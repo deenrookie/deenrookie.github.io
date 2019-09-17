@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+
+<head><meta name="generator" content="Hexo 3.9.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content>
+
+<link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
+
+
+<title> 破解某单机游戏到学习fiddler脚本改包</title>
+
+
+<link rel="stylesheet" href="/css/bulma.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+
+  <style media="screen">
+hr {
+  height: 1px;
+    background-color: black;
+    margin-top: 0px;
+    border: none;
+    margin-bottom: 0px;
+}
+.black {
+
+
+background-color: hsl(0,0%,7%);;
+
+
+}
+ #shadow {
+  text-shadow: 2px 3px 3px white;
+  margin-top: 3px;
+}
+h1 {
+  text-shadow: 2px 3px 3px black;
+ }
+.menu {
+margin-top: -80px;
+
+
+
+
+}
+#nav {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+  #banner {
+    position: relative;
+
+  }
+</style>
+<header>
+
+  <section class="section black is-medium" id="banner">
+    <div class="container">
+      <h1 id="sitetitle" class="title is-3 has-text-white-bis has-text-centered is-capitalized has-text-weight-bold">
+        
+        Deen&#39;s blog
+      </h1>
+
+      <h2 id="shadow" class="subtitle is-4 has-text-white is-capitalized has-text-centered">
+
+        
+        至人无己
+        
+      </h2>
+
+    </div>
+
+    </div>
+  </section>
+<!--TOP Menu-->
+  <div class="menu level" >
+<div class="level-item has-text-centered"></div>
+    <nav class=".navbar level-item" >
+      
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /
+            "> Home</a>
+        
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /archives
+            "> Archive</a>
+        
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /about
+            "> About</a>
+        
+    </nav>
+    <div class="level-item has-text-centered"></div>
+</div>
+
+  <hr>
+
+
+
+
+
+
+</header>
+
+
+
+<link rel="stylesheet" href="/css/highlight.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    #postsec {
+        clear: left;
+    }
+
+
+
+    .details {
+        float: left;
+        padding-left: 10px;
+        font-size: 18px;
+
+    }
+    div > span {
+       margin-left: 0px;
+      margin-top: 0px;
+    }
+</style>
+<section id="post_section" class="container markdown-body" >
+
+    <!--title,date,tags-->
+    <h2 id="hidden">
+        破解某单机游戏到学习fiddler脚本改包
+    </h2>
+
+    <section class="desec">
+
+        
+    </section>
+
+
+    <!-- content -->
+    <section id="postsec"><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>前段日子出去玩了，游山玩水的，网太差，就下了个单机耍耍。水墨风，打斗效果挺不错的（那么，请问哪里能够下载到呢？）<br>像我这种0氪玩家，肝是不可能肝的，这辈子都不可能的，阴阳师我都没肝过XD，氪也是不可能氪的，身上钱只能够吃吃饭而已……</p>
+<h2 id="开搞"><a href="#开搞" class="headerlink" title="开搞"></a>开搞</h2><p>不说了，web狗开始逆向！AndroidKiller打开，拖入apk，点击开始反编译！what？？某数字加固宝，AndroidKiller关闭！自闭中…….</p>
+<p>逆向又不会，只能回归自己老本行-开始抓包。</p>
+<a id="more"></a>
+<h3 id="请求分析"><a href="#请求分析" class="headerlink" title="请求分析"></a>请求分析</h3><p>像这样的单机游戏app实在没有太多请求，大概发现下面这些：</p>
+<ol>
+<li>访问 /fightingx/utils/timeUtil2.php 返回一个时间戳</li>
+<li>输入cdk向服务器兑换CDK</li>
+<li>充钱请求</li>
+</ol>
+<p>3的充钱是加密的乱码，如果不能逆向出源码找出解密，是基本不用看了。</p>
+<p>至于2的请求，服务器返回的是json：<code>{&quot;ret&quot;:2}</code>,仅靠这样的数据是很难构造返回包的。除非：一是逆向出源码，找出是怎么解析的，再构造相应数据；二是找到一个cdk，构造一个成功兑换的返回包，每次兑换都会返回这个。这是可行的，可是上哪找cdk呢，社工?（我加群水了半天也没水到一枚cdk）……</p>
+<h3 id="发现漏洞"><a href="#发现漏洞" class="headerlink" title="发现漏洞"></a>发现漏洞</h3><p>最后我从1下手，这涉及到一个游戏机制的问题。游戏当中有一个“探索”的机制，即你从现在开始探索，经过6个小时后你就可以获得收获，受益不少。<br><img src="http://ww1.sinaimg.cn/large/005IUN3mly1g71ohyo11gj31o00u0x6p.jpg" alt="探索"></p>
+<p>我一开始修改系统时间，提前了6个多小时，但是发现并没有什么用，然后通过抓包修改1请求的返回包，改成第二天的时间，发现“探索”就立马结束了！！我只要不停的重复这个动作，“富可敌国”指日可待。</p>
+<h2 id="自动化实现"><a href="#自动化实现" class="headerlink" title="自动化实现"></a>自动化实现</h2><h3 id="碰到的问题"><a href="#碰到的问题" class="headerlink" title="碰到的问题"></a>碰到的问题</h3><p>我使用burp的正则匹配进行返回包替换，将返回的时间戳换成几天或者几个月之后的，但是这个替换并不是一劳永逸的，<strong>我需要不停的替换，使替换的时间每次都比上次的时间多6个小时。</strong> 因为每次的出发时间点都是上一次结束的时间点，这也太累了吧，我手机操作就算了，每次还要修改burp……</p>
+<h3 id="fiddler改包"><a href="#fiddler改包" class="headerlink" title="fiddler改包"></a>fiddler改包</h3><p>我要实现的功能很简单，就是使返回的时间戳每次都比上一次请求的多21600秒，或者更多，burp是没法实现的，还是我没找到。我将目光投向了fiddler，虽然不怎么用这东西。</p>
+<p>fiddler修改返回包有三种方法</p>
+<ol>
+<li><p>通过AutoResponder进行修改，具体操作是左边选择需要修改的请求，右边再点击AutoResponder按钮，添加规则，需要制定一个txt文本<br><img src="http://ww1.sinaimg.cn/large/005IUN3mly1g71r7utus0j326o0e9wh6.jpg" alt="autoresponder修改返回包"></p>
+</li>
+<li><p>通过Automatic Breakpoints进行改包，点击rules,再选择断点方式<br><img src="http://ww1.sinaimg.cn/large/005IUN3mly1g71rf39dfvj30xp0hs75v.jpg" alt="image.png"></p>
+</li>
+</ol>
+<p>断点之后，每当有请求时，都会出现在下面。</p>
+<p><img src="http://ww1.sinaimg.cn/large/005IUN3mly1g71rlkm5spj30uh07dq39.jpg" alt="image.png"></p>
+<p>双击进入，然后点击break on response，再点击textview即可修改返回包，修改完成后点击run to completion。<br><img src="http://ww1.sinaimg.cn/large/005IUN3mly1g71rmdj3ljj30zr0f7t95.jpg" alt="image.png"></p>
+<ol start="3">
+<li>通过FiddlerScript改包，点击rules,再点击Customize Rules，就进入脚本编辑<br><img src="http://ww1.sinaimg.cn/large/005IUN3mly1g71rpfpa0yj30ru0hmwfy.jpg" alt="image.png"></li>
+</ol>
+<p>这是采用c#编写的，也自定义了一部分函数和方法。脚本编写是再此基础上进行修改。我们要修改的是OnBeforeResponse</p>
+<p><img src="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwsxjnlj318u0koq5m.jpg" alt="image.png"></p>
+<p>下图我打马赛克的部分就是脚本编写的位置。<br><img src="https://ws1.sinaimg.cn/large/005IUN3mly1g71rze2no9j312c0mo3za.jpg" alt="image.png"></p>
+<p>最简单的实例，当请求host为<a href="http://www.baidu.com时候，返回baidu：" target="_blank" rel="noopener">www.baidu.com时候，返回baidu：</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if (oSession.HostnameIs(&quot;www.baidu.com&quot;))&#123;</span><br><span class="line">	    oSession.utilSetResponseBody(&apos;baidu&apos;);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ws1.sinaimg.cn/large/005IUN3mly1g71s3n4w2mj30r105bweo.jpg" alt="image.png"></p>
+<p><img src="https://ws1.sinaimg.cn/large/005IUN3mly1g71s3yd2yaj30nv0e2abi.jpg" alt="image.png"></p>
+<h3 id="实现不断递增返回时间戳达到破解效果"><a href="#实现不断递增返回时间戳达到破解效果" class="headerlink" title="实现不断递增返回时间戳达到破解效果"></a>实现不断递增返回时间戳达到破解效果</h3><p>http是无状态，这里也是，OnBeforeResponse这个函数每当有请求返回的时候都会重新运行一次，也就是我并不能在这实现一个类似于计数器的东西，每当请求某网站时就n+1，然后再某个时间基数上乘以n*21600.</p>
+<p>但我并不需要返回值使这期间间隔的值为一个确切的值，我只需要大于一个值。</p>
+<p>假设我探索出发的时间为a，通过修改返回包，返回来的时间为a+b,b&gt;21600,第二次探索出发的时间为a+b,则第二次返回回来的时间为a+b+c,c&gt;21600,第三次探索出发的时间为a+b+c……</p>
+<p>也就是说，我需要找到一个递增的值，这个值在我探索出发，和探索结束这段时间内，增大的数值需要大于21600.</p>
+<p>有什么是不断变大的，又不受状态影响呢？<strong>系统时间戳</strong></p>
+<p>我通过代码取系统时间戳，截取这个时间戳的后面几位为g，g是递增的，我让g乘以一个数字，使g在探索的时间里，增加的值与这个数字的乘积大于21600.</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">if (oSession.HostnameIs(&quot;www.xxxxxgames.cn&quot;))&#123;</span><br><span class="line">            oSession.utilDecodeResponse(); //解码 </span><br><span class="line">            var now = new Date();</span><br><span class="line">            var ts = now.getTime();</span><br><span class="line">            var d = ts.ToString();</span><br><span class="line">            var t = d.Substring(0,10);</span><br><span class="line">            var ttt = t.Substring(t.Length - 4);</span><br><span class="line">            </span><br><span class="line">            var f = int.Parse(t);</span><br><span class="line">            var g = int.Parse(ttt);</span><br><span class="line">            </span><br><span class="line">            var time = f + g*1000;</span><br><span class="line">            oSession.utilReplaceRegexInResponse(&apos;^1568.*$&apos;,time);</span><br><span class="line">  </span><br><span class="line">            </span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自动刷钱"><a href="#自动刷钱" class="headerlink" title="自动刷钱"></a>自动刷钱</h3><p>当不用不停的修改返回时间戳来达到破解效果时，实现自动刷钱自动探索就容易的不少。简单思路就是安卓开启USB调试连接手机，通过鼠标操控手机。再用按键精灵不停重复探索动作，即可。<br><img src="https://ws1.sinaimg.cn/large/005IUN3mly1g71ss9pi4nj31ws175u0x.jpg" alt="合影"></p>
+<p>最后成果：百万金币加上数不尽的紫装 :D</p>
+<p><img src="https://ws1.sinaimg.cn/large/005IUN3mly1g71snfhxjgj31o00u04qq.jpg" alt="成果"></p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>如何实现更加精确的动态修改返回包？</p>
+
+    </section>
+
+
+</section>
+<script>var title = document.getElementById("hidden");
+    title.style.display = "none";
+    sitetitle = document.getElementById("sitetitle");
+    titlev = title.childNodes[0].nodeValue;
+    sitetitle.innerHTML = titlev;
+    shadow = document.getElementById("shadow");
+    shadow.style.visibility = "hidden";
+</script>
+<!-- 评论系统-->
+
+
+
+
+
+<style>
+    #height {
+        height: 100px;
+        box-sizing: border-box;
+        color: rgb(51, 51, 51);
+        font-size: 18px;
+        font-weight: 400;
+
+    }
+
+    .footer_p {
+        box-sizing: border-box;
+        font-size: 18px;
+        font-weight: 200;
+        line-height: 27px;
+        text-align: center;
+        text-rendering: optimizelegibility;
+    }
+
+    .footer_link {
+        color: black;
+    }
+</style>
+<script src="/js/jquery.js"></script>
+
+<!-- 特效 -->
+<script type="text/javascript" color="#555" opacity='0.9' zIndex="-1" count="100"
+src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+
+</script>
+<script src="/js/highlight.pack.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var codeBlocks = Array.prototype.slice.call(document.getElementsByTagName('pre'))
+        codeBlocks.forEach(function(block, index) {
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
+
+</body>

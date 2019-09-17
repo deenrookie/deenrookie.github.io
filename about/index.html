@@ -10,7 +10,7 @@
 <link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
 
 
-<title> Archive</title>
+<title> Deen&#39;s blog</title>
 
 
 <link rel="stylesheet" href="/css/bulma.css">
@@ -114,50 +114,74 @@ margin-top: -80px;
 </header>
 
 
-
+<link rel="stylesheet" href="/css/highlight.css">
 <style>
-    html,body {
-        background: white;
-    }
-    #archtitle {
-        margin-top: 35px;
-        font-size: 25px;
-        color: #1abc9c;
-    }
-    #arch
-          {
-        margin-bottom: 20px;
-    }
-   #archtit {
-        color: #1abc9c !important;
-        background-color: transparent;
-        -webkit-text-decoration-skip: objects;
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 45px;
     }
 
-  #archtit:active, #archtit:hover {
-        outline-width: 0;
-        border-bottom-color: #555 !important;
-        color: #555 !important;
-        text-decoration: none !important;
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    #postsec {
+        clear: left;
+    }
+
+
+
+    .details {
+        float: left;
+        padding-left: 10px;
+        font-size: 18px;
+
+    }
+    div > span {
+       margin-left: 0px;
+      margin-top: 0px;
     }
 </style>
-<section id="arch" class="container has-text-centered ">
+<section id="post_section" class="container markdown-body" >
 
-<!--title-->
-    <h2 id="archtitle">
-        <a id="archtit" href="/2019/09/17/破解某单机游戏到学习fiddler脚本改包/">破解某单机游戏到学习fiddler脚本改包</a>
+    <!--title,date,tags-->
+    <h2 id="hidden">
+        About me
     </h2>
-    <!--date and author-->
-    <strong id="archdate"><p>Posted on 2019-09-17</p>
-    </strong>
+
+    <section class="desec">
+
+        
     </section>
 
-<!-- 分页 -->
-<div id="fenye" class="container has-text-centered">
-    
-    
-</div>
-<div style="height:30px;"></div>
+
+    <!-- content -->
+    <section id="postsec"><p>Primary Web Security Researcher</p>
+<p>mail: ZGVlbnJvb2tpZUBmb3htYWlsLmNvbQ==</p>
+
+    </section>
+
+
+</section>
+<script>var title = document.getElementById("hidden");
+    title.style.display = "none";
+    sitetitle = document.getElementById("sitetitle");
+    titlev = title.childNodes[0].nodeValue;
+    sitetitle.innerHTML = titlev;
+    shadow = document.getElementById("shadow");
+    shadow.style.visibility = "hidden";
+</script>
+<!-- 评论系统-->
+
+
+
+
+
+
 
 
 <style>

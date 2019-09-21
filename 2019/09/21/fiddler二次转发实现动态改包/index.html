@@ -10,7 +10,7 @@
 <link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
 
 
-<title> Deen&#39;s blog</title>
+<title> </title>
 
 
 <link rel="stylesheet" href="/css/bulma.css">
@@ -111,55 +111,54 @@ margin-top: -80px;
 </header>
 
 
+
+<link rel="stylesheet" href="/css/highlight.css">
 <style>
-
-     #mark a {
-        color: #1abc9c !important;
-        background-color: transparent;
-        -webkit-text-decoration-skip: objects;
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 45px;
     }
 
-   #mark a:active,#mark a:hover {
-        outline-width: 0;
-        border-bottom-color: #555 !important;
-        color: #555 !important;
-        text-decoration: none !important;
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
     }
-   body {
-       font-family:"Book Antiqua", Palatino, serif;
-   }
+    #postsec {
+        clear: left;
+    }
 
-    #section {
-margin: 35px auto;
-max-width: 960px;
 
-}
 
-    #readmore {
-        margin-top: 7.5px;
-        margin-left: 840px;
-        margin-bottom: -5px;
+    .details {
+        float: left;
+        padding-left: 10px;
+        font-size: 18px;
 
     }
-    h2#title {
-line-height: 20px;
+    div > span {
+       margin-left: 0px;
+      margin-top: 0px;
     }
-    </style>
-<div id="index">
-  
+</style>
+<section id="post_section" class="container markdown-body" >
 
-<section class="container" id="section">
-    <!-- title -->
-<h2  align="center" id="title" class="message-header">
+    <!--title,date,tags-->
+    <h2 id="hidden">
         
-  <div  class="has-text-centered"></div>
-    <p>
-        2019-09-21
-    </p>
-</h2>
-<!-- Content -->
-        <div class="message-body">
-            <div id="mark"><h2 id="问题场景描述"><a href="#问题场景描述" class="headerlink" title="问题场景描述"></a>问题场景描述</h2><p>正如我上一篇所提到的，如何更加精确有状态地实现动态修改请求返回包？对有状态这里理解可能有点问题，我描述一个场景会更直观一点。</p>
+    </h2>
+
+    <section class="desec">
+
+        
+    </section>
+
+
+    <!-- content -->
+    <section id="postsec"><h2 id="问题场景描述"><a href="#问题场景描述" class="headerlink" title="问题场景描述"></a>问题场景描述</h2><p>正如我上一篇所提到的，如何更加精确有状态地实现动态修改请求返回包？对有状态这里理解可能有点问题，我描述一个场景会更直观一点。</p>
 <p>一个应用软件向服务器请求时间戳，第一次请求返回为A，通过修改返回包，使第二次返回A+B，第三次返回A+B+B…..这里面有一个递增的关系，这就是我所描述的状态。</p>
 <p>常见的改包是无状态的，即我使用burp，他的自动改包是一个正则表达式匹配的字符串替换；使用fiddler，通过的他脚本进行返回包修改，但修改函数是无状态的，每请求一次，函数便重新运行一次，是无法计数的，也就是我所说的无状态。</p>
 <h2 id="解决问题思考"><a href="#解决问题思考" class="headerlink" title="解决问题思考"></a>解决问题思考</h2><p>要解决这个问题，首先想到的是重写的一个代理，但这部分工作我觉得并不是那么简单，要做到像burp或者fiddler那样成熟的工具，并不是个简单的活。</p>
@@ -183,51 +182,23 @@ line-height: 20px;
 
 <p>这上面两段代码也就解决了我一开始所描述的场景问题。</p>
 <h2 id="又一个问题"><a href="#又一个问题" class="headerlink" title="又一个问题"></a>又一个问题</h2><p>这里我所实现的第三方服务器是一个flask，但当请求返回的结果是一个复杂的html时，里面有各种换行各种符号等等，将这种数据作为POST请求的data，在flask这边是很难处理的。是否有更优雅更加完备的第三方服务器实现方式，能够获取所有POST数据，处理这种问题？</p>
-</div>
-          
-        </div>
+
+    </section>
+
 
 </section>
+<script>var title = document.getElementById("hidden");
+    title.style.display = "none";
+    sitetitle = document.getElementById("sitetitle");
+    titlev = title.childNodes[0].nodeValue;
+    sitetitle.innerHTML = titlev;
+    shadow = document.getElementById("shadow");
+    shadow.style.visibility = "hidden";
+</script>
+<!-- 评论系统-->
 
 
 
-
-<section class="container" id="section">
-    <!-- title -->
-<h2  align="center" id="title" class="message-header">
-        
-  <div  class="has-text-centered">破解某单机游戏到学习fiddler脚本改包</div>
-    <p>
-        2019-09-17
-    </p>
-</h2>
-<!-- Content -->
-        <div class="message-body">
-            <div id="mark"><h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>前段日子出去玩了，游山玩水的，网太差，就下了个单机耍耍。水墨风，打斗效果挺不错的（那么，请问哪里能够下载到呢？）<br>像我这种0氪玩家，肝是不可能肝的，这辈子都不可能的，阴阳师我都没肝过XD，氪也是不可能氪的，身上钱只能够吃吃饭而已……</p>
-<h2 id="开搞"><a href="#开搞" class="headerlink" title="开搞"></a>开搞</h2><p>不说了，web狗开始逆向！AndroidKiller打开，拖入apk，点击开始反编译！what？？某数字加固宝，AndroidKiller关闭！自闭中…….</p>
-<p>逆向又不会，只能回归自己老本行-开始抓包。</p></div>
-          
-
-
-            <!-- dividing line -->
-              <hr size="3px" style="background-color: #E1E1E1;">
-              <a id="readmore" class="button is-black is-rounded is-small is-outlined is-focused" href="/2019/09/17/破解某单机游戏到学习fiddler脚本改包/">Read More</a>
-
-                  
-        </div>
-
-</section>
-
-
-
-    <!-- 分页 pagination-->
-<!-- 分页 -->
-<div id="fenye" class="container has-text-centered">
-    
-    
-</div>
-<div style="height:30px;"></div>
-</div>
 
 
 <style>

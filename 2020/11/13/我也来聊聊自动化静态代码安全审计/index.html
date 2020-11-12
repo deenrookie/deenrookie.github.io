@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+
+<head><meta name="generator" content="Hexo 3.9.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content>
+
+<link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
+
+
+<title> 我也来聊聊自动化静态代码安全审计</title>
+
+
+<link rel="stylesheet" href="/css/bulma.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+
+  <style media="screen">
+hr {
+  height: 1px;
+    background-color: black;
+    margin-top: 0px;
+    border: none;
+    margin-bottom: 0px;
+}
+.black {
+
+
+background-color: hsl(0,0%,7%);;
+
+
+}
+ #shadow {
+  text-shadow: 2px 3px 3px white;
+  margin-top: 3px;
+}
+h1 {
+  text-shadow: 2px 3px 3px black;
+ }
+.menu {
+margin-top: -80px;
+
+
+
+
+}
+#nav {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+  #banner {
+    position: relative;
+
+  }
+</style>
+<header>
+
+  <section class="section black is-medium" id="banner">
+    <div class="container">
+      <h1 id="sitetitle" class="title is-3 has-text-white-bis has-text-centered is-capitalized has-text-weight-bold">
+        
+        Deen&#39;s blog
+      </h1>
+
+      <h2 id="shadow" class="subtitle is-4 has-text-white is-capitalized has-text-centered">
+
+      </h2>
+
+    </div>
+
+    </div>
+  </section>
+<!--TOP Menu-->
+  <div class="menu level" >
+<div class="level-item has-text-centered"></div>
+    <nav class=".navbar level-item" >
+      
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /archives
+            "> Archive</a>
+        
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /about
+            "> About</a>
+        
+    </nav>
+    <div class="level-item has-text-centered"></div>
+</div>
+
+  <hr>
+
+
+
+
+
+
+</header>
+
+
+
+<link rel="stylesheet" href="/css/highlight.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    #postsec {
+        clear: left;
+    }
+
+
+
+    .details {
+        float: left;
+        padding-left: 10px;
+        font-size: 18px;
+
+    }
+    div > span {
+       margin-left: 0px;
+      margin-top: 0px;
+    }
+</style>
+<section id="post_section" class="container markdown-body" >
+
+    <!--title,date,tags-->
+    <h2 id="hidden">
+        我也来聊聊自动化静态代码安全审计
+    </h2>
+
+    <section class="desec">
+
+        
+    </section>
+
+
+    <!-- content -->
+    <section id="postsec"><p>想来做代码安全自动化检查快到一年了，从开发到调优，从python到golang，重构了三次，总算是把PHP代码安全检查做出来了。为什么是做PHP呢，我也不知道，当初组里大家把语言都挑了，就剩这个了。我内心是拒绝，一是php算是有点历史的语言，二是php太灵活了，静态代码检测要做起来估计会很费劲。不过还好，最后总算是做出来了。</p>
+<p>做得效果怎么样呢？不比远的，国内比较有市场得某marx，从速度，检测效果上，可以说是降维打击，某marx能做到的，我们也能做。至于RIPS，不得不承认，RIPS做的确实不错，从速度上来说也挺快的，对PHP语言的各种特性、函数的适配，都可圈可点。但即使是RIPS，在处理静态代码检测难点上，如分支处理、条件语句处理、属性的属性赋值处理，都是没有太大出彩的地方的，有些甚至没做。在一段时间优化后，我有信心可以超过RIPS，现在某些漏洞规则上，RIPS也是缺失的。</p>
+<p>聊一聊开源的那些吧，出名的有个cobra，还有个基于cobra开发的kunlun，我都有看过。我也看了项目的那些issue，里面有一些测试代码，我拿来给检查器跑，完美通过。自然，他们是开源，我们是全职在搞，效果肯定不一样。但是还是会有点成就感的。这些开源的工具，从专业角度来看，还是很不成熟的。至于github搞得那个codeql，思路很新颖，但是要嵌入流水线什么的，速度肯定不行，要把东西都解析然后存起来，内存肯定是吃不消的。只是说面向安全人员，是个很好的工具。</p>
+<p>我们怎么做的呢？这是商业机密了，具体的技术细节也不太好透露。看到这你肯定想骂娘，吹了半天牛皮然后啥都不说。那我也没办法啊。我只能说，这玩意写出来没那么容易，但是写出来比优化要容易，优化花的的时间远比开发的时间长。优化需要什么呢，需要大量的带有漏洞的真实代码，来自github和企业内部的漏洞代码，不停地调优，最后才能做出效果。</p>
+<p>在这段时间内，我下班后也抽了点时间写了个dom-xss检测的，外面那些测试用例基本都能覆盖了，那些什么开源的xss检测，和我这个肯定是没法比的。但是实际上，我没花多少时间优化，还是有很多规则没有覆盖到的，这一块我还得再花时间看看。js也好，php也罢，用过python、node、golang，都差不多。</p>
+<p>今年也算是有进步的一年吧。</p>
+
+    </section>
+
+
+</section>
+<script>var title = document.getElementById("hidden");
+    title.style.display = "none";
+    sitetitle = document.getElementById("sitetitle");
+    titlev = title.childNodes[0].nodeValue;
+    sitetitle.innerHTML = titlev;
+    shadow = document.getElementById("shadow");
+    shadow.style.visibility = "hidden";
+</script>
+<!-- 评论系统-->
+
+
+
+
+
+<style>
+    #height {
+        height: 100px;
+        box-sizing: border-box;
+        color: rgb(51, 51, 51);
+        font-size: 18px;
+        font-weight: 400;
+
+    }
+
+    .footer_p {
+        box-sizing: border-box;
+        font-size: 18px;
+        font-weight: 200;
+        line-height: 27px;
+        text-align: center;
+        text-rendering: optimizelegibility;
+    }
+
+    .footer_link {
+        color: black;
+    }
+</style>
+<script src="/js/jquery.js"></script>
+
+<!-- 特效 -->
+<script type="text/javascript" color="#555" opacity='0.9' zIndex="-1" count="100"
+src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+
+</script>
+<script src="/js/highlight.pack.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var codeBlocks = Array.prototype.slice.call(document.getElementsByTagName('pre'))
+        codeBlocks.forEach(function(block, index) {
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
+
+</body>

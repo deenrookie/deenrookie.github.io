@@ -10,7 +10,7 @@
 <link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
 
 
-<title> Deen&#39;s blog</title>
+<title> NaN</title>
 
 
 <link rel="stylesheet" href="/css/bulma.css">
@@ -105,83 +105,50 @@ margin-top: -80px;
 </header>
 
 
-<link rel="stylesheet" href="/css/highlight.css">
+
 <style>
-    .markdown-body {
-        box-sizing: border-box;
-        min-width: 200px;
-        max-width: 960px;
-        margin: 0 auto;
-        padding: 45px;
+    html,body {
+        background: white;
+    }
+    #archtitle {
+        margin-top: 35px;
+        font-size: 25px;
+        color: #1abc9c;
+    }
+    #arch
+          {
+        margin-bottom: 20px;
+    }
+   #archtit {
+        color: #1abc9c !important;
+        background-color: transparent;
+        -webkit-text-decoration-skip: objects;
     }
 
-    @media (max-width: 767px) {
-        .markdown-body {
-            padding: 15px;
-        }
-    }
-    #postsec {
-        clear: left;
-    }
-
-
-
-    .details {
-        float: left;
-        padding-left: 10px;
-        font-size: 18px;
-
-    }
-    div > span {
-       margin-left: 0px;
-      margin-top: 0px;
+  #archtit:active, #archtit:hover {
+        outline-width: 0;
+        border-bottom-color: #555 !important;
+        color: #555 !important;
+        text-decoration: none !important;
     }
 </style>
-<section id="post_section" class="container markdown-body" >
+<section id="arch" class="container has-text-centered ">
 
-    <!--title,date,tags-->
-    <h2 id="hidden">
-        About me
+<!--title-->
+    <h2 id="archtitle">
+        <a id="archtit" href="/2021/02/12/一处自嗨postMessage的dom-xss小记/">一处自嗨postMessage的dom-xss小记</a>
     </h2>
-
-    <section class="desec">
-
-        
+    <!--date and author-->
+    <strong id="archdate"><p>Posted on 2021-02-12</p>
+    </strong>
     </section>
 
-
-    <!-- content -->
-    <section id="postsec"><p>Primary Web Security Researcher</p>
-<p>XSS: <code>https://xss.plutosec.com</code><br>Mail: ZGVlbnJvb2tpZUBmb3htYWlsLmNvbQ==</p>
-<p>Hacktivity:</p>
-<ul>
-<li>CVE-2020-23653, ThinkAdmin v4/v5/v6 反序列化漏洞</li>
-<li>CNVD-2020-58823，ECShop 前台 SQL 注入漏洞——《ECShop 最新 4.1.0 前台免登录 SQL 注入 0day 漏洞披露与利用分析》</li>
-<li>CNVD-2020-65242，禅道任意文件下载漏洞——《禅道开源版自动化审计》</li>
-<li>CNVD-2020-32231 Vtiger CRM SQL注入漏洞</li>
-<li>CNVD-2020-45121 信呼OA sql注入漏洞</li>
-<li>CNVD-2020-47656 苹果CMS任意文件删除漏洞</li>
-</ul>
-
-    </section>
-
-
-</section>
-<script>var title = document.getElementById("hidden");
-    title.style.display = "none";
-    sitetitle = document.getElementById("sitetitle");
-    titlev = title.childNodes[0].nodeValue;
-    sitetitle.innerHTML = titlev;
-    shadow = document.getElementById("shadow");
-    shadow.style.visibility = "hidden";
-</script>
-<!-- 评论系统-->
-
-
-
-
-
-
+<!-- 分页 -->
+<div id="fenye" class="container has-text-centered">
+    
+    
+</div>
+<div style="height:30px;"></div>
 
 
 <style>

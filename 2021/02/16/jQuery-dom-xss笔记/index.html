@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head><meta name="generator" content="Hexo 3.9.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content>
+
+<link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
+
+
+<title> jQuery DOM-XSS笔记</title>
+
+
+<link rel="stylesheet" href="/css/bulma.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+
+  <style media="screen">
+hr {
+  height: 1px;
+    background-color: black;
+    margin-top: 0px;
+    border: none;
+    margin-bottom: 0px;
+}
+.black {
+
+
+background-color: hsl(0,0%,7%);;
+
+
+}
+ #shadow {
+  text-shadow: 2px 3px 3px white;
+  margin-top: 3px;
+}
+h1 {
+  text-shadow: 2px 3px 3px black;
+ }
+.menu {
+margin-top: -80px;
+
+
+
+
+}
+#nav {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+  #banner {
+    position: relative;
+
+  }
+</style>
+<header>
+
+  <section class="section black is-medium" id="banner">
+    <div class="container">
+      <h1 id="sitetitle" class="title is-3 has-text-white-bis has-text-centered is-capitalized has-text-weight-bold">
+        
+        Deen&#39;s blog
+      </h1>
+
+      <h2 id="shadow" class="subtitle is-4 has-text-white is-capitalized has-text-centered">
+
+      </h2>
+
+    </div>
+
+    </div>
+  </section>
+<!--TOP Menu-->
+  <div class="menu level" >
+<div class="level-item has-text-centered"></div>
+    <nav class=".navbar level-item" >
+      
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /archives
+            "> Archive</a>
+        
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /about
+            "> About</a>
+        
+    </nav>
+    <div class="level-item has-text-centered"></div>
+</div>
+
+  <hr>
+
+
+
+
+
+
+</header>
+
+
+
+<link rel="stylesheet" href="/css/highlight.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    #postsec {
+        clear: left;
+    }
+
+
+
+    .details {
+        float: left;
+        padding-left: 10px;
+        font-size: 18px;
+
+    }
+    div > span {
+       margin-left: 0px;
+      margin-top: 0px;
+    }
+</style>
+<section id="post_section" class="container markdown-body" >
+
+    <!--title,date,tags-->
+    <h2 id="hidden">
+        jQuery DOM-XSS笔记
+    </h2>
+
+    <section class="desec">
+
+        
+    </section>
+
+
+    <!-- content -->
+    <section id="postsec"><h2 id="0x00-基本介绍"><a href="#0x00-基本介绍" class="headerlink" title="0x00 基本介绍"></a>0x00 基本介绍</h2><p>jQuery函数等于$() 。</p>
+<blockquote>
+<p>在上文列出的第一个公式中，jQuery() — 这个也可以写成 $() — 通过提供的选择器检索任何DOM元素并且通过这些元素创建一个新的jQuery对象.</p>
+</blockquote>
+<p>参考：<a href="https://www.css88.com/jqapi-1.9/jQuery/" target="_blank" rel="noopener">https://www.css88.com/jqapi-1.9/jQuery/</a></p>
+<h2 id="0x01-实际案例"><a href="#0x01-实际案例" class="headerlink" title="0x01 实际案例"></a>0x01 实际案例</h2><p><code>jQuery(&quot;&lt;img/src=x onerror=alert(1)&gt;&quot;)</code> 可以触发xss。</p>
+<p>实际案例：</p>
+<p>站点：<a href="https://www.alchemer.com/" target="_blank" rel="noopener">https://www.alchemer.com/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">window.addEventListener(&quot;message&quot;, (function(t) &#123;</span><br><span class="line">    if (&quot;hsFormCallback&quot; === t.data.type &amp;&amp; &quot;onFormReady&quot; === t.data.eventName) &#123;</span><br><span class="line">      var e = t.data.id,</span><br><span class="line">        n = jQuery(&apos;form[data-form-id=&quot;&apos;.concat(e, &apos;&quot;]&apos;)),</span><br><span class="line">        a = [&quot;contact_last_touch_page_url_&quot;, &quot;contact_last_touch_page_title_&quot;, &quot;contact_last_touch_n_2_page_title_&quot;, &quot;contact_last_touch_n_1_page_title_&quot;];</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>jQuery(&#39;form[data-form-id=&quot;&#39;.concat(e, &#39;&quot;]&#39;))</code> 中e是可控的。</p>
+<p>但是字符串开头不发控制，在大部分jQuery版本下无法利用。</p>
+<h2 id="0x02-jQuery版本"><a href="#0x02-jQuery版本" class="headerlink" title="0x02 jQuery版本"></a>0x02 jQuery版本</h2><p><code>jQuery(&quot;form[data-form-id=1].&lt;img/src=x onerror=alert(1)&gt;&quot;)</code> 这个payload生效版本为1.8.3版本及以前，也就是说1.9及1.9之后的版本就无法利用了。</p>
+<p>查阅资料看到1.9的更新：<a href="https://jquery.com/upgrade-guide/1.9/" target="_blank" rel="noopener">https://jquery.com/upgrade-guide/1.9/</a></p>
+<blockquote>
+<p>Prior to 1.9, a string would be considered to be an HTML string if it had HTML tags anywhere within the string. This has the potential to cause inadvertent execution of code and reject valid selector strings. As of 1.9, a string is only considered to be HTML if it starts with a less-than (“&lt;”) character. The Migrate plugin can be used to restore the pre-1.9 behavior.</p>
+</blockquote>
+<p><code>As of 1.9, a string is only considered to be HTML if it starts with a less-than (&quot;&lt;&quot;) character</code> 主要看这一句，也就是说，1.9版本之后，只有&lt; 尖括号开头的才能利用。</p>
+
+    </section>
+
+
+</section>
+<script>var title = document.getElementById("hidden");
+    title.style.display = "none";
+    sitetitle = document.getElementById("sitetitle");
+    titlev = title.childNodes[0].nodeValue;
+    sitetitle.innerHTML = titlev;
+    shadow = document.getElementById("shadow");
+    shadow.style.visibility = "hidden";
+</script>
+<!-- 评论系统-->
+
+
+
+
+
+<style>
+    #height {
+        height: 100px;
+        box-sizing: border-box;
+        color: rgb(51, 51, 51);
+        font-size: 18px;
+        font-weight: 400;
+
+    }
+
+    .footer_p {
+        box-sizing: border-box;
+        font-size: 18px;
+        font-weight: 200;
+        line-height: 27px;
+        text-align: center;
+        text-rendering: optimizelegibility;
+    }
+
+    .footer_link {
+        color: black;
+    }
+</style>
+<script src="/js/jquery.js"></script>
+
+<!-- 特效 -->
+<script type="text/javascript" color="#555" opacity='0.9' zIndex="-1" count="100"
+src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+
+</script>
+<script src="/js/highlight.pack.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var codeBlocks = Array.prototype.slice.call(document.getElementsByTagName('pre'))
+        codeBlocks.forEach(function(block, index) {
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
+
+</body>

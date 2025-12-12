@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="写在前面不得不吐槽一下，接了这个CSRF的坑真的是苦不堪言，一个是需要开发配合接入这个后端的网关中间件，一个是这个玩意动不动就容易出事故. 先说这个开发，这个要人接入，文档写得挺清楚的，但就是有卧龙和凤雏。确实，这个运营的玩意不是谁都能干，关键是这个玩意你咋算绩效呢。再就是这个侵入的防护方案，我们东西是不会出问题的，但难保不齐这个开发不看流量直接开启拦截。还好我加了个审批，都给拒绝了，但是最近又被">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSRF防护方案（二）">
+<meta property="og:url" content="http://yoursite.com/2024/01/13/CSRF防护方案(二)/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="写在前面不得不吐槽一下，接了这个CSRF的坑真的是苦不堪言，一个是需要开发配合接入这个后端的网关中间件，一个是这个玩意动不动就容易出事故. 先说这个开发，这个要人接入，文档写得挺清楚的，但就是有卧龙和凤雏。确实，这个运营的玩意不是谁都能干，关键是这个玩意你咋算绩效呢。再就是这个侵入的防护方案，我们东西是不会出问题的，但难保不齐这个开发不看流量直接开启拦截。还好我加了个审批，都给拒绝了，但是最近又被">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSRF防护方案（二）">
+<meta name="twitter:description" content="写在前面不得不吐槽一下，接了这个CSRF的坑真的是苦不堪言，一个是需要开发配合接入这个后端的网关中间件，一个是这个玩意动不动就容易出事故. 先说这个开发，这个要人接入，文档写得挺清楚的，但就是有卧龙和凤雏。确实，这个运营的玩意不是谁都能干，关键是这个玩意你咋算绩效呢。再就是这个侵入的防护方案，我们东西是不会出问题的，但难保不齐这个开发不看流量直接开启拦截。还好我加了个审批，都给拒绝了，但是最近又被">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>CSRF防护方案（二）</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2024/01/16/CSRF防护方案(三)/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2023/09/23/CSRF防护方案/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2024/01/13/CSRF防护方案(二)/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&text=CSRF防护方案（二）"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&is_video=false&description=CSRF防护方案（二）"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CSRF防护方案（二）&body=Check out this article: http://yoursite.com/2024/01/13/CSRF防护方案(二)/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&name=CSRF防护方案（二）&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF防护方案改造"><span class="toc-number">2.</span> <span class="toc-text">CSRF防护方案改造</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新方案"><span class="toc-number">2.1.</span> <span class="toc-text">新方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在后面"><span class="toc-number">3.</span> <span class="toc-text">写在后面</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CSRF防护方案（二）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2024-01-13T01:31:22.000Z" itemprop="datePublished">2024-01-13</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><del>不得不吐槽一下，接了这个CSRF的坑真的是苦不堪言，一个是需要开发配合接入这个后端的网关中间件，一个是这个玩意动不动就容易出事故.</del></p>
+<p><del>先说这个开发，这个要人接入，文档写得挺清楚的，但就是有卧龙和凤雏。确实，这个运营的玩意不是谁都能干，关键是这个玩意你咋算绩效呢。再就是这个侵入的防护方案，我们东西是不会出问题的，但难保不齐这个开发不看流量直接开启拦截。还好我加了个审批，都给拒绝了，但是最近又被这个破网关摆了一道。</del></p>
+<p><del>说起这个破网关，我就得另起一段骂一骂。CSRF防护作为网关的插件，使用先得介入网关，我们让开发按照网关的操作文档去接入，结果接入之后业务就直接挂了。靠，还得背个事故。事故就算了，最让人无语最后分锅时候，网关的QA什么的破玩意觉得他们无责。什么厚颜无耻之徒，前面网关的开发都承认错误了，来了个什么不沾点脑子不讲理的牛鬼蛇神，叽里呱啦说了一大堆。他们RD还是有脑子的自己都知道理亏，但是这个QA什么玩意就是理直气壮。实属大开眼界。从业务方角度看，这个责任我这边背是没问题的，但是我这边找网关他们却一点不认，要不是看在SDLC同学的份上，我就直接火力全开。</del></p>
+<p><del>有时候我真的怀疑这些大厂招人的水准，这些水货有个统一的特点，就是道理讲不通，但是又贼能瞎扯。例如最近合作的另外一个安全团队实在是太搞笑了，聊技术没有一点底蕴，讲其他的又是废话空话一大堆实在是浪费时间</del>。</p>
+<p><del>我不排斥反对某些人的职业生涯规划观点，就是发展后面，越来越偏向流程什么上非技术建设。</del></p>
+<p>但是，这个前提是你的技术能力水准已经有一定的积累和底蕴。不然我实在不知道和这种人怎么交流，理直气壮的无知让人丧失沟通的欲望，保持我的职业素养前提下我可以耐心解释一遍，然后会议开到一半又回头来问一句为什么——无效沟通。</p>
+<h2 id="CSRF防护方案改造"><a href="#CSRF防护方案改造" class="headerlink" title="CSRF防护方案改造"></a>CSRF防护方案改造</h2><blockquote>
+<p>谷歌已经宣布，将逐步用一项更加关注用户隐私的“隐私沙盒”（Privacy Sandbox）计划取代第三方 Cookie。从 2024 年初开始，该公司计划将 1% 的 Chrome 用户转移到 Privacy Sandbox，并为他们禁用第三方 Cookie。 </p>
+</blockquote>
+<p>简单说，就是chrome的这个玩意的改动，已经影响了现有的防护方案，因为方案里用到了一个cookie里的字段去校验token。</p>
+<p>现在新的方案要做改造。</p>
+<p>上一篇已经讲过了，CORS的能力已经足够支持CSRF防护，前提是只要保证content-type是application/json格式的。这里有个什么flash 307的什么绕过，Chrome和firefox上触发不了的，都不算。</p>
+<p>用application/json限制其实就没Chrome这个改动什么事情了，但是比较烦的是，有相当一部分的业务，用的form表单的格式，很无语，2024年了，还有人用这个。看那个参数绑定封装的，让人瞠目结舌。好好地Go的结构体绑定不用，就要一个一个获取请求参数。</p>
+<p>那这种情况，改不了application/json的怎么办？</p>
+<h3 id="新方案"><a href="#新方案" class="headerlink" title="新方案"></a>新方案</h3><p>我想出了一个新的方案，这个方案就是中和初版的token方案和content-type check方案。</p>
+<p>初版方案已经在上一篇介绍过了，就是patch前端的请求发送，然后带上csrf token。这个方案我已经做过一轮优化，在原有的patch基础上，避免了对CORS的配置。但是这个优化因为Chrome这个改动要失效了。导致如果为了满足Chrome这个改动，原有的优化全部失效，又会碰上原来的那些问题，CORS冲突，首屏加载缓慢，介入成本高，排查复杂等等。</p>
+<p>对此，我想到，可以在原有的patch上，我们再给原有的请求的content-type加一个属于我们自己的特殊字段，网关中间件根据这个字段来决定是否要放行还是拦截。CSRF攻击在CORS安全的前提下无法伪造content-type。</p>
+<p>有几个问题需要确认和解决。</p>
+<ul>
+<li>是否会影响后端参数绑定？  不会，中间件可以把这个字段抹除掉，到达业务后端流量是正常的。</li>
+<li>是否会有其他问题，是否满足RFC标准？ <code>content-type = type &quot;/&quot; subtype *( &quot;;&quot; parameter )
+parameter = attribute &quot;=&quot; value</code>   这个是我搜到content-type的语法，也就是说我们通过加个分号 <code>;</code>，再加个形如<code>a=b</code>的字段，如<code>csrf=1</code>，最后变成<code>application/x-www-form-urlencoded;csrf=1</code> ，这个格式是满足RFC标准的，没有问题。</li>
+</ul>
+<p>至此，摆脱了Chrome这个玩意的改动，又摆脱了原来token方案的包袱。</p>
+<p>最近在实现中，期待后续效果。</p>
+<h2 id="写在后面"><a href="#写在后面" class="headerlink" title="写在后面"></a>写在后面</h2><p>“我不太清楚xxx前端架构是否能够较大程度便秘XSS出现，但是按照经验这个漏洞应该是远远大于CSRF漏洞数量的，只要同源子站出现XSS问题这个防护方案就Bypass了”</p>
+<p>一时之间不知如何回答，在有XSS的问题下，什么CSRF防护方案能够防住？</p>
+<p>如果你有和这位同学一样的困惑，<strong>那说明你tmd根本就没搞懂CORS,XSS,CSRF这些玩意</strong>。再看看资料，找个实际场景看看吧。</p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#写在前面"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF防护方案改造"><span class="toc-number">2.</span> <span class="toc-text">CSRF防护方案改造</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新方案"><span class="toc-number">2.1.</span> <span class="toc-text">新方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在后面"><span class="toc-number">3.</span> <span class="toc-text">写在后面</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2024/01/13/CSRF防护方案(二)/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&text=CSRF防护方案（二）"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&is_video=false&description=CSRF防护方案（二）"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CSRF防护方案（二）&body=Check out this article: http://yoursite.com/2024/01/13/CSRF防护方案(二)/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&title=CSRF防护方案（二）"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2024/01/13/CSRF防护方案(二)/&name=CSRF防护方案（二）&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="0x00 基本介绍jQuery函数等于$() 。  在上文列出的第一个公式中，jQuery() — 这个也可以写成 $() — 通过提供的选择器检索任何DOM元素并且通过这些元素创建一个新的jQuery对象.  参考：https://www.css88.com/jqapi-1.9/jQuery/ 0x01 实际案例jQuery(&amp;quot;&amp;lt;img/src=x onerror=alert(1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jQuery DOM-XSS笔记">
+<meta property="og:url" content="http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="0x00 基本介绍jQuery函数等于$() 。  在上文列出的第一个公式中，jQuery() — 这个也可以写成 $() — 通过提供的选择器检索任何DOM元素并且通过这些元素创建一个新的jQuery对象.  参考：https://www.css88.com/jqapi-1.9/jQuery/ 0x01 实际案例jQuery(&amp;quot;&amp;lt;img/src=x onerror=alert(1">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="jQuery DOM-XSS笔记">
+<meta name="twitter:description" content="0x00 基本介绍jQuery函数等于$() 。  在上文列出的第一个公式中，jQuery() — 这个也可以写成 $() — 通过提供的选择器检索任何DOM元素并且通过这些元素创建一个新的jQuery对象.  参考：https://www.css88.com/jqapi-1.9/jQuery/ 0x01 实际案例jQuery(&amp;quot;&amp;lt;img/src=x onerror=alert(1">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>jQuery DOM-XSS笔记</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2021/04/13/我挥挥衣袖，带走一堆文化衫/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2021/02/12/一处自嗨postMessage的dom-xss小记/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&text=jQuery DOM-XSS笔记"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&is_video=false&description=jQuery DOM-XSS笔记"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=jQuery DOM-XSS笔记&body=Check out this article: http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&name=jQuery DOM-XSS笔记&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-基本介绍"><span class="toc-number">1.</span> <span class="toc-text">0x00 基本介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-实际案例"><span class="toc-number">2.</span> <span class="toc-text">0x01 实际案例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-jQuery版本"><span class="toc-number">3.</span> <span class="toc-text">0x02 jQuery版本</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        jQuery DOM-XSS笔记
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2021-02-16T13:46:22.000Z" itemprop="datePublished">2021-02-16</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="0x00-基本介绍"><a href="#0x00-基本介绍" class="headerlink" title="0x00 基本介绍"></a>0x00 基本介绍</h2><p>jQuery函数等于$() 。</p>
+<blockquote>
+<p>在上文列出的第一个公式中，jQuery() — 这个也可以写成 $() — 通过提供的选择器检索任何DOM元素并且通过这些元素创建一个新的jQuery对象.</p>
+</blockquote>
+<p>参考：<a href="https://www.css88.com/jqapi-1.9/jQuery/" target="_blank" rel="noopener">https://www.css88.com/jqapi-1.9/jQuery/</a></p>
+<h2 id="0x01-实际案例"><a href="#0x01-实际案例" class="headerlink" title="0x01 实际案例"></a>0x01 实际案例</h2><p><code>jQuery(&quot;&lt;img/src=x onerror=alert(1)&gt;&quot;)</code> 可以触发xss。</p>
+<p>实际案例：</p>
+<p>站点：<a href="https://www.alchemer.com/" target="_blank" rel="noopener">https://www.alchemer.com/</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">"message"</span>, (<span class="function"><span class="keyword">function</span>(<span class="params">t</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="string">"hsFormCallback"</span> === t.data.type &amp;&amp; <span class="string">"onFormReady"</span> === t.data.eventName) &#123;</span><br><span class="line">      <span class="keyword">var</span> e = t.data.id,</span><br><span class="line">        n = jQuery(<span class="string">'form[data-form-id="'</span>.concat(e, <span class="string">'"]'</span>)),</span><br><span class="line">        a = [<span class="string">"contact_last_touch_page_url_"</span>, <span class="string">"contact_last_touch_page_title_"</span>, <span class="string">"contact_last_touch_n_2_page_title_"</span>, <span class="string">"contact_last_touch_n_1_page_title_"</span>];</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>jQuery(&#39;form[data-form-id=&quot;&#39;.concat(e, &#39;&quot;]&#39;))</code> 中e是可控的。</p>
+<p>但是字符串开头不发控制，在大部分jQuery版本下无法利用。</p>
+<h2 id="0x02-jQuery版本"><a href="#0x02-jQuery版本" class="headerlink" title="0x02 jQuery版本"></a>0x02 jQuery版本</h2><p><code>jQuery(&quot;form[data-form-id=1].&lt;img/src=x onerror=alert(1)&gt;&quot;)</code> 这个payload生效版本为1.8.3版本及以前，也就是说1.9及1.9之后的版本就无法利用了。</p>
+<p>查阅资料看到1.9的更新：<a href="https://jquery.com/upgrade-guide/1.9/" target="_blank" rel="noopener">https://jquery.com/upgrade-guide/1.9/</a></p>
+<blockquote>
+<p>Prior to 1.9, a string would be considered to be an HTML string if it had HTML tags anywhere within the string. This has the potential to cause inadvertent execution of code and reject valid selector strings. As of 1.9, a string is only considered to be HTML if it starts with a less-than (“&lt;”) character. The Migrate plugin can be used to restore the pre-1.9 behavior.</p>
+</blockquote>
+<p><code>As of 1.9, a string is only considered to be HTML if it starts with a less-than (&quot;&lt;&quot;) character</code> 主要看这一句，也就是说，1.9版本之后，只有&lt; 尖括号开头的才能利用。</p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-基本介绍"><span class="toc-number">1.</span> <span class="toc-text">0x00 基本介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-实际案例"><span class="toc-number">2.</span> <span class="toc-text">0x01 实际案例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-jQuery版本"><span class="toc-number">3.</span> <span class="toc-text">0x02 jQuery版本</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&text=jQuery DOM-XSS笔记"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&is_video=false&description=jQuery DOM-XSS笔记"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=jQuery DOM-XSS笔记&body=Check out this article: http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&title=jQuery DOM-XSS笔记"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2021/02/16/jQuery-dom-xss笔记/&name=jQuery DOM-XSS笔记&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="requestly改规则了，不让免费的加改包的规则。一个月20多新，很显然，我不是目标用户。 一个chrome插件这么贵，不如自己写一个，加上之前自己实现过类似的sdk，简单说就是hook那个XMLHttpRequest和fetch两个前端发请求的方法。 实现起来多多少少还是有点坑。 最后上架了。 Github: https://github.com/deenrookie/chrome-reqre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个改包的chrome插件 ReqRes Modder">
+<meta property="og:url" content="http://yoursite.com/2025/04/21/reqres_modder/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="requestly改规则了，不让免费的加改包的规则。一个月20多新，很显然，我不是目标用户。 一个chrome插件这么贵，不如自己写一个，加上之前自己实现过类似的sdk，简单说就是hook那个XMLHttpRequest和fetch两个前端发请求的方法。 实现起来多多少少还是有点坑。 最后上架了。 Github: https://github.com/deenrookie/chrome-reqre">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://drive.usercontent.google.com/download?id=1WgfcvSoSVZJL3NTAVTxb-wfRohgCWALu&authuser=0">
+<meta property="og:image" content="https://drive.usercontent.google.com/download?id=1lVRCAmoSXx8DAHwf6t72gD6VjtXMY6XU&authuser=0">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个改包的chrome插件 ReqRes Modder">
+<meta name="twitter:description" content="requestly改规则了，不让免费的加改包的规则。一个月20多新，很显然，我不是目标用户。 一个chrome插件这么贵，不如自己写一个，加上之前自己实现过类似的sdk，简单说就是hook那个XMLHttpRequest和fetch两个前端发请求的方法。 实现起来多多少少还是有点坑。 最后上架了。 Github: https://github.com/deenrookie/chrome-reqre">
+<meta name="twitter:image" content="https://drive.usercontent.google.com/download?id=1WgfcvSoSVZJL3NTAVTxb-wfRohgCWALu&authuser=0">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>一个改包的chrome插件 ReqRes Modder</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2025/07/30/碎碎念——2025/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2025/04/12/requestly/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2025/04/21/reqres_modder/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2025/04/21/reqres_modder/&text=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2025/04/21/reqres_modder/&is_video=false&description=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=一个改包的chrome插件 ReqRes Modder&body=Check out this article: http://yoursite.com/2025/04/21/reqres_modder/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2025/04/21/reqres_modder/&name=一个改包的chrome插件 ReqRes Modder&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        一个改包的chrome插件 ReqRes Modder
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2025-04-21T22:31:22.000Z" itemprop="datePublished">2025-04-21</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>requestly改规则了，不让免费的加改包的规则。一个月20多新，很显然，我不是目标用户。</p>
+<p>一个chrome插件这么贵，不如自己写一个，加上之前自己实现过类似的sdk，简单说就是hook那个XMLHttpRequest和fetch两个前端发请求的方法。</p>
+<p>实现起来多多少少还是有点坑。</p>
+<p>最后上架了。</p>
+<p>Github: <a href="https://github.com/deenrookie/chrome-reqres-modder" target="_blank" rel="noopener">https://github.com/deenrookie/chrome-reqres-modder</a></p>
+<p>插件商店：<a href="https://chromewebstore.google.com/detail/reqres-modder/chldhioickekglgaojooebkhfjjikeih" target="_blank" rel="noopener">https://chromewebstore.google.com/detail/reqres-modder/chldhioickekglgaojooebkhfjjikeih</a></p>
+<p><img src="https://drive.usercontent.google.com/download?id=1WgfcvSoSVZJL3NTAVTxb-wfRohgCWALu&authuser=0" alt="image"></p>
+<p><img src="https://drive.usercontent.google.com/download?id=1lVRCAmoSXx8DAHwf6t72gD6VjtXMY6XU&authuser=0" alt="image"></p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2025/04/21/reqres_modder/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2025/04/21/reqres_modder/&text=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2025/04/21/reqres_modder/&is_video=false&description=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=一个改包的chrome插件 ReqRes Modder&body=Check out this article: http://yoursite.com/2025/04/21/reqres_modder/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2025/04/21/reqres_modder/&title=一个改包的chrome插件 ReqRes Modder"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2025/04/21/reqres_modder/&name=一个改包的chrome插件 ReqRes Modder&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

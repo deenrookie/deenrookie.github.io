@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="写在新工作入职前夕。从18年6月14到21年4月2，我在腾讯的工作算是告一段落。四舍五入，第一份工作也算是干了三年。 岁月蹉跎，这三年也没啥建树，搞了三年白盒。可能唯一的高光就是在内网无意中发现了一个可以重置任意用户sso密码的漏洞，这也可能是我这辈子离黑掉小马哥最近的一次——当一个内鬼。 还有就是搞了Xcheck，也算是核心开发，期间收获颇丰，也对白盒有了自己的一些认知，总算学了点东西。 回想起">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我挥挥衣袖，带走一堆文化衫">
+<meta property="og:url" content="http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="写在新工作入职前夕。从18年6月14到21年4月2，我在腾讯的工作算是告一段落。四舍五入，第一份工作也算是干了三年。 岁月蹉跎，这三年也没啥建树，搞了三年白盒。可能唯一的高光就是在内网无意中发现了一个可以重置任意用户sso密码的漏洞，这也可能是我这辈子离黑掉小马哥最近的一次——当一个内鬼。 还有就是搞了Xcheck，也算是核心开发，期间收获颇丰，也对白盒有了自己的一些认知，总算学了点东西。 回想起">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://lh3.googleusercontent.com/u30ovaXCrKh_UnLiIdl9TUtW-vYqZjds4BoVO0GHWLujADy4yZwiR_BAPXsqrxcQcO_wUW8Yh04my5Fcdm-HKwF35AEYsNumDYcY3eswLA8PESIZr0JwBDmJJCatO3PzHzLZMoXTyC4UEt_frLJtR0E1qNh2HftrEBF2f96i8IXpN26JnPuGgV2Bgj1h0jcQXUkeDqau39i7HnKwrm5gYKRq7273uq_tW7bJo67plcwQhS31j2y6ZF05GDZ_iB8mPxiDooYUJ5GbWE71ej8bjOrTEQazuIAHFik9or-RZsVL49uTR71XwBEh4JSq7DfXVg-Q4xKlQeAvxF1ASXaJzqH_ckWmu_d2R7Blio8E62GvjPlEoccdyyM73Sjhtz5jD5XCUN21Ig2MuOZGUQGzK9kSz5US6DFPO5fpOicjnPb5Sk7pW9j9k7-8B63pXAkhFcGZTYd_AL-o-Lj9otzgUHgLdrkqa0o2zL7zZFgapRpZN03bn332a8sTSRODZy1Fff_GlrXJNdfkmlqVILU8g0viXh9lXS6bwne1EwzNxekMPc1yqd40jI6aITlte5IR5fGT9son2phQKbhZe8HGk6wUJyROilGCxBvbO5JaO0x-yUIa-9T12l3ajQOBkfDgl9VMFTNWt7PIQDZ8qJlxjpDHfDOR9StzP9CIKLhKjuKRtebPtX68G66tJbxs26cGFraUSFJwRTMfVFx31lEiWoKA=s328-no?authuser=0">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="我挥挥衣袖，带走一堆文化衫">
+<meta name="twitter:description" content="写在新工作入职前夕。从18年6月14到21年4月2，我在腾讯的工作算是告一段落。四舍五入，第一份工作也算是干了三年。 岁月蹉跎，这三年也没啥建树，搞了三年白盒。可能唯一的高光就是在内网无意中发现了一个可以重置任意用户sso密码的漏洞，这也可能是我这辈子离黑掉小马哥最近的一次——当一个内鬼。 还有就是搞了Xcheck，也算是核心开发，期间收获颇丰，也对白盒有了自己的一些认知，总算学了点东西。 回想起">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/u30ovaXCrKh_UnLiIdl9TUtW-vYqZjds4BoVO0GHWLujADy4yZwiR_BAPXsqrxcQcO_wUW8Yh04my5Fcdm-HKwF35AEYsNumDYcY3eswLA8PESIZr0JwBDmJJCatO3PzHzLZMoXTyC4UEt_frLJtR0E1qNh2HftrEBF2f96i8IXpN26JnPuGgV2Bgj1h0jcQXUkeDqau39i7HnKwrm5gYKRq7273uq_tW7bJo67plcwQhS31j2y6ZF05GDZ_iB8mPxiDooYUJ5GbWE71ej8bjOrTEQazuIAHFik9or-RZsVL49uTR71XwBEh4JSq7DfXVg-Q4xKlQeAvxF1ASXaJzqH_ckWmu_d2R7Blio8E62GvjPlEoccdyyM73Sjhtz5jD5XCUN21Ig2MuOZGUQGzK9kSz5US6DFPO5fpOicjnPb5Sk7pW9j9k7-8B63pXAkhFcGZTYd_AL-o-Lj9otzgUHgLdrkqa0o2zL7zZFgapRpZN03bn332a8sTSRODZy1Fff_GlrXJNdfkmlqVILU8g0viXh9lXS6bwne1EwzNxekMPc1yqd40jI6aITlte5IR5fGT9son2phQKbhZe8HGk6wUJyROilGCxBvbO5JaO0x-yUIa-9T12l3ajQOBkfDgl9VMFTNWt7PIQDZ8qJlxjpDHfDOR9StzP9CIKLhKjuKRtebPtX68G66tJbxs26cGFraUSFJwRTMfVFx31lEiWoKA=s328-no?authuser=0">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>我挥挥衣袖，带走一堆文化衫</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2021/05/19/DOMPurify源码小探究/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2021/02/16/jQuery-dom-xss笔记/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&text=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&is_video=false&description=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=我挥挥衣袖，带走一堆文化衫&body=Check out this article: http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&name=我挥挥衣袖，带走一堆文化衫&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        我挥挥衣袖，带走一堆文化衫
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2021-04-13T13:46:22.000Z" itemprop="datePublished">2021-04-13</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>写在新工作入职前夕。<br>从18年6月14到21年4月2，我在腾讯的工作算是告一段落。四舍五入，第一份工作也算是干了三年。</p>
+<p>岁月蹉跎，这三年也没啥建树，搞了三年白盒。可能唯一的高光就是在内网无意中发现了一个可以重置任意用户sso密码的漏洞，这也可能是我这辈子离黑掉小马哥最近的一次——当一个内鬼。</p>
+<p>还有就是搞了Xcheck，也算是核心开发，期间收获颇丰，也对白盒有了自己的一些认知，总算学了点东西。</p>
+<p>回想起入职腾讯第一天，高压线规矩没咋学会，审计个项目验证漏洞传了马上去……当晚就被应急响应，被当内鬼抓起来在几十人群里挨批……现在想起来，也是真的搞笑。</p>
+<p>为啥要跑路呢？<br>用最近的梗来说，想跑路也不完全想跑。腾讯这边讯无论工作还是人都挺好的，不用加班的神仙部门，也没啥压力。只是呆太久了，就觉得该换换坑了，该去学一些新的东西、技术去提升自己。让自己值更多钱……再者就是工作上总感觉少了些什么，谁会想一直当三星堆呢，攒齐七个又不能召唤神龙？也没啥股票没啥钱，本来就是大白菜一个，还得被人倒挂，七七八八的，心一横，快刀斩乱麻干脆就跑了。</p>
+<p>在腾讯的这几年，衣服倒是不愁穿了，文化衫搞了有十来件。我在想，我穿着腾讯的衣服在新公司电梯会不会挨打？</p>
+<p><img src="https://lh3.googleusercontent.com/u30ovaXCrKh_UnLiIdl9TUtW-vYqZjds4BoVO0GHWLujADy4yZwiR_BAPXsqrxcQcO_wUW8Yh04my5Fcdm-HKwF35AEYsNumDYcY3eswLA8PESIZr0JwBDmJJCatO3PzHzLZMoXTyC4UEt_frLJtR0E1qNh2HftrEBF2f96i8IXpN26JnPuGgV2Bgj1h0jcQXUkeDqau39i7HnKwrm5gYKRq7273uq_tW7bJo67plcwQhS31j2y6ZF05GDZ_iB8mPxiDooYUJ5GbWE71ej8bjOrTEQazuIAHFik9or-RZsVL49uTR71XwBEh4JSq7DfXVg-Q4xKlQeAvxF1ASXaJzqH_ckWmu_d2R7Blio8E62GvjPlEoccdyyM73Sjhtz5jD5XCUN21Ig2MuOZGUQGzK9kSz5US6DFPO5fpOicjnPb5Sk7pW9j9k7-8B63pXAkhFcGZTYd_AL-o-Lj9otzgUHgLdrkqa0o2zL7zZFgapRpZN03bn332a8sTSRODZy1Fff_GlrXJNdfkmlqVILU8g0viXh9lXS6bwne1EwzNxekMPc1yqd40jI6aITlte5IR5fGT9son2phQKbhZe8HGk6wUJyROilGCxBvbO5JaO0x-yUIa-9T12l3ajQOBkfDgl9VMFTNWt7PIQDZ8qJlxjpDHfDOR9StzP9CIKLhKjuKRtebPtX68G66tJbxs26cGFraUSFJwRTMfVFx31lEiWoKA=s328-no?authuser=0" alt></p>
+<p>最近有些失眠，睡不着就找到慕课编译原理的课重新捡起来……秒入睡，当初挂科的原因找到啦。</p>
+<p>在腾讯的时光还是快乐和充实的，感谢大家照顾，后会有期。</p>
+<p>悟来时见江海古，苍崖行遍谒玄门。</p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&text=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&is_video=false&description=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=我挥挥衣袖，带走一堆文化衫&body=Check out this article: http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&title=我挥挥衣袖，带走一堆文化衫"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2021/04/13/我挥挥衣袖，带走一堆文化衫/&name=我挥挥衣袖，带走一堆文化衫&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

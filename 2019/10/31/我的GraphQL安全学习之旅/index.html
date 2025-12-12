@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="GraphQL简介GraphQL是Facebook的一个开源项目，定义了一种查询语言，用来代替传统的RESTful API。看到QL这样的字眼，很容易产生误解，以为是新的数据库查询语言，但其实GraphQL和数据库没有什么太大关系，GraphQL并不直接操作查询数据库，可以理解为传统的后端代码与数据库之间又多加了一层，这一层就是GraphQL. 传统的RESTful API是一个接口对应一个url">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我的GraphQL安全学习之旅">
+<meta property="og:url" content="http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="GraphQL简介GraphQL是Facebook的一个开源项目，定义了一种查询语言，用来代替传统的RESTful API。看到QL这样的字眼，很容易产生误解，以为是新的数据库查询语言，但其实GraphQL和数据库没有什么太大关系，GraphQL并不直接操作查询数据库，可以理解为传统的后端代码与数据库之间又多加了一层，这一层就是GraphQL. 传统的RESTful API是一个接口对应一个url">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://ask.qcloudimg.com/http-save/2359520/79tkc3a9vb.jpeg">
+<meta property="og:image" content="https://ask.qcloudimg.com/http-save/2359520/o0rgsqfslf.jpeg">
+<meta property="og:image" content="https://ask.qcloudimg.com/http-save/2359520/bwznzufyjc.jpeg">
+<meta property="og:image" content="https://ask.qcloudimg.com/http-save/2359520/4huzc2zc9b.jpeg">
+<meta property="og:image" content="https://ask.qcloudimg.com/http-save/2359520/d79vkgsg20.jpeg">
+<meta property="og:image" content="https://ask.qcloudimg.com/http-save/2359520/oj8whilscn.jpeg">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="我的GraphQL安全学习之旅">
+<meta name="twitter:description" content="GraphQL简介GraphQL是Facebook的一个开源项目，定义了一种查询语言，用来代替传统的RESTful API。看到QL这样的字眼，很容易产生误解，以为是新的数据库查询语言，但其实GraphQL和数据库没有什么太大关系，GraphQL并不直接操作查询数据库，可以理解为传统的后端代码与数据库之间又多加了一层，这一层就是GraphQL. 传统的RESTful API是一个接口对应一个url">
+<meta name="twitter:image" content="https://ask.qcloudimg.com/http-save/2359520/79tkc3a9vb.jpeg">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>我的GraphQL安全学习之旅</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2020/03/30/XSS那些tricks/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2019/09/21/fiddler二次转发实现动态改包/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&text=我的GraphQL安全学习之旅"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&is_video=false&description=我的GraphQL安全学习之旅"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=我的GraphQL安全学习之旅&body=Check out this article: http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&name=我的GraphQL安全学习之旅&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#GraphQL简介"><span class="toc-number">1.</span> <span class="toc-text">GraphQL简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GraphQL初窥"><span class="toc-number">2.</span> <span class="toc-text">GraphQL初窥</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GraphQL的安全问题"><span class="toc-number">3.</span> <span class="toc-text">GraphQL的安全问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        我的GraphQL安全学习之旅
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2019-10-31T13:46:22.000Z" itemprop="datePublished">2019-10-31</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="GraphQL简介"><a href="#GraphQL简介" class="headerlink" title="GraphQL简介"></a>GraphQL简介</h2><p>GraphQL是Facebook的一个开源项目，定义了一种查询语言，用来代替传统的RESTful API。看到QL这样的字眼，很容易产生误解，以为是新的数据库查询语言，但其实GraphQL和数据库没有什么太大关系，GraphQL并不直接操作查询数据库，可以理解为传统的后端代码与数据库之间又多加了一层，这一层就是GraphQL.</p>
+<p>传统的RESTful API是一个接口对应一个url，GraphQL是通过一个url接口改变请求所POST的查询参数，来达到多个api的查询效果。</p>
+<h2 id="GraphQL初窥"><a href="#GraphQL初窥" class="headerlink" title="GraphQL初窥"></a>GraphQL初窥</h2><p>在查找GraphQL资料的过程中，都可以看到一个简单的demo，不过查询结果都是代码写死的，对于理解GraphQL和数据库之间的关系，并不是很有帮助，我写了一个简单和数据库连接的demo，python代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"><span class="keyword">from</span> flask_sqlalchemy <span class="keyword">import</span> SQLAlchemy</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> graphene</span><br><span class="line"><span class="keyword">from</span> graphene_sqlalchemy <span class="keyword">import</span> SQLAlchemyObjectType, SQLAlchemyConnectionField</span><br><span class="line"><span class="keyword">from</span> flask_graphql <span class="keyword">import</span> GraphQLView</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.debug = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">basedir = os.path.abspath(os.path.dirname(__file__))</span><br><span class="line"></span><br><span class="line">app.config[<span class="string">'SQLALCHEMY_DATABASE_URI'</span>] = <span class="string">'mysql+pymysql://root:root@127.0.0.1:3306/test?charset=utf8mb4'</span></span><br><span class="line">app.config[<span class="string">'SQLALCHEMY_COMMIT_ON_TEARDOWN'</span>] = <span class="literal">True</span></span><br><span class="line">app.config[<span class="string">'SQLALCHEMY_TRACK_MODIFICATIONS'</span>] = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">db = SQLAlchemy(app)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserModel</span><span class="params">(db.Model)</span>:</span></span><br><span class="line">    __tablename__ = <span class="string">'user'</span></span><br><span class="line">    id = db.Column(db.Integer, primary_key=<span class="literal">True</span>)</span><br><span class="line">    name = db.Column(db.String(<span class="number">256</span>), index=<span class="literal">True</span>, unique=<span class="literal">True</span>)</span><br><span class="line">    password = db.Column(db.String(<span class="number">256</span>), index=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'&lt;User %r&gt;'</span> % self.username</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span><span class="params">(SQLAlchemyObjectType)</span>:</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">        model = UserModel</span><br><span class="line">        </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Query</span><span class="params">(graphene.ObjectType)</span>:</span></span><br><span class="line">    users = graphene.List(User)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">resolve_users</span><span class="params">(self, info)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> UserModel.query.all()</span><br><span class="line">        </span><br><span class="line">schema = graphene.Schema(query=Query)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'&lt;p&gt; Hello World!&lt;/p &gt;'</span></span><br><span class="line"></span><br><span class="line">app.add_url_rule(</span><br><span class="line">    <span class="string">'/graphql'</span>,</span><br><span class="line">    view_func=GraphQLView.as_view(</span><br><span class="line">        <span class="string">'graphql'</span>,</span><br><span class="line">        schema=schema,</span><br><span class="line">        graphiql=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    app.run(host=<span class="string">'0.0.0.0'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>访问<a href="http://localhost:5000/" target="_blank" rel="noopener">http://localhost:5000/</a> 即可看到demo。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">query&#123;</span><br><span class="line">  users&#123;</span><br><span class="line">    <span class="built_in">id</span>,</span><br><span class="line">    password,</span><br><span class="line">    <span class="built_in">name</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询结果如下：</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/79tkc3a9vb.jpeg" alt="查询结果.png"></p>
+<p>查询出来的数据即<code>UserModel.query.all()</code>的执行结果。但如果我要在浏览器实现只查询id=2的用户的信息是做不到，因为后端python代码里没有写，<strong>也就是说，只有代码里写了接口，定义了相应的schema，才能通过GraphQL查询出对应结果，所以并不是通过GraphQL就能查询获取数据库所有数据</strong>。</p>
+<h2 id="GraphQL的安全问题"><a href="#GraphQL的安全问题" class="headerlink" title="GraphQL的安全问题"></a>GraphQL的安全问题</h2><p>如果看过p牛在先知大会上的分享——《攻击GraphQL》，会对GraphQL的安全问题有一个全面的认识。这里，在GraphQL安全问题研究上，我并没有新的发现，可以算是个人的学习笔记以及自己的一些理解。</p>
+<p>让我们先回顾一下p牛总结的问题。</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/o0rgsqfslf.jpeg" alt="GraphQL安全问题总结.png"></p>
+<p>这ppt中提到的sql注入，个人感觉和GraphQL并不是太大关系，在不了解GraphQL的时候，一度以为看到用了GraphQL就以为找到了注入。如果代码的数据库查询都是像我上面那样的规范操作，自然是不存在sql注入的。若查询返回数据的方式使用的是原生语句查询数据库，一旦用户参数未经安全过滤进入数据库，还是存在sql注入。</p>
+<p>至于csrf，GraphQL可以通过Mutation进行数据更改，若graphql接口未做安全校验，自然可以通过构造恶意html进行攻击。ppt中给的poc如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="actionscript">history.pushState(<span class="string">''</span>, <span class="string">''</span>, <span class="string">'/'</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"https://graphqlapp.herokuapp.com/"</span> <span class="attr">method</span>=<span class="string">"POST"</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"query"</span></span></span><br><span class="line"><span class="tag"><span class="attr">value</span>=<span class="string">"mutation&amp;#32;&amp;#123;&amp;#10;&amp;#32;&amp;#32;editProfile&amp;#40;name&amp;#58;&amp;quot;hac</span></span></span><br><span class="line"><span class="tag"><span class="string">ker&amp;quot;&amp;#44;&amp;#32;age&amp;#58;&amp;#32;5&amp;#41;&amp;#32;&amp;#123;&amp;#10;&amp;#32;&amp;#32;&amp;#32;&amp;#32;n</span></span></span><br><span class="line"><span class="tag"><span class="string">ame&amp;#10;&amp;#32;&amp;#32;&amp;#32;&amp;#32;age&amp;#10;&amp;#32;&amp;#32;&amp;#125;&amp;#10;&amp;#125;"</span> /&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">value</span>=<span class="string">"Submit request"</span> /&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>个人在挖掘src的过程中，碰到不少站点有用到GraphQL进行数据查询。发现的漏洞主要是信息泄露，和ddos拒绝服务。</p>
+<p>发现的ddos漏洞在黑盒层面无法判断是否和GraphqQL有直接的关系，漏洞很简单，在graphql的query请求当中，有一个limit参数，当我将参数调成一个超大数字时，网站就卡死宕机了，无法判断后端哪一层崩溃了。</p>
+<p>再回到信息泄露的问题上，个人觉得这才是大家在用GraphQL进行开发时，常忽略的地方。<strong>GraphQL可以使用schema和type查询可用的对象和对象的所有字段</strong>。</p>
+<p>如下，以我上面的demo为例，查询可用对象</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">query <span class="variable">__schema</span>&#123;</span><br><span class="line">  <span class="variable">__schema</span>&#123;</span><br><span class="line">    types&#123;</span><br><span class="line">      <span class="built_in">name</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/bwznzufyjc.jpeg" alt="image.png"></p>
+<p>得到User，再查询User的字段。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;      __type(name: <span class="string">"User"</span>) &#123;</span><br><span class="line">           name</span><br><span class="line">           fields &#123;</span><br><span class="line">               name</span><br><span class="line">              <span class="built_in"> type </span>&#123;</span><br><span class="line">                   name</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/4huzc2zc9b.jpeg" alt="image.png"></p>
+<p>在实际挖洞过程中，就可判断是否存在敏感字段，如用户的password，phone，address等。再做进一步的漏洞挖掘。</p>
+<p>但有时目标网站可能存在几十个对象，一个一个查找出具体的字段显示是太麻烦了，是否可以编写工具进行批量查询呢？本想自己写一下，但发现已经有大佬给我们做好了。</p>
+<p>项目在git地址为<code>https://github.com/doyensec/graph-ql</code>，通过这个工具可以详细列出网站的对象还有对应字段。分析他的python源码可以得到这两个payload。</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">query IntrospectionQuery&#123;__schema&#123;queryType&#123;<span class="keyword">name</span>&#125;mutationType&#123;<span class="keyword">name</span>&#125;subscriptionType&#123;<span class="keyword">name</span>&#125;types&#123;...FullType&#125;directives&#123;<span class="keyword">name</span> description locations args&#123;...InputValue&#125;&#125;&#125;&#125;fragment FullType on __Type&#123;<span class="keyword">kind</span> <span class="keyword">name</span> description fields(includeDeprecated:true)&#123;<span class="keyword">name</span> description args&#123;...InputValue&#125;<span class="keyword">type</span>&#123;...TypeRef&#125;isDeprecated deprecationReason&#125;inputFields&#123;...InputValue&#125;interfaces&#123;...TypeRef&#125;enumValues(includeDeprecated:true)&#123;<span class="keyword">name</span> description isDeprecated deprecationReason&#125;possibleTypes&#123;...TypeRef&#125;&#125;fragment InputValue on __InputValue&#123;<span class="keyword">name</span> description <span class="keyword">type</span>&#123;...TypeRef&#125;defaultValue&#125;fragment TypeRef on __Type&#123;<span class="keyword">kind</span> <span class="keyword">name</span> ofType&#123;<span class="keyword">kind</span> <span class="keyword">name</span> ofType&#123;<span class="keyword">kind</span> <span class="keyword">name</span> ofType&#123;<span class="keyword">kind</span> <span class="keyword">name</span> ofType&#123;<span class="keyword">kind</span> <span class="keyword">name</span> ofType&#123;<span class="keyword">kind</span> <span class="keyword">name</span> ofType&#123;<span class="keyword">kind</span> <span class="keyword">name</span> ofType&#123;<span class="keyword">kind</span> <span class="keyword">name</span>&#125;&#125;&#125;&#125;&#125;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">query</span> <span class="type">IntrospectionQuery</span>&#123;__schema&#123;queryType&#123;name&#125;mutationType&#123;name&#125;subscriptionType&#123;name&#125;types&#123;...<span class="type">FullType</span>&#125;directives&#123;name description args&#123;...<span class="type">InputValue</span>&#125;onOperation onFragment onField&#125;&#125;&#125;fragment <span class="type">FullType</span> on __Type&#123;kind name description fields(includeDeprecated:true)&#123;name description args&#123;...<span class="type">InputValue</span>&#125;<span class="keyword">type</span>&#123;...<span class="type">TypeRef</span>&#125;isDeprecated deprecationReason&#125;inputFields&#123;...<span class="type">InputValue</span>&#125;interfaces&#123;...<span class="type">TypeRef</span>&#125;enumValues(includeDeprecated:true)&#123;name description isDeprecated deprecationReason&#125;possibleTypes&#123;...<span class="type">TypeRef</span>&#125;&#125;fragment <span class="type">InputValue</span> on __InputValue&#123;name description type&#123;...<span class="type">TypeRef</span>&#125;defaultValue&#125;fragment <span class="type">TypeRef</span> on __Type&#123;kind name ofType&#123;kind name ofType&#123;kind name ofType&#123;kind name&#125;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>测试效果如下，只需一次请求就可列出对象和字段。</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/d79vkgsg20.jpeg" alt="image.png"></p>
+<p>工具的效果如下：</p>
+<p><img src="https://ask.qcloudimg.com/http-save/2359520/oj8whilscn.jpeg" alt="image.png"></p>
+<p>在实际使用过程中，<strong>常常需要修改脚本，修改post的参数名称以及返回结果的参数名，使之与实际请求结果相对应，若有登陆态校验，则还需要添加cookie</strong>，这一块脚本有待改进,有时间就造一个顺手的轮子。</p>
+<p>至于嵌套查询导致ddos，在实际挖掘中暂时没有碰到，具体介绍可以参考freebuf的《GraphQL安全指北》这篇文章。</p>
+<p><strong>已经造完了</strong></p>
+<p>实现很简单，把上一个项目生成html的函数抠出来，再自己重写一个发送payload的请求的函数，避免修改请求头和cookie的麻烦，至于原来项目硬编码取返回包data参数导致有些情况下无法使用的问题，我添加了一个-d参数来解决，即当返回结果不是data参数时，可以指定参数名。</p>
+<p>项目地址：<a href="https://github.com/deenrookie/x-graphql" target="_blank" rel="noopener">https://github.com/deenrookie/x-graphql</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://xzfile.aliyuncs.com/upload/zcon/2018/7_%E6%94%BB%E5%87%BBGraphQL_phithon.pdf" target="_blank" rel="noopener">https://xzfile.aliyuncs.com/upload/zcon/2018/7_%E6%94%BB%E5%87%BBGraphQL_phithon.pdf</a></li>
+<li><a href="https://www.freebuf.com/articles/web/184040.html" target="_blank" rel="noopener">https://www.freebuf.com/articles/web/184040.html</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#GraphQL简介"><span class="toc-number">1.</span> <span class="toc-text">GraphQL简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GraphQL初窥"><span class="toc-number">2.</span> <span class="toc-text">GraphQL初窥</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GraphQL的安全问题"><span class="toc-number">3.</span> <span class="toc-text">GraphQL的安全问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">4.</span> <span class="toc-text">参考</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&text=我的GraphQL安全学习之旅"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&is_video=false&description=我的GraphQL安全学习之旅"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=我的GraphQL安全学习之旅&body=Check out this article: http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&title=我的GraphQL安全学习之旅"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2019/10/31/我的GraphQL安全学习之旅/&name=我的GraphQL安全学习之旅&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

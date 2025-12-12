@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="CVE-2022-23529—— 自嗨RCE先看下国内的漏洞通告，叫做“node-jsonwebtoken远程代码执行漏洞”。CVSS 7.6 ，风险很高了可以说是。 看下这个开源项目影响力， https://github.com/auth0/node-jsonwebtoken  16.1k的star数，挺多的。 怎么就没人分析下详情呢？ 再看下git的commit的记录，https://gith">
+<meta property="og:type" content="article">
+<meta property="og:title" content="最近看的漏洞">
+<meta property="og:url" content="http://yoursite.com/2023/01/15/最近看的漏洞/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="CVE-2022-23529—— 自嗨RCE先看下国内的漏洞通告，叫做“node-jsonwebtoken远程代码执行漏洞”。CVSS 7.6 ，风险很高了可以说是。 看下这个开源项目影响力， https://github.com/auth0/node-jsonwebtoken  16.1k的star数，挺多的。 怎么就没人分析下详情呢？ 再看下git的commit的记录，https://gith">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115013706.png">
+<meta property="og:image" content="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115014749.png">
+<meta property="og:image" content="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115014849.png">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="最近看的漏洞">
+<meta name="twitter:description" content="CVE-2022-23529—— 自嗨RCE先看下国内的漏洞通告，叫做“node-jsonwebtoken远程代码执行漏洞”。CVSS 7.6 ，风险很高了可以说是。 看下这个开源项目影响力， https://github.com/auth0/node-jsonwebtoken  16.1k的star数，挺多的。 怎么就没人分析下详情呢？ 再看下git的commit的记录，https://gith">
+<meta name="twitter:image" content="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115013706.png">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>最近看的漏洞</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2023/03/18/无题-202303/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2023/01/12/无题——2022/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2023/01/15/最近看的漏洞/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2023/01/15/最近看的漏洞/&text=最近看的漏洞"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2023/01/15/最近看的漏洞/&is_video=false&description=最近看的漏洞"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=最近看的漏洞&body=Check out this article: http://yoursite.com/2023/01/15/最近看的漏洞/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2023/01/15/最近看的漏洞/&name=最近看的漏洞&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2022-23529——-自嗨RCE"><span class="toc-number">1.</span> <span class="toc-text">CVE-2022-23529—— 自嗨RCE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Apache-Kylin多个命令注入漏洞——-Remove-useless-code"><span class="toc-number">2.</span> <span class="toc-text">Apache Kylin多个命令注入漏洞—— Remove useless code</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        最近看的漏洞
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2023-01-15T13:46:22.000Z" itemprop="datePublished">2023-01-15</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="CVE-2022-23529——-自嗨RCE"><a href="#CVE-2022-23529——-自嗨RCE" class="headerlink" title="CVE-2022-23529—— 自嗨RCE"></a>CVE-2022-23529—— 自嗨RCE</h2><p>先看下国内的漏洞通告，叫做“node-jsonwebtoken远程代码执行漏洞”。CVSS 7.6 ，风险很高了可以说是。</p>
+<p>看下这个开源项目影响力， <a href="https://github.com/auth0/node-jsonwebtoken" target="_blank" rel="noopener">https://github.com/auth0/node-jsonwebtoken</a>  16.1k的star数，挺多的。</p>
+<p>怎么就没人分析下详情呢？</p>
+<p>再看下git的commit的记录，<a href="https://github.com/auth0/node-jsonwebtoken/commit/e1fa9dcc12054a8681db4e6373da1b30cf7016e3" target="_blank" rel="noopener">https://github.com/auth0/node-jsonwebtoken/commit/e1fa9dcc12054a8681db4e6373da1b30cf7016e3</a> ，说实话没太看明白，怎么扯上toString这个函数的。</p>
+<p>一通google，最后在 <a href="https://unit42.paloaltonetworks.com/jsonwebtoken-vulnerability-cve-2022-23529/" target="_blank" rel="noopener">https://unit42.paloaltonetworks.com/jsonwebtoken-vulnerability-cve-2022-23529/</a> 找到了细节，后来才想起来，在twitter看过这篇文章，当时没注意到是这个洞。</p>
+<p>看完之后第一反应，就这啊？</p>
+<p>简单分析如下：</p>
+<ul>
+<li>这个库有个verify 函数，函数接收三个参数，第一个参数是token，第二个参数是密钥secretOrPublicKey，第三个可选参数。</li>
+<li>verify函数执行后会有如下函数调用，在这里调用了secretOrPublicKey的toString()函数</li>
+</ul>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115013706.png" alt></p>
+<ul>
+<li>如果这个参数secretOrPublicKey不是字符串，而是一个 <code>{toString: () =&gt; console.error(&quot;PWNED !!11&quot;)};</code> 这样的对象，那就有代码执行的风险</li>
+</ul>
+<p>看完我就无语了…..verify第二个参数一般能不能可控都是问题，如果是字符串能rce那确实是问题挺严重的，但这里还得是这样的对象？？？ 都能传一个这样的对象到这个函数，不早都代码执行了….. 什么垃圾洞啊，难怪没人分析</p>
+<h2 id="Apache-Kylin多个命令注入漏洞——-Remove-useless-code"><a href="#Apache-Kylin多个命令注入漏洞——-Remove-useless-code" class="headerlink" title="Apache Kylin多个命令注入漏洞—— Remove useless code"></a>Apache Kylin多个命令注入漏洞—— Remove useless code</h2><p>这个很常见的项目了，看下影响版本：</p>
+<ul>
+<li>Kylin 2.x</li>
+<li>Kylin 3.x</li>
+<li>Kylin 4.x &lt; 4.0.3</li>
+</ul>
+<p>也就是最新的4.0.3不受影响。 直接对比4.0.2 <a href="https://github.com/apache/kylin/compare/kylin-4.0.2...kylin-4.0.3" target="_blank" rel="noopener">https://github.com/apache/kylin/compare/kylin-4.0.2...kylin-4.0.3</a></p>
+<p>说实话，这些commit名称啊，也没security rce vul safe之类的关键字，这也太难找了吧。</p>
+<p>无语之时，一个commit映入眼帘，随手点击一看。 <a href="https://github.com/apache/kylin/commit/fd2977e21c51f1afed668f2d9713cf562f2dc42d" target="_blank" rel="noopener">https://github.com/apache/kylin/commit/fd2977e21c51f1afed668f2d9713cf562f2dc42d</a></p>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115014749.png" alt></p>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115014849.png" alt></p>
+<p>看到这就懂了，和之前那几个rce如出一辙，顺着数据流简单走一遍就完事了。</p>
+<p>这个commit叫做  <code>Remove useless code</code> 真有意思啊这项目组。</p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CVE-2022-23529——-自嗨RCE"><span class="toc-number">1.</span> <span class="toc-text">CVE-2022-23529—— 自嗨RCE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Apache-Kylin多个命令注入漏洞——-Remove-useless-code"><span class="toc-number">2.</span> <span class="toc-text">Apache Kylin多个命令注入漏洞—— Remove useless code</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2023/01/15/最近看的漏洞/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2023/01/15/最近看的漏洞/&text=最近看的漏洞"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2023/01/15/最近看的漏洞/&is_video=false&description=最近看的漏洞"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=最近看的漏洞&body=Check out this article: http://yoursite.com/2023/01/15/最近看的漏洞/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2023/01/15/最近看的漏洞/&title=最近看的漏洞"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2023/01/15/最近看的漏洞/&name=最近看的漏洞&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

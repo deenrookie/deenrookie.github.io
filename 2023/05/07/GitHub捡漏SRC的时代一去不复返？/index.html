@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang=en>
+<head><meta name="generator" content="Hexo 3.9.0">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="捡漏简单说就是通过github code search的api，搜索相关src企业的关键字，比如一些大厂内部git仓库的域名，然后按时间排序展示最新的。例如这些项目：  https://github.com/VKSRC/Github-Monitor https://github.com/MiSecurity/x-patrol  简单粗暴，但是很有效，这东西没有太大技术含量，就是调用github的a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GitHub捡漏SRC的时代一去不复返？">
+<meta property="og:url" content="http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/index.html">
+<meta property="og:site_name" content="Deen&#39;s blog">
+<meta property="og:description" content="捡漏简单说就是通过github code search的api，搜索相关src企业的关键字，比如一些大厂内部git仓库的域名，然后按时间排序展示最新的。例如这些项目：  https://github.com/VKSRC/Github-Monitor https://github.com/MiSecurity/x-patrol  简单粗暴，但是很有效，这东西没有太大技术含量，就是调用github的a">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2025-12-12T10:19:37.158Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GitHub捡漏SRC的时代一去不复返？">
+<meta name="twitter:description" content="捡漏简单说就是通过github code search的api，搜索相关src企业的关键字，比如一些大厂内部git仓库的域名，然后按时间排序展示最新的。例如这些项目：  https://github.com/VKSRC/Github-Monitor https://github.com/MiSecurity/x-patrol  简单粗暴，但是很有效，这东西没有太大技术含量，就是调用github的a">
+    
+    
+        
+          
+              <link rel="shortcut icon" href="/images/favicon.ico">
+          
+        
+        
+          
+            <link rel="icon" type="image/png" href="/images/d33n.jpg" sizes="192x192">
+          
+        
+        
+          
+            <link rel="apple-touch-icon" sizes="180x180" href="/images/d33n.jpg">
+          
+        
+    
+    <!-- title -->
+    <title>GitHub捡漏SRC的时代一去不复返？</title>
+    <!-- styles -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/lib/meslo-LG/styles.css">
+    <link rel="stylesheet" href="/lib/justified-gallery/justifiedGallery.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- rss -->
+    
+    
+    <!-- jquery -->
+    <script src="/lib/jquery/jquery.min.js"></script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<meta name="theme-color" content="#000000">
+<body>
+    
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="background">
+      
+        <div id="header-post">
+  <a id="menu-icon" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#"><i class="fa fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" href="/2023/06/16/碎碎念——今夕何年/"><i class="fa fa-chevron-left" aria-hidden="true" onmouseover='$("#i-prev").toggle();' onmouseout='$("#i-prev").toggle();'></i></a></li>
+        
+        
+        <li><a class="icon" href="/2023/04/18/博客迁移/"><i class="fa fa-chevron-right" aria-hidden="true" onmouseover='$("#i-next").toggle();' onmouseout='$("#i-next").toggle();'></i></a></li>
+        
+        <li><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up" aria-hidden="true" onmouseover='$("#i-top").toggle();' onmouseout='$("#i-top").toggle();'></i></a></li>
+        <!-- <li><a class="icon" href="#"><i class="fa fa-share-alt" aria-hidden="true" onmouseover='$("#i-share").toggle();' onmouseout='$("#i-share").toggle();' onclick='$("#share").toggle();return false;'></i></a></li> -->
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <!-- <span id="i-share" class="info" style="display:none;">Share post</span> -->
+    </span>
+    <br/>
+    <!-- <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/"><i class="fa fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&text=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&is_video=false&description=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=GitHub捡漏SRC的时代一去不复返？&body=Check out this article: http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/"><i class="fa fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&name=GitHub捡漏SRC的时代一去不复返？&description="><i class="fa fa-tumblr " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div> -->
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#捡漏"><span class="toc-number">1.</span> <span class="toc-text">捡漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GitHub掀桌了"><span class="toc-number">2.</span> <span class="toc-text">GitHub掀桌了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试挣扎"><span class="toc-number">3.</span> <span class="toc-text">尝试挣扎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#思考"><span class="toc-number">4.</span> <span class="toc-text">思考</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+      
+      <div class="content index width mx-auto px2 my4">
+          
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        GitHub捡漏SRC的时代一去不复返？
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deen's blog</span>
+      </span>
+      
+    <div class="postdate">
+        <time datetime="2023-05-07T13:46:22.000Z" itemprop="datePublished">2023-05-07</time>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="捡漏"><a href="#捡漏" class="headerlink" title="捡漏"></a>捡漏</h2><p>简单说就是通过github code search的api，搜索相关src企业的关键字，比如一些大厂内部git仓库的域名，然后按时间排序展示最新的。例如这些项目：</p>
+<ul>
+<li><a href="https://github.com/VKSRC/Github-Monitor" target="_blank" rel="noopener">https://github.com/VKSRC/Github-Monitor</a></li>
+<li><a href="https://github.com/MiSecurity/x-patrol" target="_blank" rel="noopener">https://github.com/MiSecurity/x-patrol</a></li>
+</ul>
+<p>简单粗暴，但是很有效，这东西没有太大技术含量，就是调用github的api。 这是github的文档：<a href="https://docs.github.com/en" target="_blank" rel="noopener">https://docs.github.com/en</a></p>
+<p>GitHub主要提供两种api：</p>
+<ul>
+<li>REST API</li>
+<li>GraphQL API </li>
+</ul>
+<p>这些项目都用的REST API实现的，这个接口：<a href="https://docs.github.com/en/rest/search?apiVersion=2022-11-28#search-code" target="_blank" rel="noopener">https://docs.github.com/en/rest/search?apiVersion=2022-11-28#search-code</a></p>
+<h2 id="GitHub掀桌了"><a href="#GitHub掀桌了" class="headerlink" title="GitHub掀桌了"></a>GitHub掀桌了</h2><p>20230310，GitHub blog发布了一则通知——《Changes to the code search API》</p>
+<blockquote>
+<p>We are deprecating support for sorting code search results. Once these changes take effect, all code search results will be sorted by best match ——《Changes to the code search API》</p>
+</blockquote>
+<p>4月10号开始生效。</p>
+<p>意思是4月10号开始，不再支持代码搜索按最新的结果排序，也就是那些什么github泄露监控的搜索结果，搜出来的也不是最新的结果了。</p>
+<p>颇有一种“你爷爷决策一失误，我爷爷就得要饭” 的感觉。</p>
+<p>那面那些开源项目，也可以宣告终结了，那个接口没有报错，估计还有不少人没感知到这个改动。</p>
+<p>在github的文档上，order这个参数备注着 “This field is deprecated” 。</p>
+<p>GitHub捡漏SRC的时代宣告终结。</p>
+<h2 id="尝试挣扎"><a href="#尝试挣扎" class="headerlink" title="尝试挣扎"></a>尝试挣扎</h2><p>如上所说，GitHub提供了两种类型的API，REST API和GraphQL API。抱着侥幸心理，我怀疑这个改动生效只对REST API生效。</p>
+<p>尝试在GraphQL API进行突破：<a href="https://docs.github.com/en/graphql/overview/explorer" target="_blank" rel="noopener">https://docs.github.com/en/graphql/overview/explorer</a></p>
+<p>经过一番查找尝试之后，我真想抽GitHub两嘴巴子，GitHub捡漏SRC的时代宣告终结again</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>那问题来了，现在一般大一点有点安全意识的企业都会在内部布置这样一套监控系统，现在这个系统失效了，那如何确保员工上传到GitHub上的东西没有泄露敏感数据呢？</p>
+<p>我不知道GitHub这样改动是出于何种原有，可能是我这种捡漏的太多导致大家对它的安全性有所怀疑？ 那问题是，只关闭发现问题的途径，那问题就不存在了吗？</p>
+<p>皇帝的新装——问题看不到，就等于没有问题？</p>
+
+  </div>
+</article>
+
+
+
+      </div>
+      
+       <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#捡漏"><span class="toc-number">1.</span> <span class="toc-text">捡漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#GitHub掀桌了"><span class="toc-number">2.</span> <span class="toc-text">GitHub掀桌了</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#尝试挣扎"><span class="toc-number">3.</span> <span class="toc-text">尝试挣扎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#思考"><span class="toc-number">4.</span> <span class="toc-text">思考</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" href="http://www.facebook.com/sharer.php?u=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/"><i class="fa fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://twitter.com/share?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&text=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.linkedin.com/shareArticle?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://pinterest.com/pin/create/bookmarklet/?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&is_video=false&description=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=GitHub捡漏SRC的时代一去不复返？&body=Check out this article: http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="https://getpocket.com/save?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://reddit.com/submit?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.stumbleupon.com/submit?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://digg.com/submit?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&title=GitHub捡漏SRC的时代一去不复返？"><i class="fa fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="http://www.tumblr.com/share/link?url=http://yoursite.com/2023/05/07/GitHub捡漏SRC的时代一去不复返？/&name=GitHub捡漏SRC的时代一去不复返？&description="><i class="fa fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+      <ul>
+        <li id="toc"><a class="icon" href="#" onclick='$("#toc-footer").toggle();return false;'><i class="fa fa-list fa-lg" aria-hidden="true"></i> TOC</a></li>
+        <!-- <li id="share"><a class="icon" href="#" onclick='$("#share-footer").toggle();return false;'><i class="fa fa-share-alt fa-lg" aria-hidden="true"></i> Share</a></li> -->
+        <li id="top" style="display:none"><a class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a></li>
+        <li id="menu"><a class="icon" href="#" onclick='$("#nav-footer").toggle();return false;'><i class="fa fa-bars fa-lg" aria-hidden="true"></i> Menu</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+      
+      <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy; 2025 Deen&#39;s blog
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Archives</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+      <script src="/lib/justified-gallery/jquery.justifiedGallery.min.js"></script>
+<script src="/js/main.js"></script>
+<!-- Google Analytics -->
+
+<!-- Disqus Comments -->
+
+
+    </div><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

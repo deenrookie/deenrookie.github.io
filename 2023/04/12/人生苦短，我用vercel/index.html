@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>人生苦短，我用vercel · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">人生苦短，我用vercel</h1>
+    <p class="post-meta">
+      <time datetime="2023-04-12T13:46:22.000Z" itemprop="datePublished">2023-04-12</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="vercel是什么"><a href="#vercel是什么" class="headerlink" title="vercel是什么"></a>vercel是什么</h2><p>vercel地址：<a href="https://vercel.com/">https://vercel.com/</a></p>
+<blockquote>
+<p>Vercel is the platform for frontend developers, providing the speed and reliability innovators need to create at the moment of inspiration.</p>
+</blockquote>
+<p>简单理解，前端网站托管，服务部署。</p>
+<p>你可以用vercel，直接把你的静态网站部署在它的服务器上，可以设置你自己的个性域名，会自动配置好https。比如非常出名hexo博客站点。</p>
+<p>当然，如果只是部署静态网站，我就没必要写这么一篇东西了。接下来说到vercel的亲儿子，<a href="https://github.com/vercel/next.js/">https://github.com/vercel/next.js/</a></p>
+<p>这个也是个明星级选手，不过对于Next.js，我一直有误解，我以为它是vue react之类的东西，但其实他不是。</p>
+<p>他和vue react不冲突，还可以搭配使用。</p>
+<p>Next.js 比较出名一点是什么呢？ssr。服务端渲染，众所周知啊，自动vue react这些东西出来后，写爬虫不用无头浏览器，都不知道页面有些什么东西，这对SEO来说并不是一件好事。这就有了这个ssr，也就是服务端都把东西渲染加载好了，再返回到前端浏览器了，这样做一是方便SEO，二是大大加快了浏览器那段的渲染加载速度。</p>
+<p>虽然我都用不上这些。</p>
+<p>Next.js可以写后端接口，配合vercel，直接白嫖一个应用部署环境，前后端一体，纵享丝滑。</p>
+<p>也没那么丝滑，这个typescript写起来还是挺费劲的…..</p>
+<h2 id="Next-js连上MySQL"><a href="#Next-js连上MySQL" class="headerlink" title="Next.js连上MySQL"></a>Next.js连上MySQL</h2><p>我这里需要后端开发，按它的目录结构，pages目录下，一个页面就是一个http接口。</p>
+<p>直接贴代码，executeQuery第一个参数就是SQL语句，里面用占位符，第二个参数就是值</p>
+<p><strong>放在后端目录下，切记</strong></p>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230412015324.png" alt=""></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mysql <span class="keyword">from</span> <span class="string">'serverless-mysql'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> db = mysql(&#123;</span><br><span class="line">  config: &#123;</span><br><span class="line">    host: process.env.MYSQL_HOST,</span><br><span class="line">    port: <span class="built_in">parseInt</span>(process.env.MYSQL_PORT <span class="keyword">as</span> <span class="built_in">string</span>),</span><br><span class="line">    database: process.env.MYSQL_DATABASE,</span><br><span class="line">    user: process.env.MYSQL_USER,</span><br><span class="line">    password: process.env.MYSQL_PASSWORD</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">executeQuery</span>(<span class="params">&#123; query, values &#125;:&#123;</span></span></span><br><span class="line"><span class="function"><span class="params">    query: <span class="built_in">string</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    values: <span class="built_in">any</span>[],</span></span></span><br><span class="line"><span class="function"><span class="params">&#125;</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> results = <span class="keyword">await</span> db.query(query, values);</span><br><span class="line">    <span class="keyword">await</span> db.end();</span><br><span class="line">    <span class="keyword">return</span> results;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (error) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123; error &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用react组件进行前端开发"><a href="#使用react组件进行前端开发" class="headerlink" title="使用react组件进行前端开发"></a>使用react组件进行前端开发</h2><p><strong>我这里用的antd-mobile，这些比较出名的组件，对于ssr都有相应设置要求</strong></p>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230412015610.png" alt=""></p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p><a href="https://vercel.com/">https://vercel.com/</a>   授权github的权限给它 然后发布就好了，自己设置好要的那些环境变量</p>
+<p>看下我最后写的一个小的管理界面，效果还行。</p>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/12b57bd9a01158abb276566e74433f8.jpg" alt=""></p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>总结下vercel优点</p>
+<ol>
+<li>前后端一体纵向丝滑</li>
+<li>免费部署，部署体验好</li>
+<li>域名随意指定+HTTPS免费证书</li>
+<li>git commit实时自动更新</li>
+</ol>
+<p>不好的地方：</p>
+<ul>
+<li>本地环境和线上环境不一致……本地没问题线上有bug</li>
+<li>服务器连接国内因为gfw存在 不太友好，建议购买国外的数据服务</li>
+</ul>
+<p>有ChatGPT之后写前端解bug真的是太高效了，还能辅助设计页面。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

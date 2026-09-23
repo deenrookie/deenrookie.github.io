@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>碎碎念——今夕何年 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">碎碎念——今夕何年</h1>
+    <p class="post-meta">
+      <time datetime="2023-06-16T01:31:22.000Z" itemprop="datePublished">2023-06-16</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="碎碎念"><a href="#碎碎念" class="headerlink" title="碎碎念"></a>碎碎念</h2><p>最近一个月发生了很多有趣的事情，去了一趟上海、北京，算是乡下人进城。在上海，我见到了高三之后8年未见的故友狒狒。这种带着久远时间跨度重逢的感觉很奇妙，interesting。这八年来我们平时联系不多，我也不是那种喜欢维系关系的人。不知如何描述，可能能和我玩得好的，都是抽象乐子人，见面之后很快就熟络起来。八年啊，三千天呢，多少个小时就懒得算了，大概意思就是很久。都好像没有什么太大变化，也不知道该有什么变化，没有太大变化那就是还年轻。算是好事吧。</p>
+<p>在北京，想看个故宫和天安门的，果真是门都没有，忘了预约这茬，doctor陈也是大马虎王。不过也还好，隔着十万八千里看到了天安门的侧脸，那也算看到，在景山上俯瞰故宫，那也算看到故宫了——不虚此行。在北京周末和同事聚会，探讨七七八八各种奇奇怪怪的问题，感慨良多，我感觉总归就是 “时来天地皆同力，运去英雄不自由”，我们都明白很多大道理，可是到自己的时候却总是做不好，时间过去再回首，都在酒中，喝了两斤的啤酒已经是我过去好几年的喝酒份额了，两斤！！</p>
+<p>心血来潮翻了翻斗鱼，大学时候看的好多主播已经不播了。</p>
+<p>最近CSGO玩得比较多，打出的高光操作也存到本地了——可能以后再也打不出了。</p>
+<p>从数字上看，自己好像已经很老了。样貌还好，这是值得庆幸的事情，心态就更不用说了，我虽然时不时感慨光阴似箭日月如梭how time flies，但至死是少年，虽然，素质极差。</p>
+<h2 id="CVE-2023-3224"><a href="#CVE-2023-3224" class="headerlink" title="CVE-2023-3224"></a>CVE-2023-3224</h2><p>这个是nuxt.js的洞，有点self RCE意思，简单说就是只有在开发者dev模式下才能触发。</p>
+<p>问题出在这个文件：<a href="https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/test-component-wrapper.ts">https://github.com/nuxt/nuxt/blob/main/packages/nuxt/src/app/components/test-component-wrapper.ts</a> </p>
+<p>这已经是修复过后的代码，原来的代码是：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; parseURL &#125; <span class="keyword">from</span> <span class="string">'ufo'</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineComponent, h &#125; <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> &#123; parseQuery &#125; <span class="keyword">from</span> <span class="string">'vue-router'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> (url:<span class="built_in">string</span>) =&gt; defineComponent(&#123;</span><br><span class="line">  name: <span class="string">'NuxtTestComponentWrapper'</span>,</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> setup (props, &#123; attrs &#125;) &#123;</span><br><span class="line">    <span class="keyword">const</span> query = parseQuery(parseURL(url).search)</span><br><span class="line">    <span class="keyword">const</span> urlProps = query.props ? <span class="built_in">JSON</span>.parse(query.props <span class="keyword">as</span> <span class="built_in">string</span>) : &#123;&#125;</span><br><span class="line">    <span class="keyword">const</span> comp = <span class="keyword">await</span> <span class="keyword">import</span>(<span class="comment">/* @vite-ignore */</span> query.path <span class="keyword">as</span> <span class="built_in">string</span>).then(<span class="function"><span class="params">r</span> =&gt;</span> r.default)</span><br><span class="line">    <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> [</span><br><span class="line">      h(<span class="string">'div'</span>, <span class="string">'Component Test Wrapper for '</span> + query.path),</span><br><span class="line">      h(<span class="string">'div'</span>, &#123; id: <span class="string">'nuxt-component-root'</span> &#125;, [</span><br><span class="line">        h(comp, &#123; ...attrs, ...props, ...urlProps &#125;)</span><br><span class="line">      ])</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><code>await import(/* @vite-ignore */ query.path as string)</code>  从用户请求参数取path参数，然后直接传递给import，导致RCE。</p>
+<p>这里payload可以 <code>path=data:text/javascript,console.log(&quot;hello!&quot;);</code> , import还能这样利用，也是长见识了。至于命令执行，就是typescript执行命令的操作了，把console.log替换就完事了。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

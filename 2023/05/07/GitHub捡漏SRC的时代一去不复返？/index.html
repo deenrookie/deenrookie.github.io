@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>GitHub捡漏SRC的时代一去不复返？ · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">GitHub捡漏SRC的时代一去不复返？</h1>
+    <p class="post-meta">
+      <time datetime="2023-05-07T13:46:22.000Z" itemprop="datePublished">2023-05-07</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="捡漏"><a href="#捡漏" class="headerlink" title="捡漏"></a>捡漏</h2><p>简单说就是通过github code search的api，搜索相关src企业的关键字，比如一些大厂内部git仓库的域名，然后按时间排序展示最新的。例如这些项目：</p>
+<ul>
+<li><a href="https://github.com/VKSRC/Github-Monitor">https://github.com/VKSRC/Github-Monitor</a></li>
+<li><a href="https://github.com/MiSecurity/x-patrol">https://github.com/MiSecurity/x-patrol</a></li>
+</ul>
+<p>简单粗暴，但是很有效，这东西没有太大技术含量，就是调用github的api。 这是github的文档：<a href="https://docs.github.com/en">https://docs.github.com/en</a></p>
+<p>GitHub主要提供两种api：</p>
+<ul>
+<li>REST API</li>
+<li>GraphQL API </li>
+</ul>
+<p>这些项目都用的REST API实现的，这个接口：<a href="https://docs.github.com/en/rest/search?apiVersion=2022-11-28#search-code">https://docs.github.com/en/rest/search?apiVersion=2022-11-28#search-code</a></p>
+<h2 id="GitHub掀桌了"><a href="#GitHub掀桌了" class="headerlink" title="GitHub掀桌了"></a>GitHub掀桌了</h2><p>20230310，GitHub blog发布了一则通知——《Changes to the code search API》</p>
+<blockquote>
+<p>We are deprecating support for sorting code search results. Once these changes take effect, all code search results will be sorted by best match ——《Changes to the code search API》</p>
+</blockquote>
+<p>4月10号开始生效。</p>
+<p>意思是4月10号开始，不再支持代码搜索按最新的结果排序，也就是那些什么github泄露监控的搜索结果，搜出来的也不是最新的结果了。</p>
+<p>颇有一种“你爷爷决策一失误，我爷爷就得要饭” 的感觉。</p>
+<p>那面那些开源项目，也可以宣告终结了，那个接口没有报错，估计还有不少人没感知到这个改动。</p>
+<p>在github的文档上，order这个参数备注着 “This field is deprecated” 。</p>
+<p>GitHub捡漏SRC的时代宣告终结。</p>
+<h2 id="尝试挣扎"><a href="#尝试挣扎" class="headerlink" title="尝试挣扎"></a>尝试挣扎</h2><p>如上所说，GitHub提供了两种类型的API，REST API和GraphQL API。抱着侥幸心理，我怀疑这个改动生效只对REST API生效。</p>
+<p>尝试在GraphQL API进行突破：<a href="https://docs.github.com/en/graphql/overview/explorer">https://docs.github.com/en/graphql/overview/explorer</a></p>
+<p>经过一番查找尝试之后，我真想抽GitHub两嘴巴子，GitHub捡漏SRC的时代宣告终结again</p>
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><p>那问题来了，现在一般大一点有点安全意识的企业都会在内部布置这样一套监控系统，现在这个系统失效了，那如何确保员工上传到GitHub上的东西没有泄露敏感数据呢？</p>
+<p>我不知道GitHub这样改动是出于何种原有，可能是我这种捡漏的太多导致大家对它的安全性有所怀疑？ 那问题是，只关闭发现问题的途径，那问题就不存在了吗？</p>
+<p>皇帝的新装——问题看不到，就等于没有问题？</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

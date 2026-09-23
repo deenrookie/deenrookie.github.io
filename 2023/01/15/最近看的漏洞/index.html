@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>最近看的漏洞 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">最近看的漏洞</h1>
+    <p class="post-meta">
+      <time datetime="2023-01-15T13:46:22.000Z" itemprop="datePublished">2023-01-15</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="CVE-2022-23529——-自嗨RCE"><a href="#CVE-2022-23529——-自嗨RCE" class="headerlink" title="CVE-2022-23529—— 自嗨RCE"></a>CVE-2022-23529—— 自嗨RCE</h2><p>先看下国内的漏洞通告，叫做“node-jsonwebtoken远程代码执行漏洞”。CVSS 7.6 ，风险很高了可以说是。</p>
+<p>看下这个开源项目影响力， <a href="https://github.com/auth0/node-jsonwebtoken">https://github.com/auth0/node-jsonwebtoken</a>  16.1k的star数，挺多的。</p>
+<p>怎么就没人分析下详情呢？</p>
+<p>再看下git的commit的记录，<a href="https://github.com/auth0/node-jsonwebtoken/commit/e1fa9dcc12054a8681db4e6373da1b30cf7016e3">https://github.com/auth0/node-jsonwebtoken/commit/e1fa9dcc12054a8681db4e6373da1b30cf7016e3</a> ，说实话没太看明白，怎么扯上toString这个函数的。</p>
+<p>一通google，最后在 <a href="https://unit42.paloaltonetworks.com/jsonwebtoken-vulnerability-cve-2022-23529/">https://unit42.paloaltonetworks.com/jsonwebtoken-vulnerability-cve-2022-23529/</a> 找到了细节，后来才想起来，在twitter看过这篇文章，当时没注意到是这个洞。</p>
+<p>看完之后第一反应，就这啊？</p>
+<p>简单分析如下：</p>
+<ul>
+<li>这个库有个verify 函数，函数接收三个参数，第一个参数是token，第二个参数是密钥secretOrPublicKey，第三个可选参数。</li>
+<li>verify函数执行后会有如下函数调用，在这里调用了secretOrPublicKey的toString()函数</li>
+</ul>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115013706.png" alt=""></p>
+<ul>
+<li>如果这个参数secretOrPublicKey不是字符串，而是一个 <code>{toString: () =&gt; console.error(&quot;PWNED !!11&quot;)};</code> 这样的对象，那就有代码执行的风险</li>
+</ul>
+<p>看完我就无语了…..verify第二个参数一般能不能可控都是问题，如果是字符串能rce那确实是问题挺严重的，但这里还得是这样的对象？？？ 都能传一个这样的对象到这个函数，不早都代码执行了….. 什么垃圾洞啊，难怪没人分析</p>
+<h2 id="Apache-Kylin多个命令注入漏洞——-Remove-useless-code"><a href="#Apache-Kylin多个命令注入漏洞——-Remove-useless-code" class="headerlink" title="Apache Kylin多个命令注入漏洞—— Remove useless code"></a>Apache Kylin多个命令注入漏洞—— Remove useless code</h2><p>这个很常见的项目了，看下影响版本：</p>
+<ul>
+<li>Kylin 2.x</li>
+<li>Kylin 3.x</li>
+<li>Kylin 4.x &lt; 4.0.3</li>
+</ul>
+<p>也就是最新的4.0.3不受影响。 直接对比4.0.2 <a href="https://github.com/apache/kylin/compare/kylin-4.0.2...kylin-4.0.3">https://github.com/apache/kylin/compare/kylin-4.0.2...kylin-4.0.3</a></p>
+<p>说实话，这些commit名称啊，也没security rce vul safe之类的关键字，这也太难找了吧。</p>
+<p>无语之时，一个commit映入眼帘，随手点击一看。 <a href="https://github.com/apache/kylin/commit/fd2977e21c51f1afed668f2d9713cf562f2dc42d">https://github.com/apache/kylin/commit/fd2977e21c51f1afed668f2d9713cf562f2dc42d</a></p>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115014749.png" alt=""></p>
+<p><img src="https://1-1252869755.cos.ap-guangzhou.myqcloud.com/20230115014849.png" alt=""></p>
+<p>看到这就懂了，和之前那几个rce如出一辙，顺着数据流简单走一遍就完事了。</p>
+<p>这个commit叫做  <code>Remove useless code</code> 真有意思啊这项目组。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

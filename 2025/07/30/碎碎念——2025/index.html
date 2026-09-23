@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>碎碎念——2025 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">碎碎念——2025</h1>
+    <p class="post-meta">
+      <time datetime="2025-07-30T23:53:22.000Z" itemprop="datePublished">2025-07-30</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="岁月是杀猪刀"><a href="#岁月是杀猪刀" class="headerlink" title="岁月是杀猪刀"></a>岁月是杀猪刀</h2><p>2015的高考，已经过了10个年头。</p>
+<p>偶尔会做梦梦到高考，上次还考了化学什么的乱七八糟的吓醒了。</p>
+<p>“人无同时拥有青春和对青春的感受” 。</p>
+<p>可能过于平庸没什么值得伤感的。</p>
+<p>有些朋友已经十年未见了。</p>
+<p>知足常乐。</p>
+<h2 id="关于Xcheck"><a href="#关于Xcheck" class="headerlink" title="关于Xcheck"></a>关于Xcheck</h2><p>Xcheck最初的那一批研发都跑了，剩下两个维护的研发都没听过。</p>
+<p>算算时间，从19-25年，近7年光景，我倒还好，待了2年多，与其他人对这个产品付出的心血相比，andy他们确实是最伤心的那波。</p>
+<p>狡兔死，走狗烹。 这可能就是在大公司内部创业的宿命，不会说你做出来一个东西，这个东西就一直是你的。</p>
+<p>在某些办公室政治下，例如别的老板也看上你的这个，那你就完蛋了。听了他们的遭遇之后，只能说，腾讯CSIG的一些部门过于恶心了。</p>
+<p>在这种遭遇之下（空降LD，让研发放弃xcheck去做测试，晚上9点早上9点开会折磨人），他们能不撕逼写小作文，都是属于素质较高了。</p>
+<p>每想到这个，我都不由惋惜。虽然xcheck已经和我没什么关系了，但是毕竟是一个我认真负责过的产品，以及andy他们的“师生情”和“战友情”，他们最后这样的结果，都得长叹一口气。</p>
+<p>俱往矣，都是谈资了。</p>
+<p>回深圳小黑屋又重新聚餐了一次，大家精神面貌都还挺好的。</p>
+<h2 id="新加坡的生活"><a href="#新加坡的生活" class="headerlink" title="新加坡的生活"></a>新加坡的生活</h2><p>来了快两年了。</p>
+<p>难吃了点，但是又胖了不少，有时间做自己的事情。</p>
+<p>申请了PR，希望能过。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>博客折腾 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">博客折腾</h1>
+    <p class="post-meta">
+      <time datetime="2023-04-18T13:46:22.000Z" itemprop="datePublished">2023-04-18</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="折腾史"><a href="#折腾史" class="headerlink" title="折腾史"></a>折腾史</h2><p>从15年的wordpress到17 18年自己写的Django blog，再到简书，再到cnblogs，再到后面一直用的github page</p>
+<p>用了这么久，还是github page最省事</p>
+<p>我是个喜欢记笔记的人，这么多年下来，前前后后少说上百篇是有的，后面一些学习笔记也不在blog更新了</p>
+<p>用好听的话讲叫“爱惜羽毛”、“惜字如金”，其实觉得自己学了不少了，再更新些没啥技术含量的东西到blog就丢人了</p>
+<p>再其次就是懒</p>
+<p>这几年一直都在用github page，用的hexo</p>
+<p>这东西有个很烦的一个点，每次都得hexo g 然后 hexo d  执行一遍</p>
+<p>执行完之后还得到github去加个CNAME</p>
+<p>我这懒得也是有点东西，这些年都这样操作下来了，换了两次电脑也坚持下来了</p>
+<p>直到最近我遇到vercel，用了好的东西，再用这个不好的</p>
+<p>实在忍无可忍</p>
+<p>于是我又花了一天时间，改了next.js 里example里的博客源码</p>
+<p>一切都准备就绪了……就差写CSS了</p>
+<p>到这一步，终于醒悟，这才是自己写博客源码的刚开始，CSS 的工作量才是大头</p>
+<p>折腾了半天，我的审美实在无法接受我用这么丑的blog</p>
+<p>哎呀，又回到这个hexo，我改善下这个hexo使用体验不就好了么？</p>
+<h2 id="hexo"><a href="#hexo" class="headerlink" title="hexo"></a>hexo</h2><p>hexo 这个东西，两部分组成，一个是最后的静态网站文件，一个是生成网站的源文件，就是markdown那些东西</p>
+<p>最近也刚接触了github那个workflow，再起一个仓库放源文件，然后利用workflow来push，岂不是完美？</p>
+<p>哦，已经有人实现了……</p>
+<p><a href="https://juejin.cn/post/6943895271751286821">https://juejin.cn/post/6943895271751286821</a> </p>
+<p>服了，打字打到这里的时候，有道笔记坏掉了，没保存下来….</p>
+<p>那我忽略那部分内容吧</p>
+<p>直接说照着这个笔记操作要注意的点：</p>
+<ul>
+<li><p>他这个掘金里的workflow，有个uses的用法，就是直接服用别人仓库的脚本：<a href="https://github.com/theme-keep/hexo-deploy-github-pages-action">https://github.com/theme-keep/hexo-deploy-github-pages-action</a> ，这里是这个脚本，<strong>为了安全起见，建议先fork脚本，检查下安全性</strong> ，我这也算是职业习惯了。</p>
+</li>
+<li><p>还要创建CNAME文件，fork 之后 在entrypoint.sh，加一句 <code>echo &quot;xxxx.cn&quot; &gt; CNAME</code> 的命令吧  </p>
+</li>
+<li><p>注意一些配置，有些是master分支，实际现在默认是main分支</p>
+</li>
+</ul>
+<p>最后，终于写博客也是纵享丝滑了，提交个md就完事了，我这篇博客就是为了测试用的</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

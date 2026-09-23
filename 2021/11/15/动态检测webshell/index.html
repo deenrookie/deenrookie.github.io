@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>动态检测webshell · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">动态检测webshell</h1>
+    <p class="post-meta">
+      <time datetime="2021-11-15T13:46:22.000Z" itemprop="datePublished">2021-11-15</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="检测原理"><a href="#检测原理" class="headerlink" title="检测原理"></a>检测原理</h2><p>“假动态”和“真动态”。 这里真假动态均为个人理解。</p>
+<p>假动态是指会模拟执行样本代码，这里模拟执行，应该是指解释执行代码，但又不是真的执行。例如 1+1，在模拟执行之后会得到2，但是例如 f(1) +1，f是一个系统内置函数，如果没有很好的对f做解释执行的话，那这个模拟执行的结果就不准确。系统有那么多内置函数，假动态如果要做到准确，成本实现非常之高，但如果不做准确，在面对样本中的动态操作时，效果较差。</p>
+<p>真动态的话，就是是真的会执行样本代码，与病毒检测类似，有一个动态执行的沙箱，可参考阿里云的《云环境下恶意脚本检测的最佳实践》。这里具体如何实现的由于未参与过，也无从知道。但是从测试的效果来看，如果样本中都是“确定”的数值变量，不那么动态的，那么这个沙箱检测可以成功检测得出。</p>
+<p>关于这个实现原理，个人猜想是hook了指定的危险函数，能实时监测内存……等等，反正我不会…</p>
+<h2 id="绕过“真动态”"><a href="#绕过“真动态”" class="headerlink" title="绕过“真动态”"></a>绕过“真动态”</h2><p>这次aliyun第四届恶意文本检测webshell，绕了四个，撞了一个，三个有效。记录下绕过的思路。</p>
+<h3 id="1-探测沙盒"><a href="#1-探测沙盒" class="headerlink" title="1. 探测沙盒"></a>1. 探测沙盒</h3><p>测试发现</p>
+<ol>
+<li>编码对动态的沙盒无效，编码也是php代码，对解释引擎自然是无效的</li>
+<li>在无限循环或者其他超长超大字符、数组情况下，沙盒表现为超时、或者正常</li>
+<li>暴力的污点传播模式，内置的不可信函数的返回值不可信，即污点</li>
+</ol>
+<h3 id="2-Bypass"><a href="#2-Bypass" class="headerlink" title="2. Bypass"></a>2. Bypass</h3><p>刚看了活动规则….“不得公开绕过技巧及样本”</p>
+<p>一言以蔽之——用魔法打败魔法，用动态打败动态，动态条件、动态调用、动态变量、动态函数……</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

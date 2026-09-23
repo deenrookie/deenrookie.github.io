@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>CSRF防护方案 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">CSRF防护方案</h1>
+    <p class="post-meta">
+      <time datetime="2023-09-23T01:31:22.000Z" itemprop="datePublished">2023-09-23</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="一些知识要点"><a href="#一些知识要点" class="headerlink" title="一些知识要点"></a>一些知识要点</h2><p>这是一个危害不高的漏洞，但是知识点却也不少，有些人只是一知半解，整个漏洞的知识体系都没搞明白，和CORS的漏洞混为一谈，在大厂里搞安全不知道这个细节的也不在少数。</p>
+<p>先说一下CSRF的攻击手段，大概就是构造的恶意请求的表单，然后集成在一个恶意url里面，给受害者点击，然后触发请求，就会以受害者的session发送一个请求。</p>
+<p>大概整个攻击流程就是这样。</p>
+<p>这里面有很重要的一个知识点，就是simple request，这是参考文档：<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS</a></p>
+<p>简单说，就是满足这个简单请求的，就不用要求跨域，这个跨域CORS我就不多解释了，如果这个没搞懂，那CSRF这个也搞不懂了。</p>
+<p>所以，这些构造的攻击表单，都是满足简单请求这个条件。当服务端只允许接受content-type是json情况下，还能构造CSRF攻击吗？</p>
+<p>有人说能，用XMLHttpRequest，把content-type改成json就好了……. 但是这个不满足simple request的条件，在没有CORS的问题下是无法攻击成功的。所以服务端防御CSRF，只需要强制校验content-type。</p>
+<h2 id="防护方案"><a href="#防护方案" class="headerlink" title="防护方案"></a>防护方案</h2><p>根据上面说的，校验content-type就好了，但是因为一些历史的原因，前端已经使用了form表单的格式，端上也是用的form表单的格式，那怎么办。如果调用方式都改成json的数据格式，成本太高。由此，就开发了一个防护方案，这个方案的主要防护原理以下几点：</p>
+<ul>
+<li>服务端前的网关层做token校验</li>
+<li>浏览器前端层面做请求hook，把请求都带上token，发送请求前，先去网关那里获取一个token</li>
+</ul>
+<p>这里说下前端的hook，就是prototype的属性重新赋值，把原先那个函数的值保存下来，然后在重新赋值时，带上token，再把原来的函数最后执行</p>
+<p>实现这个主要是以下这些开发工作：</p>
+<ul>
+<li>前端SDK开发</li>
+<li>后端网关token服务开发</li>
+</ul>
+<p>整个请求流程变成如下：</p>
+<ol>
+<li>前端sdk，请求获取token，后端网关层返回token</li>
+<li>正常的请求携带上token</li>
+<li>后端网关校验token</li>
+</ol>
+<p>这里面有一点必不可少的就是校验origin。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>说实话，修复的时候，既要前端接入sdk，又要后端接入网关</p>
+<p>实际上不如在开发时候就直接限制好content-type是json这个要求。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

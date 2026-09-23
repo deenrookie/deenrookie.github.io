@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>未来已来 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">未来已来</h1>
+    <p class="post-meta">
+      <time datetime="2026-09-23T00:09:22.000Z" itemprop="datePublished">2026-09-23</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="未来已来"><a href="#未来已来" class="headerlink" title="未来已来"></a>未来已来</h2><p>电影《战马》（War Horse）有个片段，一群骑兵对着马克沁机枪的阵地冲锋，声声哀嚎中，宣告着骑兵时代的终结。</p>
+<p>珍妮纺纱机的出现也是，现在的我，和一个个程序员像是当年的纺织女工。</p>
+<p>我并不喜欢贩卖焦虑，之前我对AI替代人工嗤之以鼻，因为真的用过，最早的GPT到cursor，说实话，能提高效率，但是很难替代，但是现在，没有什么是不可能了。</p>
+<h3 id="SAST"><a href="#SAST" class="headerlink" title="SAST"></a>SAST</h3><p>之前写一个SAST工具，全人力投入的情况下，我需要3个月，now，3天可以给你搓质量很高的MVP出来。</p>
+<h3 id="Pulse"><a href="#Pulse" class="headerlink" title="Pulse"></a>Pulse</h3><p>因为不想花钱买burp（单纯想花掉token），所以搓了一个轻量版，想要啥加啥，不占内存，支持插件开发，BS架构，还方便部署。</p>
+<p><a href="https://github.com/deenrookie/pulse">https://github.com/deenrookie/pulse</a> </p>
+<h3 id="ProxyPilot"><a href="#ProxyPilot" class="headerlink" title="ProxyPilot"></a>ProxyPilot</h3><p>一个chrome插件，用来代替requestly的，这个东西就是个前端hook，还收费，免费模式一堆限制。刚好自己也熟悉前端js发请求那一套，直接秒了。</p>
+<p><a href="https://github.com/deenrookie/proxypilot-extension">https://github.com/deenrookie/proxypilot-extension</a></p>
+<h3 id="Pluto"><a href="#Pluto" class="headerlink" title="Pluto"></a>Pluto</h3><p><a href="https://github.com/deenrookie/pluto">https://github.com/deenrookie/pluto</a></p>
+<p>3天顶了我之前3个月的工作，每天下班两小时的投入。</p>
+<p>重构了之前的分布式bugbounty扫描工具，UI更好看了，接入AI了，交互更好了，日志啥的各种都变好了。</p>
+<p>挖到的漏洞少了。</p>
+<h3 id="CTF"><a href="#CTF" class="headerlink" title="CTF"></a>CTF</h3><p>25年的时候，我还在手工测试AI那些东西做CTF，发现效果一般般，有用，但是那么有用。<br>但是现在，“大人，时代变了”。</p>
+<h3 id="什么重要"><a href="#什么重要" class="headerlink" title="什么重要"></a>什么重要</h3><p>经验不是那么重要，聪明更重要，表达能力更重要，审美更重要。</p>
+<p>token很重要，model很重要。</p>
+<p>钱很重要，家人和生活更重要。</p>
+<p>25年的年终总结给我忘了，想了很多，但是没写，很多现在都变了。</p>
+<h3 id="刚刚"><a href="#刚刚" class="headerlink" title="刚刚"></a>刚刚</h3><p>刚刚又核弹了，opus5.5发布了。</p>
+<p>学得慢，就等于不用学。</p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

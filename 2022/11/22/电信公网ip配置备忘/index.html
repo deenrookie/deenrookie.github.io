@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>电信公网ip配置备忘 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">电信公网ip配置备忘</h1>
+    <p class="post-meta">
+      <time datetime="2022-11-22T13:46:22.000Z" itemprop="datePublished">2022-11-22</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="如下"><a href="#如下" class="headerlink" title="如下"></a>如下</h2><ul>
+<li>申请公网ip<ul>
+<li>找给你安装宽带的师傅，一般第二天就好了</li>
+<li>打电信客服电话，说要装监控，开公网ip</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>如何判断是否有公网ip</p>
+<ul>
+<li>登录光猫后台，一般是192.168.1.1，网上有很多如何找密码的教程，这里说一个默认账户和密码：telecomadmin nE7jA%5m</li>
+<li>登录之后，找到网络连接PPPOE那个。如果获取的ip是公网ip不是内网ip，那就成功了。<strong>申请公网ip成功后需要断开重连</strong>。</li>
+</ul>
+</li>
+<li><p>获取宽带账户和密码</p>
+<ul>
+<li>还是上面那个页面，用户名有的，密码获取操作：鼠标右键审查元素，元素的类型“type” 从password改成text，这个时候页面显示的是密码的base64，再直接解码就是密码了，8位</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p>设置成桥接   </p>
+<ul>
+<li>还是上面那个页面，“连接模式” 从路由改成桥接。<strong>如果你不是网线直接连着光猫，这个操作会使你连不上光猫了，所以确认上述操作已完成</strong>。  </li>
+</ul>
+</li>
+<li><p>路由器操作</p>
+<ul>
+<li>wan口 进行pppoe连接</li>
+<li>我自己的刷的pandora固件，坑了我好久。这里记录下。</li>
+<li>新增接口，wan，协议 pppoe，物理设备那里要选对，其实就是选对路由器连接光猫的那个wan口，一般是eth0 eth1这些。<strong>防火墙这里设置是个大坑，会导致上不了外网，这个下面细讲</strong>。</li>
+<li>如何判断pppoe是否连成功？回到接口展示页面，刷新两三次看有没有获取到公网ip，有没有数据传输。</li>
+<li>lan口设置，选择为接口创建桥接，然后可以选多个物理设备，比如你的2.4g 5g 你pc网线连路由器那个，这几个都勾上。<strong>交换机VLAN这些就别够了，发现够了之后会时不时导致路由器崩溃</strong>。 这个接口设置成惊天ip，这样就能选IPV4地址，避免和光猫的192.168.1.1冲突。</li>
+<li>防护墙设置，两个区域，LAN和WAN，wan就是公网的流量。<strong>其实到这一步，你的机器已经暴露在公网了</strong>。我这里直接接受接受接受，<strong>wan到lan开启动态ip伪装，我不知道干嘛用的，但是不勾上不了外网</strong>。（花了两个小时踩坑）这里就两个规则wan到lan，lan到wan,   在接口设置那里，wan口防火墙规则就选wan到lan，同理lan一样。</li>
+<li>动态dns设置，潘多拉是带动态dns设置的：动态dns就是公网ip会不停变，但是可以设置一个动态解析，解析到ip变了之后，就把域名的解析也变了。我用的腾讯云的域名，可以选择 dnspod.cn进行设置，操作网上都有，就不展开讲了。</li>
+</ul>
+</li>
+</ul>
+<h2 id="安全设置"><a href="#安全设置" class="headerlink" title="安全设置"></a>安全设置</h2><p>这里我单独拿出来记录。</p>
+<ul>
+<li>检查路由器的服务，没必要的就别开了，路由器上的服务开了就会被外网访问到。</li>
+<li>找个vps扫自己的公网ip，就是那个路由器，看看开了哪些端口，不需要的端口在防火墙自定义规则那里下掉<ul>
+<li>可以转发到没用的端口</li>
+<li>或者用iptables命令下掉</li>
+</ul>
+</li>
+<li>端口转发这里就简单了，不赘述了</li>
+</ul>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>

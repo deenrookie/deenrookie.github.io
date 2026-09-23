@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang=&#34;en&#34;>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070807">
+  <title>飞书防撤回 · Deen&#39;s blog</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1.1.2"><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><main class="site-shell">
+    <header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation">
+    
+      <a href="/">Home</a>
+    
+      <a href="/archives/">Archives</a>
+    
+      <a href="/about/">About</a>
+    
+  </nav>
+</header>
+<div class="header-rule" aria-hidden="true"></div>
+
+    <article class="post-detail" itemscope itemtype="https://schema.org/BlogPosting">
+  <header class="post-header">
+    <h1 itemprop="headline">飞书防撤回</h1>
+    <p class="post-meta">
+      <time datetime="2021-08-29T13:46:22.000Z" itemprop="datePublished">2021-08-29</time>
+      
+    </p>
+  </header>
+  <div class="article-content" itemprop="articleBody"><h2 id="飞书介绍"><a href="#飞书介绍" class="headerlink" title="飞书介绍"></a>飞书介绍</h2><p>一个由字节跳动研发的工作使用的IM。<br>PC、MAC客户端开发使用的是electron js，也有网页版。</p>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>鉴于使用的是electron js，客户端并没有什么好的调试方法。通过对源码结构的对比，我发现客户端版和网页版相比并没有太大区别，于是我决定从网页版入手。</p>
+<h2 id="关键字定位"><a href="#关键字定位" class="headerlink" title="关键字定位"></a>关键字定位</h2><p>打开网页版飞书，测试消息撤回功能。右键审查元素。<br><img src="https://i.imgur.com/4olwJhI.png" alt="关键字"></p>
+<p>得到了我们要的关键字——“is-recalled”<br>然后在浏览器搜索定位。<br><img src="https://i.imgur.com/4lRJ82c.png" alt="浏览器搜索"></p>
+<h2 id="调试"><a href="#调试" class="headerlink" title="调试"></a>调试</h2><p>在上面搜索得到的路径中，寻找可疑的执行路径进行断点调试。<br>会发现每一个消息其实都是结构对象。</p>
+<p><img src="https://i.imgur.com/EmimmJs.png" alt=""></p>
+<p>这里就有我们要的 isRecalled 字段。</p>
+<p>所以我们要做的就是找到接收消息函数，对每次接收过来的消息对isRecalled字段进行判断。若值为true，则直接丢弃。</p>
+<p>最后找到 onReceivePushAsyncMessages 函数，对函数进行修改。（可能已失效）</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">onReceivePushAsyncMessages</span><span class="params">(e)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span>(Object.keys(e.messages)<span class="selector-class">.length</span> == <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span>(e<span class="selector-class">.messages</span>[Object.keys(e.messages)[<span class="number">0</span>]].isRecalled) &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    H<span class="selector-class">.a</span><span class="selector-class">.receiveAsyncPushMesssage</span>(Object.values(e.messages)), this.receiveMessagesEntities(e, &#123;onlyUpdateMessages: !<span class="number">0</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="客户端实现"><a href="#客户端实现" class="headerlink" title="客户端实现"></a>客户端实现</h2><p>mac下访达，应用程序-飞书-显示包内容，Contents-Frameworks-Lark Framework-Resources-webcontent</p>
+<p><img src="https://i.imgur.com/KyD4tOF.png" alt=""><br>都是js，自由发挥。</p>
+<h2 id="chrome下替换指定js文件的插件"><a href="#chrome下替换指定js文件的插件" class="headerlink" title="chrome下替换指定js文件的插件"></a>chrome下替换指定js文件的插件</h2><p>ResRes插件</p>
+<p><img src="https://i.imgur.com/HJ5RWtW.png" alt=""></p>
+<h2 id="chrome下修改Ajax请求回包"><a href="#chrome下修改Ajax请求回包" class="headerlink" title="chrome下修改Ajax请求回包"></a>chrome下修改Ajax请求回包</h2><p>使用ajax-interceptor插件:<br><a href="https://chrome.google.com/webstore/detail/ajax-interceptor/nhpjggchkhnlbgdfcbgpdpkifemomkpg">https://chrome.google.com/webstore/detail/ajax-interceptor/nhpjggchkhnlbgdfcbgpdpkifemomkpg</a></p>
+</div>
+</article>
+
+    <footer class="site-footer">
+  Copyright © 2026 Deen&#39;s blog
+</footer>
+
+  </main>
+  <script>
+    (function () {
+      var terminal = document.querySelector('[data-terminal-intro]');
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!terminal || reduceMotion) return;
+
+      var introSeen = false;
+      try { introSeen = window.sessionStorage.getItem('deen-terminal-intro-seen') === '1'; } catch (error) {}
+      if (introSeen) return;
+      try { window.sessionStorage.setItem('deen-terminal-intro-seen', '1'); } catch (error) {}
+
+      var root = document.documentElement;
+      var lines = terminal.querySelectorAll('.terminal-command .terminal-typed');
+      var output = terminal.querySelector('.terminal-output');
+      var cursors = terminal.querySelectorAll('.terminal-cursor');
+      var list = document.querySelector('.post-list');
+      var pagination = document.querySelector('.terminal-status');
+      var text = Array.prototype.map.call(lines, function (line) { return line.textContent; });
+      var delay = function (milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); };
+      var type = function (line, value) {
+        line.textContent = '';
+        return new Promise(function (resolve) {
+          var index = 0;
+          var tick = function () {
+            line.textContent += value.charAt(index++);
+            if (index < value.length) window.setTimeout(tick, 28);
+            else resolve();
+          };
+          tick();
+        });
+      };
+
+      root.classList.add('terminal-booting');
+      cursors[0].classList.add('is-active');
+      output.classList.remove('is-visible');
+      type(lines[0], text[0])
+        .then(function () {
+          cursors[0].classList.remove('is-active');
+          output.classList.add('is-visible');
+          return delay(260);
+        })
+        .then(function () { cursors[1].classList.add('is-active'); })
+        .then(function () { return type(lines[1], text[1]); })
+        .then(function () {
+          cursors[1].classList.remove('is-active');
+          Array.prototype.forEach.call(list.children, function (item, index) {
+            item.style.transitionDelay = (index * 42) + 'ms';
+            item.classList.add('is-visible');
+          });
+          if (pagination) pagination.classList.add('is-visible');
+          root.classList.remove('terminal-booting');
+        });
+    }());
+
+    document.querySelectorAll('.article-content .highlight').forEach(function (block) {
+      var code = block.querySelector('code, td.code, pre');
+      if (!code) return;
+      var className = block.className.split(/\s+/).find(function (name) { return name !== 'highlight'; });
+      var toolbar = document.createElement('div');
+      toolbar.className = 'code-toolbar';
+      toolbar.innerHTML = '<span class="code-controls" aria-hidden="true"><i></i><i></i><i></i></span><span class="code-language"></span><button type="button" data-copy-code>Copy</button>';
+      toolbar.querySelector('.code-language').textContent = className || 'text';
+      block.prepend(toolbar);
+      var table = block.querySelector('table');
+      if (table) {
+        var scroller = document.createElement('div');
+        scroller.className = 'code-scroll';
+        table.parentNode.insertBefore(scroller, table);
+        scroller.appendChild(table);
+      }
+    });
+    document.addEventListener('click', function (event) {
+      var button = event.target.closest('[data-copy-code]');
+      if (!button) return;
+      var code = button.closest('.highlight, .code-block').querySelector('code, td.code, pre');
+      if (!code || !navigator.clipboard) return;
+      navigator.clipboard.writeText(code.innerText).then(function () {
+        button.textContent = 'Copied';
+        window.setTimeout(function () { button.textContent = 'Copy'; }, 1400);
+      });
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</body>
+</html>
